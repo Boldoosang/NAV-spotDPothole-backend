@@ -16,7 +16,6 @@ class Pothole(db.Model):
     potholeID = db.Column(db.Integer, primary_key = True)
     longitude = db.Column(db.Float, nullable = False)
     latitude = db.Column(db.Float, nullable = False)
-    constituencyID = db.Column(db.String(100), nullable = False)
     expiryDate = db.Column(db.Date, nullable = False)
 
     #Declares a relationship with the Report table, such that all of the reports for a pothole are deleted when the pothole is deleted.
@@ -28,7 +27,6 @@ class Pothole(db.Model):
             "potholeID" : self.potholeID,
             "longitude" : self.longitude,
             "latitude" : self.latitude,
-            "constituencyID" : self.constituencyID,
             "expiryDate" : self.expiryDate.strftime("%Y-%m-%d")
         }
     
