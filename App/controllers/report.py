@@ -82,7 +82,7 @@ def reportPotholeStandard(user, reportDetails):
     finalPothole = None
 
     #Determines if the reportDetails contains all of the neccesary fields for processing of the report.
-    if "longitude" in reportDetails and "latitude" in reportDetails and "constituencyID" in reportDetails and "description" in reportDetails:
+    if "longitude" in reportDetails and "latitude" in reportDetails and "description" in reportDetails:
         #If the coordinates reported are within the bounds for Trinidad and Tobago, process the report.
         if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
             #Finds the closest pothole to the coordinates.
@@ -93,7 +93,7 @@ def reportPotholeStandard(user, reportDetails):
                 #Attempts to create a pothole record using the report details.
                 try:
                     #Creates the report using the report details, adds the report to the database, and commits the changes.
-                    newPothole = Pothole(longitude=reportDetails["longitude"], latitude=reportDetails["latitude"], constituencyID=reportDetails["constituencyID"], expiryDate=datetime.now() + timedelta(days=EXPIRY_DATE_PRIMARY))
+                    newPothole = Pothole(longitude=reportDetails["longitude"], latitude=reportDetails["latitude"], expiryDate=datetime.now() + timedelta(days=EXPIRY_DATE_PRIMARY))
                     db.session.add(newPothole)
                     db.session.commit()
 
@@ -178,7 +178,7 @@ def reportPotholeDriver(user, reportDetails):
     finalPothole = None
     
     #Determines if the reportDetails contains all of the neccesary fields for processing of the report.
-    if "longitude" in reportDetails and "latitude" in reportDetails and "constituencyID" in reportDetails:
+    if "longitude" in reportDetails and "latitude" in reportDetails:
         #If the coordinates reported are within the bounds for Trinidad and Tobago, process the report.
         if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
             #Finds the closest pothole to the coordinates.
@@ -189,7 +189,7 @@ def reportPotholeDriver(user, reportDetails):
                 #Attempts to create a pothole record using the report details.
                 try:
                     #Creates the report using the report details, adds the report to the database, and commits the changes.
-                    newPothole = Pothole(longitude=reportDetails["longitude"], latitude=reportDetails["latitude"], constituencyID=reportDetails["constituencyID"], expiryDate=datetime.now() + timedelta(days=EXPIRY_DATE_PRIMARY))
+                    newPothole = Pothole(longitude=reportDetails["longitude"], latitude=reportDetails["latitude"], expiryDate=datetime.now() + timedelta(days=EXPIRY_DATE_PRIMARY))
                     db.session.add(newPothole)
                     db.session.commit()
                     #Sets the selected finalPothole to this new pothole object.

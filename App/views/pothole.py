@@ -7,6 +7,8 @@
 #Imports flask modules.
 from flask import Blueprint, redirect, request, jsonify, send_from_directory
 
+from App.controllers.pothole import getIndividualPotholeData, getPotholeData, nukePotholesInDB
+
 #Creates a blueprint to the collection of views for potholes.
 potholeViews = Blueprint('potholeViews', __name__)
 
