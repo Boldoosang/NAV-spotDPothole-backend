@@ -36,6 +36,6 @@ class Report(db.Model):
             "dateReported" : self.dateReported.strftime("%Y-%m-%d"),
             "description" : self.description,
             "votes" : [vote.toDict() for vote in self.votes],
-            "reportedImages" : [rImage.toDict() for rImage in self.reportedImages]
-            
+            "reportedImages" : [rImage.toDict() for rImage in self.reportedImages],
+            "reportedBy" : self.user.firstName + " " + self.user.lastName
         }
