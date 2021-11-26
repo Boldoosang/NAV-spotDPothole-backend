@@ -27,6 +27,7 @@ class Pothole(db.Model):
             "potholeID" : self.potholeID,
             "longitude" : self.longitude,
             "latitude" : self.latitude,
+            "numReports" : len(self.reports),
             "expiryDate" : self.expiryDate.strftime("%Y-%m-%d")
         }
     
