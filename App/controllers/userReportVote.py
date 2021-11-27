@@ -21,15 +21,14 @@ from App.controllers import *
 
 #Returns all of the votes for a particular reportID.
 def getAllVotesForReport(reportID):
-    #If the reportID is invalid, return an error and BAD REQUEST status code (400)
-    if(not reportID):
-        return json.dumps({"error": "Invalid report ID specified."}), 400
-
-    #Gets all of the votes for a particular report, stores their dictionary definition in an array, and returns a json dump of the array.
-    #Also returns an 'OK' http status code (200).
-    votes = db.session.query(UserReportVote).filter_by(reportID=reportID).all()
-    voteData = [v.toDict() for v in votes]
-    return json.dumps(voteData), 200
+    try:
+        #Gets all of the votes for a particular report, stores their dictionary definition in an array, and returns a json dump of the array.
+        #Also returns an 'OK' http status code (200).
+        votes = db.session.query(UserReportVote).filter_by(reportID=reportID).all()
+        voteData = [v.toDict() for v in votes]
+        return json.dumps(voteData), 200
+    except:
+        return {"error" : "Invalid reportID specified."}, 400
 
 #Returns all of the upvotes for a particular reportID.
 def getAllUpvotesForReport(reportID):
