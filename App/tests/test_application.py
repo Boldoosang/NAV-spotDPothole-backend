@@ -422,7 +422,7 @@ def testDeleteLastReportDeletesPothole(simulated_db):
 
     potholeAfterDelete = displayIndividualPotholes(potholeID)[0]
 
-    assert "Successfully deleted report." in rv[0]["message"] and 200 == rv[1] and "No report found." in oldRep[0] and potholeBeforeDelete == potholeAfterDelete
+    assert "Successfully deleted report." in rv[0]["message"] and 200 == rv[1] and "No report found." in oldRep[0] and potholeBeforeDelete != potholeAfterDelete
 
 
 # Integration Test 20: calculateNetVotes should return the number of upvotes-downvotes for a report.
