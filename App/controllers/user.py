@@ -78,9 +78,11 @@ def registerUserController(regData):
                     return {"error" : "An unknown error has occurred!"}, 500
                     
 
-        #If the registration data is null, return an error message along with a 'BAD REQUEST' http status code (400).        
+        #If the registration data is null, return an error message along with a 'BAD REQUEST' http status code (400).    
+        db.session.rollback()    
         return {"error" : "Invalid registration details provided!"}, 400
     except:
+        db.session.rollback()
         return {"error" : "Unable to register with user details!"}, 400
 
 #Facilitates the login of a user in the application given a dictionary containing login information.
@@ -106,8 +108,10 @@ def loginUserController(loginDetails):
                     return {"access_token" : access_token}, 200
 
         #If the login data is null, return an error message along with an 'UNAUTHORIZED' http status code (401).   
+        db.session.rollback()
         return {"error" : "Invalid login details provided!"}, 401
     except:
+        db.session.rollback()
         return {"error" : "Unable to login with user details!"}, 400
 
 #Returns the user's information given a user object.
@@ -119,6 +123,7 @@ def identifyUser(current_user):
         #Otherwise, return an error message and an 'UNAUTHORIZED' http status code (401).
         return {"error" : "User is not logged in!"}, 401
     except:
+        db.session.rollback()
         return {"error" : "Unable to identify user!"}, 400
 
 ##################### TEST CONTROLLERS #####################

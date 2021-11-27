@@ -24,6 +24,7 @@ def getPotholeData():
         #Returns the json form of the array, as well as an OK http status (200) code.
         return json.dumps(potholeData), 200
     except:
+        db.session.rollback()
         return json.dumps({"error": "Invalid pothole details specified."}), 400
 
 #Retrieives and returns data for an individual pothole given the pothole ID.
@@ -41,6 +42,7 @@ def getIndividualPotholeData(potholeID):
         return json.dumps(potholeData), 200
     #If the potholeID is invalid, return an error and BAD REQUEST status code (400)
     except:
+        db.session.rollback()
         return json.dumps({"error": "Invalid pothole ID specified."}), 400
 
 #Deletes a pothole given a particular potholeID.
@@ -64,6 +66,7 @@ def deletePothole(potholeID):
                 return False
     #If the potholeID is invalid, return an error and BAD REQUEST status code (400)
     except:
+        db.session.rollback()
         return json.dumps({"error": "Invalid pothole ID specified."}), 400
 
 #Deletes all of the potholes that have expired.
@@ -87,6 +90,7 @@ def getAllPotholes():
         allReports = [r.toDict() for r in allReports]
         return allReports
     except:
+        db.session.rollback()
         return []
 
 def nukePotholesInDB():
@@ -96,4 +100,5 @@ def nukePotholesInDB():
             db.session.delete(pothole)
             db.session.commit()
     except:
+        db.session.rollback()
         return "Unable to nuke!"

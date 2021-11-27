@@ -51,6 +51,7 @@ def getReportData():
         reportData = [r.toDict() for r in reports]
         return json.dumps(reportData), 200
     except:
+        db.session.rollback()
         return json.dumps({"error": "Invalid pothole reports in database."}), 400
 
 #Given the latitude and logitude for a report, finds the closest pothole within a threshold distance specified by DISTANCE_THRESHOLD
@@ -80,7 +81,7 @@ def findClosestPothole(latitude, longitude):
         #Returns the final pothole to be used for the report.
         return finalPothole
     except:
-        return None
+        return "error"
 
 #Validates a report of a user via the standard interface before adding it to the database.
 def reportPotholeStandard(user, reportDetails):
@@ -94,6 +95,9 @@ def reportPotholeStandard(user, reportDetails):
             if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
                 #Finds the closest pothole to the coordinates.
                 finalPothole = findClosestPothole(reportDetails["latitude"], reportDetails["longitude"])
+
+                if finalPothole == "error":
+                    return {"error": "Invalid pothole coordinates specified!"}, 400
 
                 #If there does not exist an existing pothole that the report can be mapped to, create a new pothole at the report location.
                 if not finalPothole:
@@ -177,8 +181,10 @@ def reportPotholeStandard(user, reportDetails):
                 return {"error" : "The coordinates are not in Trinidad and Tobago!"}, 400
         #Otherwise, the request does not contain all of the required fields for processing. Return an error and 'BAD REQUEST' http status code (400).
         else:
+            db.session.rollback()
             return {"error" : "Invalid report details submitted!"}, 400
     except:
+        db.session.rollback()
         return {"error": "Invalid report details specified."}, 400
 
 #Validates a report of a user via the driver interface before adding it to the database.
@@ -193,6 +199,9 @@ def reportPotholeDriver(user, reportDetails):
             if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
                 #Finds the closest pothole to the coordinates.
                 finalPothole = findClosestPothole(reportDetails["latitude"], reportDetails["longitude"])
+
+                if finalPothole == "error":
+                    return {"error": "Invalid pothole coordinates specified!"}, 400
 
                 #If there does not exist an existing pothole that the report can be mapped to, create a new pothole at the report location.
                 if not finalPothole:
@@ -254,8 +263,10 @@ def reportPotholeDriver(user, reportDetails):
                 return {"error" : "The coordinates are not in Trinidad and Tobago!"}, 400
         #Otherwise, the request does not contain all of the required fields for processing. Return an error and 'BAD REQUEST' http status code (400).
         else:
+            db.session.rollback()
             return {"error" : "Invalid report details submitted!"}, 400
     except:
+        db.session.rollback()
         return {"error": "Invalid report details specified."}, 400
 
 
@@ -331,8 +342,10 @@ def deleteUserPotholeReport(user, potholeID, reportID):
                 return {"error" : "Report does not exist! Unable to delete."}, 404
         #Otherwise, if the potholeID or the reportID are null, an invalid request was submitted. Return an error message and a 'BAD REQUEST' http status request (400).
         else:
+            db.session.rollback()
             return {"error" : "Invalid report details provided."}, 400
     except:
+        db.session.rollback()
         return {"error": "Invalid pothole details specified."}, 400
 
 #Facilitates the creator of a report to update the description of their report.    
@@ -366,8 +379,10 @@ def updateReportDescription(user, potholeID, reportID, potholeDetails):
                 return {"error" : "Invalid report details submitted!"}, 400
         #Otherwise, reportDetails is null and cannot be processed. Return an error and 'BAD REQUEST' status code.
         else:
+            db.session.rollback()
             return {"error" : "Invalid report update request submitted!"}, 400
     except:
+        db.session.rollback()
         return {"error": "Invalid pothole details specified."}, 400
 
 
@@ -381,6 +396,7 @@ def getPotholeReports(potholeID):
         #Returns all of the reports in an array in json form, and an 'OK' http status codee (200).
         return json.dumps(reportData), 200
     except:
+        db.session.rollback()
         return {"error": "Invalid pothole ID specified."}, 400
 
 #Returns an individual pothole information given the potholeID and reportID.
@@ -395,6 +411,7 @@ def getIndividualPotholeReport(potholeID, reportID):
         else:
             return json.dumps({"error": "No report found."}), 404
     except:
+        db.session.rollback()
         return json.dumps({"error": "Invalid pothole ID or report ID specified."}), 400
 
 
@@ -406,4 +423,5 @@ def getAllPotholeReportsByUser(user):
         allReports = [r.toDict() for r in allReports]
         return allReports
     except:
+        db.session.rollback()
         return json.dumps({"error": "Invalid user."}), 400

@@ -44,8 +44,10 @@ def getPotholeReportImages(reportID):
             return json.dumps([image.toDict() for image in foundReportedImages]), 200
         #Otherwise, an invalid reportID was submitted. Return an error message and a 'BAD REQUEST' http status code (400).
         else:
+            db.session.rollback()
             return {"error" : "Invalid pothole image requested!"}, 400
     except:
+        db.session.rollback()
         return {"error": "Invalid report ID specified."}, 400
 
 #Finds and returns the image information corresponding to a particular reportID and imageID.
@@ -64,8 +66,10 @@ def getIndividualPotholeReportImage(reportID, imageID):
             return json.dumps(foundReportedImage.toDict()), 200
         #If either of the reportID or imageID are null, return an error and 'BAD REQUEST' http status code.
         else:
+            db.session.rollback()
             return {"error" : "Invalid pothole image requested!"}, 400
     except:
+        db.session.rollback()
         return {"error": "Invalid report ID or imageID specified."}, 400
 
 #For the original posting user, facilitates the deletion of an image for a report.
@@ -100,8 +104,10 @@ def deletePotholeReportImage(user, potholeID, reportID, imageID):
 
         #If any of the user, reportID and imageID values are null, return an error and a 'BAD REQUEST' http status code.    
         else:
+            db.session.rollback()
             return {"error" : "Invalid pothole image submitted!"}, 400
     except:
+        db.session.rollback()
         return {"error": "Invalid request submitted."}, 400
 
 #For the original report poster, adds an image to their report given the imageDetails.
@@ -155,6 +161,8 @@ def addPotholeReportImage(user, potholeID, reportID, imageDetails):
                 return {"error" : "No pothole images submitted!"}, 400
         #If any of the the user, reportID and imageDetails are null, return an error message and a 'BAD REQUEST' http status code (400).
         else:
+            db.session.rollback()
             return {"error" : "Invalid pothole request submitted!"}, 400
     except:
+        db.session.rollback()
         return {"error": "Invalid request submitted."}, 400
