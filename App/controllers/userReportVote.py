@@ -13,6 +13,7 @@ from flask import Flask, request, session
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, current_user
 from geopy import distance
 import json
+from App.controllers.report import deletePotholeReport
 
 #Imports the all of the models and controllers of the application.
 from App.models import *
@@ -67,9 +68,13 @@ def voteOnPothole(user, potholeID, reportID, voteData):
                 #Attempts to vote on a report given that the user has not previously voted on the report.
                 if not existingVote: 
                     #Creates a new vote object with the vote data, adds the vote, and commits it to the database.
-                    newVote = UserReportVote(reportID = reportID, upvote = voteData["upvote"], userID = user.userID)
-                    db.session.add(newVote)
-                    db.session.commit()
+                    try:
+                        newVote = UserReportVote(reportID = reportID, upvote = voteData["upvote"], userID = user.userID)
+                        db.session.add(newVote)
+                        db.session.commit()
+                    except:
+                        db.session.rollback()
+                        return {"error": "Please do not vote too quickly"}, 500
 
                     #If the net votes changes such that the net votes are now below the deletion threshold, delete the pothole report.
                     if calculateNetVotes(reportID) <= REPORT_DELETION_THRESHOLD:
@@ -85,15 +90,23 @@ def voteOnPothole(user, potholeID, reportID, voteData):
                     #If the vote option received matches the previous vote option, the user has toggled the vote and would result in the deletion of the vote.
                     if existingVote.upvote == voteData["upvote"]:
                         #Deletes the vote, commits the changes, and returns a message along with a 'OK' http status code.
-                        db.session.delete(existingVote)
-                        db.session.commit()
-                        return {"message": "Vote removed from report!"}, 200
+                        try:
+                            db.session.delete(existingVote)
+                            db.session.commit()
+                            return {"message": "Vote removed from report!"}, 200
+                        except:
+                            db.session.rollback()
+                            return {"error": "Please do not vote too quickly"}, 500
                     #Otherwise, if the vote option is different than the previous vote, update the vote information.
                     else:
                         #Changes the vote status, adds the vote to the database, and commits the changes.
-                        existingVote.upvote = voteData["upvote"]
-                        db.session.add(existingVote)
-                        db.session.commit()
+                        try:
+                            existingVote.upvote = voteData["upvote"]
+                            db.session.add(existingVote)
+                            db.session.commit()
+                        except:
+                            db.session.rollback()
+                            return {"error": "Please do not vote too quickly"}, 500
 
                         #If the net votes changes such that the net votes are now below the deletion threshold, delete the pothole report.
                         if calculateNetVotes(reportID) <= REPORT_DELETION_THRESHOLD:
