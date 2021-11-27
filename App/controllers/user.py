@@ -108,7 +108,7 @@ def loginUserController(loginDetails):
 def identifyUser(current_user):
     #If the user object is not null, return the details for the user object.
     if current_user:
-        return {"email" : current_user.email, "firstName" : current_user.firstName, "lastName": current_user.lastName}, 200
+        return {"userID" : current_user.userID, "email" : current_user.email, "firstName" : current_user.firstName, "lastName": current_user.lastName}, 200
     #Otherwise, return an error message and an 'UNAUTHORIZED' http status code (401).
     return {"error" : "User is not logged in!"}, 401
 
