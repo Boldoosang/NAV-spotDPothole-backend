@@ -21,6 +21,10 @@ from App.controllers import *
 
 #Returns all of the votes for a particular reportID.
 def getAllVotesForReport(reportID):
+    #If the reportID is invalid, return an error and BAD REQUEST status code (400)
+    if(not reportID):
+        return json.dumps({"error": "Invalid report ID specified."}), 400
+
     #Gets all of the votes for a particular report, stores their dictionary definition in an array, and returns a json dump of the array.
     #Also returns an 'OK' http status code (200).
     votes = db.session.query(UserReportVote).filter_by(reportID=reportID).all()
@@ -29,6 +33,10 @@ def getAllVotesForReport(reportID):
 
 #Returns all of the upvotes for a particular reportID.
 def getAllUpvotesForReport(reportID):
+    #If the reportID is invalid, return an error and BAD REQUEST status code (400)
+    if(not reportID):
+        return json.dumps({"error": "Invalid report ID specified."}), 400
+
     #Gets all of the upvotes for a particular report, stores their dictionary definition in an array, and returns a json dump of the array.
     #Also returns an 'OK' http status code (200).
     upvotes = db.session.query(UserReportVote).filter_by(reportID=reportID, upvote=True).all()
@@ -37,6 +45,10 @@ def getAllUpvotesForReport(reportID):
 
 #Returns all of the downvotes for a particular reportID.
 def getAllDownvotesForReport(reportID):
+    #If the reportID is invalid, return an error and BAD REQUEST status code (400)
+    if(not reportID):
+        return json.dumps({"error": "Invalid report ID specified."}), 400
+
     #Gets all of the downvotes for a particular report, stores their dictionary definition in an array, and returns a json dump of the array.
     #Also returns an 'OK' http status code (200).
     downvotes = db.session.query(UserReportVote).filter_by(reportID=reportID, upvote=False).all()
@@ -45,6 +57,11 @@ def getAllDownvotesForReport(reportID):
 
 #Enables a user to vote on a pothole report and returns the outcome along with the http status code.
 def voteOnPothole(user, potholeID, reportID, voteData):
+    #If the potholeID or reportID is invalid, return an error and BAD REQUEST status code (400)
+    if(not potholeID or not reportID):
+        return json.dumps({"error": "Invalid pothole ID or report ID specified."}), 400
+
+
     #If voteData is null, return an error that no data was provided along with the 'BAD REQUEST' http status code (400).
     if not voteData:
         return {"error": "No vote data supplied."}, 400
@@ -131,6 +148,10 @@ def voteOnPothole(user, potholeID, reportID, voteData):
 
 #Calculates and returns the net vote outcome for a particular report.
 def calculateNetVotes(reportID):
+    #If the reportID is invalid, return an error and BAD REQUEST status code (400)
+    if(not reportID):
+        return json.dumps({"error": "Invalid report ID specified."}), 400
+
     #Finds the number of upvotes and downvotes for a particular report, in the vote database.
     upvotes = db.session.query(UserReportVote).filter_by(reportID=reportID, upvote=True).count()
     downvotes = db.session.query(UserReportVote).filter_by(reportID=reportID, upvote=False).count()

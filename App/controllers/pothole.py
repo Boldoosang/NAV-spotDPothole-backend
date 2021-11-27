@@ -25,6 +25,10 @@ def getPotholeData():
 
 #Retrieives and returns data for an individual pothole given the pothole ID.
 def getIndividualPotholeData(potholeID):
+    #If the potholeID is invalid, return an error and BAD REQUEST status code (400)
+    if(not potholeID):
+        return json.dumps({"error": "Invalid pothole ID specified."}), 400
+
     #Retrieves the first pothole, with the specified potholeID, from the database.
     pothole = db.session.query(Pothole).filter_by(potholeID=potholeID).first()
     #If a pothole with the given potholeID is not found, return a 'Not Found' error and status code.
@@ -38,6 +42,10 @@ def getIndividualPotholeData(potholeID):
 
 #Deletes a pothole given a particular potholeID.
 def deletePothole(potholeID):
+    #If the potholeID is invalid, return an error and BAD REQUEST status code (400)
+    if(not potholeID):
+        return json.dumps({"error": "Invalid pothole ID specified."}), 400
+        
     #Finds the pothole corresponding to the input potholeID.
     pothole = db.session.query(Pothole).filter_by(potholeID=potholeID).first()
     #If no pothole is found, return False that it could not be deleted.

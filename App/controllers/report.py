@@ -250,6 +250,10 @@ def reportPotholeDriver(user, reportDetails):
 #SYSTEM POTHOLE REPORT DELETE FUNCTION
 #Allows the system to delete a pothhole given the reportID and potholeID.
 def deletePotholeReport(potholeID, reportID):
+    #If the potholeID or reportID is invalid, return False
+    if(not potholeID or not reportID):
+        return False
+
     #Finds and stores the report to be deleted using the potholeID and reportID.
     foundReport = db.session.query(Report).filter_by(potholeID= potholeID, reportID=reportID).first()
 
@@ -347,6 +351,10 @@ def updateReportDescription(user, potholeID, reportID, potholeDetails):
 
 #Returns an json dump of the array of all the reports associated with a potholeID.
 def getPotholeReports(potholeID):
+    #If the potholeID or reportID is invalid, return an error and BAD REQUEST status code (400)
+    if(not potholeID):
+        return json.dumps({"error": "Invalid pothole ID specified."}), 400
+
     #Gets all of the reports associated with a potholeID.
     reports = db.session.query(Report).filter_by(potholeID=potholeID).all()
     #Converts all of the found reports to their dictionary definition, and stores them in an array.
@@ -356,6 +364,10 @@ def getPotholeReports(potholeID):
 
 #Returns an individual pothole information given the potholeID and reportID.
 def getIndividualPotholeReport(potholeID, reportID):
+    #If the potholeID or reportID is invalid, return an error and BAD REQUEST status code (400)
+    if(not potholeID or not reportID):
+        return json.dumps({"error": "Invalid pothole ID or report ID specified."}), 400
+
     #Gets the report associated with the potholeID and reportID.
     report = db.session.query(Report).filter_by(potholeID=potholeID, reportID=reportID).first()
     #If a report is found, return a json dump of the definition of the report and a 'OK' http status code (200).
@@ -369,6 +381,9 @@ def getIndividualPotholeReport(potholeID, reportID):
 ##################### TEST CONTROLLERS #####################
 
 def getAllPotholeReportsByUser(user):
+    if(not user):
+        return []
+        
     allReports = db.session.query(Report).filter_by(userID=user.userID).all()
     allReports = [r.toDict() for r in allReports]
     return allReports
