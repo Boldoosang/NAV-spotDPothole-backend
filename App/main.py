@@ -36,7 +36,7 @@ def loadConfig(app, config):
         app.config['JWT_EXPIRATION_DELTA'] = os.environ.get('JWTDELTADAYS')
         app.config['DEBUG'] = os.environ.get('DEBUG')
         app.config['ENV'] = os.environ.get('ENV')
-        SQLITEDB = os.environ.get("SQLITEDB", default="False")
+        SQLITEDB = os.environ.get("SQLITEDB", default="False") 
 
         app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///spotDPothole.db" if SQLITEDB in ["True", "true", "TRUE"] else os.environ.get('DBURI')
 
