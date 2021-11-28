@@ -81,6 +81,13 @@ $ py manage.py db migrate
 $ py manage.py db upgrade
 ```
 
+## TESTING
+With the PyTest module installed, the system components can be evaluated using both integration and unit tests using the following command:
+```
+$ pytest
+```
+Tests can be modified by navigating to /App/tests and editing the test_application.py file.
+
 ## PROJECT DELIVERABLES
 * [SpotDPothole Web Application](https://spotdpothole.justinbaldeo.com/)
 * [Project Report](https://spotdpothole.justinbaldeo.com/projectReport)
