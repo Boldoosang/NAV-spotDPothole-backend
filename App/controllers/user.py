@@ -5,7 +5,7 @@
 #USER CONTROLLERS - Facilitate interactions between the user model and the other models/controllers of the application.
 
 #Imports flask modules and json.
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required
 from sqlalchemy.exc import IntegrityError, OperationalError
 import json
 
