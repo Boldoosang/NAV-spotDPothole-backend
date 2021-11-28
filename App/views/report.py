@@ -5,6 +5,7 @@
 #REPORT VIEW - Defines the view endpoints for REPORTS.
 
 #Imports flask modules.
+from flask_jwt_extended import current_user, jwt_required
 from flask import Blueprint, redirect, request, jsonify, send_from_directory
 
 #Creates a blueprint to the collection of views for reports.

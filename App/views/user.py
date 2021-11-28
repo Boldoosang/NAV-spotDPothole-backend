@@ -2,16 +2,20 @@
 #SpotDPothole-Backend
 #NULLIFY
 
-#REPORTEDIMAGE VIEW - Defines the view endpoints for REPORTEDIMAGES.
+#USER VIEW - Defines the view endpoints for REPORTEDIMAGES.
 
 #Imports flask modules.
+from flask_jwt_extended import jwt_required, current_user
 from flask import Blueprint, request, jsonify, send_from_directory
+
+
 
 #Creates a blueprint to the collection of views for users.
 userViews = Blueprint('userViews', __name__)
 
 #Imports the all of the controllers of the application.
 from App.controllers import *
+from App.controllers.user import identifyUser, loginUserController, registerUserController
 
 #Creates a POST route to facilitate the registration of a new user. Also returns a status code to denote the outcome of the operation.
 @userViews.route('/register', methods=["POST"])
