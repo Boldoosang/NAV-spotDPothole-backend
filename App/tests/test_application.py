@@ -527,3 +527,5 @@ def testLoginInvalidData(users_in_db):
     rv = loginUserController({"email" : email, "password": password})
     assert 'Wrong email or password entered!' in rv[0]["error"] and rv[1] == 401
 
+def testFail(users_in_db):
+    assert False
