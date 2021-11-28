@@ -1,4 +1,4 @@
-# NULLIFY - SpotDPothole
+# NULLIFY - SpotDPothole Backend
 Welcome to our COMP 3613 Software Engineering Project! This project aims to provide the backend of an application that is geared towards the logging of potholes located across the roadways of Trinidad and Tobago. Please note that this project reflects the various prototype stages that will be refined over the course of many sprints. Implemented features of the first prototype can be found below.
 
 [![PyTest](https://github.com/Boldoosang/NULLIFY-spotDPothole-backend/actions/workflows/pytest.yml/badge.svg)](https://github.com/Boldoosang/NULLIFY-spotDPothole-backend/actions/workflows/pytest.yml)
