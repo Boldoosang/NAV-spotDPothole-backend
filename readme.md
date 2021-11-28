@@ -35,8 +35,8 @@ In development, configuration can be handled through the use of a 'config.py' fi
 In production, environment variables should be used as these variables ensure that the sensitive information variables can be loaded as needed without being present into the code.
 
 ## HEROKU SETUP
-The application can be deployed to heroku using the button below.
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+The application can be deployed to heroku using the button below.  
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)  
 The application must also be configured using the configuration information above. The environment variables for the heroku deployed application can be accessed in the settings of the application, after clicking on "Reveal Config Vars".
 ![Heroku Configuration Tutorial](images/heroku-tutorial.png)
 
