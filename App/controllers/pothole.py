@@ -4,18 +4,17 @@
 
 #POTHOLE CONTROLLERS - Facilitate interactions between the pothole model and the other models/controllers of the application.
 
-#Imports flask modules and json.
-from flask import Flask, request, session
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, current_user
+#Imports json.
 import json
 
-#Imports the all of the models and controllers of the application.
+#Imports the all of the required models and controllers.
 from App.models import *
 from App.controllers import *
 
 #Retrieves all of the potholes that are in the database and returns their dictionary definitions in an array, in json form, as well as
 #an 'OK' http status code (200).
 def getPotholeData():
+    #Attempts to get and return all of the potholes in the database.
     try:
         #Retrieves all of the potholes from the database.
         potholes = db.session.query(Pothole).all()
@@ -24,6 +23,7 @@ def getPotholeData():
         #Returns the json form of the array, as well as an OK http status (200) code.
         return json.dumps(potholeData), 200
     except:
+    #If an error was encountered in getting the pothole data, rollback the query (querying invalid datatype crashes POSTGRES database ONLY)
         db.session.rollback()
         return json.dumps({"error": "Invalid pothole details specified."}), 400
 
@@ -40,7 +40,7 @@ def getIndividualPotholeData(potholeID):
         potholeData = pothole.toDict()
         #Returns the json data for the found pothole and an OK status code (200).
         return json.dumps(potholeData), 200
-    #If the potholeID is invalid, return an error and BAD REQUEST status code (400)
+    #If the potholeID is invalid, return an error and BAD REQUEST status code (400) and rollback the database.
     except:
         db.session.rollback()
         return json.dumps({"error": "Invalid pothole ID specified."}), 400
@@ -48,7 +48,6 @@ def getIndividualPotholeData(potholeID):
 #Deletes a pothole given a particular potholeID.
 def deletePothole(potholeID):
     try:
-
         #Finds the pothole corresponding to the input potholeID.
         pothole = db.session.query(Pothole).filter_by(potholeID=potholeID).first()
         #If no pothole is found, return False that it could not be deleted.
@@ -64,13 +63,14 @@ def deletePothole(potholeID):
             #If the deletion operation fails, rollback the database and return False that the pothole could not be deleted.
                 db.session.rollback()
                 return False
-    #If the potholeID is invalid, return an error and BAD REQUEST status code (400)
+    #If the potholeID is invalid, return an error and BAD REQUEST status code (400) and rollback the database.
     except:
         db.session.rollback()
         return json.dumps({"error": "Invalid pothole ID specified."}), 400
 
 #Deletes all of the potholes that have expired.
 def deleteExpiredPotholes():
+    #Attempts to delete all of the expired potholes.
     try:
         #Gets all of the expired potholes, that is, gets all of the potholes where the expiry date has passed.
         expiredPotholes = db.session.query(Pothole).filter(datetime.now() >= Pothole.expiryDate).all()
@@ -78,27 +78,35 @@ def deleteExpiredPotholes():
         for pothole in expiredPotholes:
             deletePothole(pothole.potholeID)
     except:
+    #If deleting the expired pothoels result in an error, print a message and rollback the transaction.
         print("error deleting expired potholes")
         db.session.rollback()
 
 
 ##################### TEST CONTROLLERS #####################
-
+#Gets all of the potholes within the database and returns it in an array.
 def getAllPotholes():
+    #Attempts to get all of the potholes in the database.
     try:
         allReports = db.session.query(Pothole).filter_by().all()
         allReports = [r.toDict() for r in allReports]
         return allReports
     except:
+    #If the query fails, rollback and return an empty array.
         db.session.rollback()
         return []
 
+#Removes all potholes, reports, and reported images. Cascade deletion enforces that reports and reported images are deleted.
 def nukePotholesInDB():
+    #Attempts to delete all of the potholes in the database.
     try:
+        #Gets all of the potholes in the database.
         allPotholes = db.session.query(Pothole).all()
+        #Individual deletes each of all of the potholes and commits the transaction.
         for pothole in allPotholes:
             db.session.delete(pothole)
             db.session.commit()
     except:
+    #If an error is encountered, rollback the last delete and return an error.
         db.session.rollback()
         return "Unable to nuke!"

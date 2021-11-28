@@ -8,19 +8,17 @@
 #Defines the minimum net vote threshold that would result in the deletion of a report.
 REPORT_DELETION_THRESHOLD = -5          
 
-#Imports flask modules, json, and geopy.
-from flask import Flask, request, session
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, current_user
-from geopy import distance
+#Imports json
 import json
-from App.controllers.report import deletePotholeReport
 
-#Imports the all of the models and controllers of the application.
+#Imports the all of the required models and controllers.
 from App.models import *
 from App.controllers import *
+from App.controllers.report import deletePotholeReport
 
 #Returns all of the votes for a particular reportID.
 def getAllVotesForReport(reportID):
+    #Attempts to get all of the votes for a particular report.
     try:
         #Gets all of the votes for a particular report, stores their dictionary definition in an array, and returns a json dump of the array.
         #Also returns an 'OK' http status code (200).
@@ -28,11 +26,13 @@ def getAllVotesForReport(reportID):
         voteData = [v.toDict() for v in votes]
         return json.dumps(voteData), 200
     except:
+    #If getting all the votes fails, rollback the database (in the case of invalid request datatype), and return an error.
         db.session.rollback()
         return {"error" : "Invalid reportID specified."}, 400
 
 #Returns all of the upvotes for a particular reportID.
 def getAllUpvotesForReport(reportID):
+    #Attempts to get all of the upvotes for a particular report.
     try:
         #If the reportID is invalid, return an error and BAD REQUEST status code (400)
         if(not reportID):
@@ -44,11 +44,13 @@ def getAllUpvotesForReport(reportID):
         upvoteData = [uv.toDict() for uv in upvotes]
         return json.dumps(upvoteData), 200
     except:
+    #If getting all the upvotes fails, rollback the database (in the case of invalid request datatype), and return an error.
         db.session.rollback()
         return {"error" : "Invalid reportID specified."}, 400
 
 #Returns all of the downvotes for a particular reportID.
 def getAllDownvotesForReport(reportID):
+    #Attempts to get all of the downvotes for a particular report.
     try:
         #If the reportID is invalid, return an error and BAD REQUEST status code (400)
         if(not reportID):
@@ -60,11 +62,13 @@ def getAllDownvotesForReport(reportID):
         downvoteData = [dv.toDict() for dv in downvotes]
         return json.dumps(downvoteData), 200
     except:
+    #If getting all the downvotes fails, rollback the database (in the case of invalid request datatype), and return an error.
         db.session.rollback()
         return {"error" : "Invalid reportID specified."}, 400
 
 #Enables a user to vote on a pothole report and returns the outcome along with the http status code.
 def voteOnPothole(user, potholeID, reportID, voteData):
+    #Attempts to vote on a pothole.
     try:
         #If the potholeID or reportID is invalid, return an error and BAD REQUEST status code (400)
         if(not potholeID or not reportID):
@@ -156,11 +160,13 @@ def voteOnPothole(user, potholeID, reportID, voteData):
             return {"error": "No report found."}, 404
     
     except:
+    #If voting on the report fails, roll back the databse and returns an error. (Invalid datatype within request)
         db.session.rollback()
         return {"error" : "Invalid vote request submitted."}, 400
 
 #Calculates and returns the net vote outcome for a particular report.
 def calculateNetVotes(reportID):
+    #Attempts to calculate the net vote of a particular report.
     try:
         #If the reportID is invalid, return an error and BAD REQUEST status code (400)
         if(not reportID):
@@ -172,5 +178,6 @@ def calculateNetVotes(reportID):
         #Returns the net upvotes-downvotes.
         return (upvotes-downvotes)
     except:
+    #If calculating the netvotes fails, roll back the databse and returns an error. (Invalid datatype of reportID)
         db.session.rollback()
         return {"error" : "Invalid vote report ID submitted."}, 400

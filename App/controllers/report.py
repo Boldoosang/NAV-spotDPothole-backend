@@ -12,38 +12,20 @@ EXPIRY_DATE_REFRESH = 30
 #Specifies the number of days that a pothole record should be initialized with, before they are deleted.
 EXPIRY_DATE_PRIMARY = 60
 
-#Imports flask modules, geopy, datetime and json.
-from flask import Flask, request, session
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, current_user
+#Imports geopy, datetime and json.
 from geopy import distance
 from datetime import datetime, timedelta
-import json, requests
-from App.controllers.pothole import deletePothole
+import json
 
-#Imports the all of the models and controllers of the application.
+#Imports the all of the required models and controllers.
 from App.models import *
 from App.controllers import *
-
-#Referenced from StackOverflow
-#https://stackoverflow.com/questions/10543940/check-if-a-url-to-an-image-is-up-and-exists-in-python
-#Given a URL, determines if the URL points to an image.
-def is_url_image(image_url):
-    #Sets the expected image types.
-    image_formats = ("image/png", "image/jpeg", "image/jpg")
-    #Attempts to send a GET request to the URL.
-    try:
-        r = requests.get(image_url)
-    #If the request fails, the URL would be invalid; return false.
-    except:
-        return False
-    #If the content-type in the headers of the response contains a matching image format, return true.
-    if r.headers["content-type"] in image_formats:
-        return True
-    #Otherwise, return false.
-    return False
+from App.controllers.pothole import deletePothole
+from App.controllers.reportedImage import is_url_image
 
 #Returns a json dump of all of the reports in the database.
 def getReportData():
+    #Attempts to get and return all of the potholes in the database in json form.
     try:
         #Gets all of the reports in the database, gets the dictionary definitions, and returns them all in an array.
         #Also returns a 'OK' http status code (200)
@@ -51,11 +33,13 @@ def getReportData():
         reportData = [r.toDict() for r in reports]
         return json.dumps(reportData), 200
     except:
+    #If an error was encountered in getting the pothole data, rollback the query (querying invalid datatype crashes POSTGRES database ONLY)
         db.session.rollback()
         return json.dumps({"error": "Invalid pothole reports in database."}), 400
 
 #Given the latitude and logitude for a report, finds the closest pothole within a threshold distance specified by DISTANCE_THRESHOLD
 def findClosestPothole(latitude, longitude):
+    #Attempts to find the closest pothole.
     try:
         #Initializes the finalPothole to None; there is no selected pothole that is close enough.
         finalPothole = None
@@ -81,10 +65,12 @@ def findClosestPothole(latitude, longitude):
         #Returns the final pothole to be used for the report.
         return finalPothole
     except:
+    #If an error is encountered, return an error message.
         return "error"
 
 #Validates a report of a user via the standard interface before adding it to the database.
 def reportPotholeStandard(user, reportDetails):
+    #Attempts to process a standard report.
     try:
         #Initializes the finalPothole to be added to None.
         finalPothole = None
@@ -96,8 +82,9 @@ def reportPotholeStandard(user, reportDetails):
                 #Finds the closest pothole to the coordinates.
                 finalPothole = findClosestPothole(reportDetails["latitude"], reportDetails["longitude"])
 
+                #If calculating the final pothole results in an error, return the appropriate error.
                 if finalPothole == "error":
-                    return {"error": "Invalid pothole coordinates specified!"}, 400
+                    return {"error": "Error calculating pothole distance from location coordinates."}, 400
 
                 #If there does not exist an existing pothole that the report can be mapped to, create a new pothole at the report location.
                 if not finalPothole:
@@ -184,11 +171,13 @@ def reportPotholeStandard(user, reportDetails):
             db.session.rollback()
             return {"error" : "Invalid report details submitted!"}, 400
     except:
+    #Rolls back the database in the event of invalid report details (particularly datatype) being submitted.
         db.session.rollback()
         return {"error": "Invalid report details specified."}, 400
 
 #Validates a report of a user via the driver interface before adding it to the database.
 def reportPotholeDriver(user, reportDetails):
+    #Attempts to process a standard report.
     try:
         #Initializes the finalPothole to be added to None.
         finalPothole = None
@@ -200,8 +189,9 @@ def reportPotholeDriver(user, reportDetails):
                 #Finds the closest pothole to the coordinates.
                 finalPothole = findClosestPothole(reportDetails["latitude"], reportDetails["longitude"])
 
+                #If calculating the final pothole results in an error, return the appropriate error.
                 if finalPothole == "error":
-                    return {"error": "Invalid pothole coordinates specified!"}, 400
+                    return {"error": "Error calculating pothole distance from location coordinates."}, 400
 
                 #If there does not exist an existing pothole that the report can be mapped to, create a new pothole at the report location.
                 if not finalPothole:
@@ -266,6 +256,7 @@ def reportPotholeDriver(user, reportDetails):
             db.session.rollback()
             return {"error" : "Invalid report details submitted!"}, 400
     except:
+    #Rolls back the database in the event of invalid report details (particularly datatype) being submitted.
         db.session.rollback()
         return {"error": "Invalid report details specified."}, 400
 
@@ -273,6 +264,7 @@ def reportPotholeDriver(user, reportDetails):
 #SYSTEM POTHOLE REPORT DELETE FUNCTION
 #Allows the system to delete a pothhole given the reportID and potholeID.
 def deletePotholeReport(potholeID, reportID):
+    #Attempts to remove a pothole from the system given a pothole ID and report ID.
     try:
         #If the potholeID or reportID is invalid, return False
         if(not potholeID or not reportID):
@@ -304,13 +296,15 @@ def deletePotholeReport(potholeID, reportID):
         #If the report is not found, return false since there was no deletion.
         else:
             return False
-    
+    #If the deletion fails, rollback the database and return false.
     except:
+        db.session.rollback()
         return False
 
 #USER POTHOLE REPORT DELETE FUNCTION
 #Facilitates the creator of a report to be able to delete their own report.
 def deleteUserPotholeReport(user, potholeID, reportID):
+    #Attempts to delete a pothole from the database.
     try:
         #Ensures that the potholeID and reportID are non-null before deleting the data.
         if potholeID and reportID:
@@ -345,11 +339,13 @@ def deleteUserPotholeReport(user, potholeID, reportID):
             db.session.rollback()
             return {"error" : "Invalid report details provided."}, 400
     except:
+    #If the deletion fails, rollback the database and return an error and BAD REQUEST error status. (This case captures invalid datatypes)
         db.session.rollback()
         return {"error": "Invalid pothole details specified."}, 400
 
 #Facilitates the creator of a report to update the description of their report.    
 def updateReportDescription(user, potholeID, reportID, potholeDetails):
+    #Attempts to delete the report description of a pothole.
     try:
         #Determines if the potholeDetails is not null before processing the data.
         if potholeDetails:
@@ -382,12 +378,15 @@ def updateReportDescription(user, potholeID, reportID, potholeDetails):
             db.session.rollback()
             return {"error" : "Invalid report update request submitted!"}, 400
     except:
+    #If the report is unable to be updated, return an error and BAD REQUEST http status code (400). This case protects against invalid data types.
+        #Rolls back the datatype in the event of misquery using invalid datatype.
         db.session.rollback()
         return {"error": "Invalid pothole details specified."}, 400
 
 
 #Returns an json dump of the array of all the reports associated with a potholeID.
 def getPotholeReports(potholeID):
+    #Attempts to get the pothole reports for a particular potholeID
     try:
         #Gets all of the reports associated with a potholeID.
         reports = db.session.query(Report).filter_by(potholeID=potholeID).all()
@@ -396,11 +395,14 @@ def getPotholeReports(potholeID):
         #Returns all of the reports in an array in json form, and an 'OK' http status codee (200).
         return json.dumps(reportData), 200
     except:
+    #This case only executes when an invalid datatype is used for the potholeID.
+        #Rolls back the datatype in the event of misquery using invalid datatype.
         db.session.rollback()
         return {"error": "Invalid pothole ID specified."}, 400
 
 #Returns an individual pothole information given the potholeID and reportID.
 def getIndividualPotholeReport(potholeID, reportID):
+    #Attempts to get an individual pothole report.
     try:
         #Gets the report associated with the potholeID and reportID.
         report = db.session.query(Report).filter_by(potholeID=potholeID, reportID=reportID).first()
@@ -411,17 +413,20 @@ def getIndividualPotholeReport(potholeID, reportID):
         else:
             return json.dumps({"error": "No report found."}), 404
     except:
+    #If getting a pothole report fails, rollback the database in the event of datatype error and return the appropriate message.
         db.session.rollback()
         return json.dumps({"error": "Invalid pothole ID or report ID specified."}), 400
 
 
 ##################### TEST CONTROLLERS #####################
-
+#Attempts to get all of the reports made by a single user.
 def getAllPotholeReportsByUser(user):
+    #Attemps to query the databse for all of the reports made by a user and returns them.
     try:
         allReports = db.session.query(Report).filter_by(userID=user.userID).all()
         allReports = [r.toDict() for r in allReports]
         return allReports
     except:
+    #If getting the pothole reports fails, rollback the database in the event of datatype error and return the appropriate message.
         db.session.rollback()
         return json.dumps({"error": "Invalid user."}), 400

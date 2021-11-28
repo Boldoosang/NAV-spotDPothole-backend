@@ -4,13 +4,11 @@
 
 #REPORTEDIMAGE CONTROLLERS - Facilitate interactions between the reportedImage model and the other models/controllers of the application.
 
-#Imports flask modules and json.
-from flask import Flask, request, session
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, current_user
+#Imports sqlalchemy errors, requests and json.
 from sqlalchemy.exc import IntegrityError
 import json, requests
 
-#Imports the all of the models and controllers of the application.
+#Imports the all of the required models and controllers.
 from App.models import *
 from App.controllers import *
 
@@ -35,6 +33,7 @@ def is_url_image(image_url):
 
 #Finds and returns the json dump of all of the images corresponding to a particular reportID.
 def getPotholeReportImages(reportID):
+    #Attempts to get pothole images for a particular report.
     try:
         #If the reportID is not null, find the report images.
         if reportID:
@@ -47,11 +46,13 @@ def getPotholeReportImages(reportID):
             db.session.rollback()
             return {"error" : "Invalid pothole image requested!"}, 400
     except:
+    #If the images cannot be retrieved (invalid datatype used for querying), rollback the databse and return an error.
         db.session.rollback()
         return {"error": "Invalid report ID specified."}, 400
 
 #Finds and returns the image information corresponding to a particular reportID and imageID.
 def getIndividualPotholeReportImage(reportID, imageID):
+    #Attempts to get the report image for a particular report.
     try:
         #If both reportID and imageID are not null, find and return the image information.
         if reportID and imageID:
@@ -69,11 +70,13 @@ def getIndividualPotholeReportImage(reportID, imageID):
             db.session.rollback()
             return {"error" : "Invalid pothole image requested!"}, 400
     except:
+    #If the image cannot be retrieved (invalid datatype used for querying), rollback the databse and return an error.
         db.session.rollback()
         return {"error": "Invalid report ID or imageID specified."}, 400
 
 #For the original posting user, facilitates the deletion of an image for a report.
 def deletePotholeReportImage(user, potholeID, reportID, imageID):
+    #Attempts to get the report images for a particular report.
     try:
         #If the user, reportID and imageID are not null, facilitate the deletion.
         if user and reportID and imageID:
@@ -107,11 +110,13 @@ def deletePotholeReportImage(user, potholeID, reportID, imageID):
             db.session.rollback()
             return {"error" : "Invalid pothole image submitted!"}, 400
     except:
+    #If the images cannot be retrieved (invalid datatype used for querying), rollback the databse and return an error.
         db.session.rollback()
         return {"error": "Invalid request submitted."}, 400
 
 #For the original report poster, adds an image to their report given the imageDetails.
 def addPotholeReportImage(user, potholeID, reportID, imageDetails):
+    #Attempts to add the report image to a particular report.
     try:
         #If the user, reportID and imageDetails are non null, facilitate the addition of the image.
         if user and reportID and imageDetails:
@@ -164,5 +169,6 @@ def addPotholeReportImage(user, potholeID, reportID, imageDetails):
             db.session.rollback()
             return {"error" : "Invalid pothole request submitted!"}, 400
     except:
+    #If the image cannot be added (invalid datatype used for adding), rollback the databse and return an error.
         db.session.rollback()
         return {"error": "Invalid request submitted."}, 400

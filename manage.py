@@ -5,8 +5,6 @@
 #Import Modules
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-import os
-from datetime import datetime, timedelta
 
 #Import models and controllers
 from App.models import *

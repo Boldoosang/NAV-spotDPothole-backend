@@ -5,19 +5,19 @@
 #USER CONTROLLERS - Facilitate interactions between the user model and the other models/controllers of the application.
 
 #Imports flask modules and json.
-from flask import Flask, request, session
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, current_user
+from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import IntegrityError, OperationalError
 import json
-from App.controllers.report import reportPotholeDriver, reportPotholeStandard
 
-#Imports all of the models and controllers from the application.
+#Imports the all of the required models and controllers.
 from App.models import *
 from App.controllers import *
+from App.controllers.report import reportPotholeDriver, reportPotholeStandard
 
 #Facilitates the registration of a user in the application given a dictionary containing registration information.
 #The appropriate outcome and status codes are then returned.
 def registerUserController(regData):  
+    #Attempts to register the user using the registration data.
     try:
         #If the registration data is not null, process the data.
         if regData:
@@ -82,12 +82,14 @@ def registerUserController(regData):
         db.session.rollback()    
         return {"error" : "Invalid registration details provided!"}, 400
     except:
+    #If registering the user fails (Due to invalid data types being used), rollback the database and return an error.
         db.session.rollback()
         return {"error" : "Unable to register with user details!"}, 400
 
 #Facilitates the login of a user in the application given a dictionary containing login information.
 #The appropriate outcome and status codes are then returned.
-def loginUserController(loginDetails):  
+def loginUserController(loginDetails): 
+    #Attempts to login the user with their login details. 
     try:
         #If the login data is not null, process the data.
         if loginDetails:
@@ -111,11 +113,14 @@ def loginUserController(loginDetails):
         db.session.rollback()
         return {"error" : "Invalid login details provided!"}, 401
     except:
+    #If the login details are composed using invalid datatypes, the query for the user object will fail and there will be no rollback to recover.
+        #Rollback recovers the error in the event of invalid data in the login request. Also returns an error.
         db.session.rollback()
         return {"error" : "Unable to login with user details!"}, 400
 
 #Returns the user's information given a user object.
 def identifyUser(current_user):
+    #Attempts to indentify a user given their JWT identified user object.
     try:
         #If the user object is not null, return the details for the user object.
         if current_user:
@@ -123,10 +128,12 @@ def identifyUser(current_user):
         #Otherwise, return an error message and an 'UNAUTHORIZED' http status code (401).
         return {"error" : "User is not logged in!"}, 401
     except:
+    #If identifying the user fails, rollback the database.
         db.session.rollback()
         return {"error" : "Unable to identify user!"}, 400
 
 ##################### TEST CONTROLLERS #####################
+#Creates test users for fixtures.
 def createTestUsers():
     registerUserController({
         "email" : "tester1@yahoo.com",
@@ -177,14 +184,17 @@ def createTestUsers():
         "agreeToS": True
     })
 
+#Returns all registered users in the database.
 def getAllRegisteredUsers():
     allUsers = User.query.all()
     return json.dumps([u.toDict() for u in allUsers])
 
+#Returns one of the registered users in the database given their email.
 def getOneRegisteredUser(email):
     testUser = db.session.query(User).filter_by(email=email).first()
     return testUser
 
+#Creates simulated report data, simulated users, and has those simulated users file those simulated reports.
 def createSimulatedData():
     createTestUsers()
 
