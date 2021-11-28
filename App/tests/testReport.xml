@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="40" failures="9" skipped="0" tests="76" time="6.855" timestamp="2021-11-27T20:17:14.608507" hostname="JUSTINBALDEO-DE"><testcase classname="App.tests.test_application" name="testNoPotholes" time="0.040"><failure message="assert (b'[]' in b'[{&quot;potholeID&quot;: 1, &quot;longitude&quot;: -61.454274, &quot;latitude&quot;: 10.432359, &quot;numReports&quot;: 1, &quot;expiryDate&quot;: &quot;2021-12-27&quot;}, {&quot;po...2-27&quot;}, {&quot;potholeID&quot;: 6, &quot;longitude&quot;: -61.466627, &quot;latitude&quot;: 10.648361, &quot;numReports&quot;: 1, &quot;expiryDate&quot;: &quot;2021-12-27&quot;}]')&#10; +  where b'[{&quot;potholeID&quot;: 1, &quot;longitude&quot;: -61.454274, &quot;latitude&quot;: 10.432359, &quot;numReports&quot;: 1, &quot;expiryDate&quot;: &quot;2021-12-27&quot;}, {&quot;po...2-27&quot;}, {&quot;potholeID&quot;: 6, &quot;longitude&quot;: -61.466627, &quot;latitude&quot;: 10.648361, &quot;numReports&quot;: 1, &quot;expiryDate&quot;: &quot;2021-12-27&quot;}]' = &lt;WrapperTestResponse 665 bytes [200 OK]&gt;.data">empty_db = &lt;FlaskClient &lt;Flask 'App.main'&gt;&gt;
+
+    def testNoPotholes(empty_db):
+        response = empty_db.get('/api/potholes')
+&gt;       assert b'[]' in response.data and response.status_code == 200
+E       assert (b'[]' in b'[{"potholeID": 1, "longitude": -61.454274, "latitude": 10.432359, "numReports": 1, "expiryDate": "2021-12-27"}, {"po...2-27"}, {"potholeID": 6, "longitude": -61.466627, "latitude": 10.648361, "numReports": 1, "expiryDate": "2021-12-27"}]')
+E        +  where b'[{"potholeID": 1, "longitude": -61.454274, "latitude": 10.432359, "numReports": 1, "expiryDate": "2021-12-27"}, {"po...2-27"}, {"potholeID": 6, "longitude": -61.466627, "latitude": 10.648361, "numReports": 1, "expiryDate": "2021-12-27"}]' = &lt;WrapperTestResponse 665 bytes [200 OK]&gt;.data
+
+App\tests\test_application.py:47: AssertionError</failure></testcase><testcase classname="App.tests.test_application" name="testNoPotholes" time="0.000"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def empty_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:21: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testNoReports" time="0.024"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def empty_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:21: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testNoReportsForPothole" time="0.015"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def empty_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:21: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testNoIndividualReportForPothole" time="0.015"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def empty_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:21: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testIdentifyUserNotLoggedIn" time="0.013" /><testcase classname="App.tests.test_application" name="testNoVotesForPothole" time="0.045"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def empty_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:21: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testNoIndividualPothole" time="0.014"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def empty_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:21: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testNoReportImages" time="0.013"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def empty_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:21: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testNoIndividualReportImage" time="0.014"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def empty_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:21: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testGetExistingPothole" time="1.420"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testGetNonExistentPothole" time="0.015"><failure message="assert (b'No pothole data for that ID.' in b'{&quot;potholeID&quot;: 3, &quot;longitude&quot;: -61.400837, &quot;latitude&quot;: 10.50223, &quot;numReports&quot;: 1, &quot;expiryDate&quot;: &quot;2021-12-27&quot;}')&#10; +  where b'{&quot;potholeID&quot;: 3, &quot;longitude&quot;: -61.400837, &quot;latitude&quot;: 10.50223, &quot;numReports&quot;: 1, &quot;expiryDate&quot;: &quot;2021-12-27&quot;}' = &lt;WrapperTestResponse 108 bytes [200 OK]&gt;.data">empty_db = &lt;FlaskClient &lt;Flask 'App.main'&gt;&gt;
+
+    def testGetNonExistentPothole(empty_db):
+        response = empty_db.get("/api/potholes/3")
+&gt;       assert b"No pothole data for that ID." in response.data and response.status_code == 404
+E       assert (b'No pothole data for that ID.' in b'{"potholeID": 3, "longitude": -61.400837, "latitude": 10.50223, "numReports": 1, "expiryDate": "2021-12-27"}')
+E        +  where b'{"potholeID": 3, "longitude": -61.400837, "latitude": 10.50223, "numReports": 1, "expiryDate": "2021-12-27"}' = &lt;WrapperTestResponse 108 bytes [200 OK]&gt;.data
+
+App\tests\test_application.py:100: AssertionError</failure></testcase><testcase classname="App.tests.test_application" name="testGetNonExistentPothole" time="0.000"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def empty_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:21: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testGetExistingReport" time="0.038"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testGetNonExistentReport" time="0.037"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testGetAllReportsForPothole" time="0.038"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testGetAllReportImagesForPothole" time="0.035"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testGetIndividualReportImage" time="0.039"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testGetNonExistentIndividualReportImage" time="0.036"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testRegister" time="0.021"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def empty_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:21: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testRegisterInvalidData" time="0.012" /><testcase classname="App.tests.test_application" name="testRegisterExistingUser" time="0.043" /><testcase classname="App.tests.test_application" name="testAddNewPotholeReportDriver" time="0.113"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def users_in_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createTestUsers()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:31: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testAddNewPotholeReportStandard" time="0.020"><failure message="assert (True and False)">users_in_db = &lt;FlaskClient &lt;Flask 'App.main'&gt;&gt;
+
+    def testAddNewPotholeReportStandard(users_in_db):
+        reportDetails = {
+            "longitude" : -61.277001,
+            "latitude" : 10.726551,
+            "constituencyID" : "arima",
+            "description": "Very large pothole spanning both lanes of the road.",
+            "images" : [
+                "https://www.howtogeek.com/wp-content/uploads/2018/08/Header.png"
+            ]
+        }
+    
+        user1 = getOneRegisteredUser("tester1@yahoo.com")
+        r = reportPotholeStandard(user1, reportDetails)
+    
+    
+        allReportsByUser = getAllPotholeReportsByUser(user1)
+        check2 = False
+    
+        for oneReportByUser in allReportsByUser:
+            if reportDetails["description"] == oneReportByUser["description"] and reportDetails["images"][0] == oneReportByUser["reportedImages"][0]["imageURL"]:
+                check2 = True
+    
+        rPotholes = getAllPotholes()
+        check1 = False
+        for pothole in rPotholes:
+            if reportDetails["longitude"] == pothole["longitude"] and reportDetails["latitude"] == pothole["latitude"]:
+                check1 = True
+    
+&gt;       assert check1 and check2 and "Successfully added pothole report to database!" in r[0]["message"] and r[1] == 201
+E       assert (True and False)
+
+App\tests\test_application.py:215: AssertionError</failure></testcase><testcase classname="App.tests.test_application" name="testAddNewPotholeReportStandard" time="0.000"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def users_in_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createTestUsers()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:31: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testDuplicateReportSameUser" time="1.079" /><testcase classname="App.tests.test_application" name="testMultipleReportsSamePothole" time="0.127"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def users_in_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createTestUsers()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:31: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testDeleteExistingPotholeImage" time="1.200"><failure message="AssertionError: assert (({'error': 'Pothole image not found!'}, 404) != ({'error': 'Pothole image not found!'}, 404))">simulated_db = &lt;FlaskClient &lt;Flask 'App.main'&gt;&gt;
+
+    def testDeleteExistingPotholeImage(simulated_db):
+        user1 = getOneRegisteredUser("tester1@yahoo.com")
+    
+        potholeID = 1
+        reportID = 1
+        imageID = 1
+    
+        reportedImageBefore = getIndividualReportedImage(potholeID, reportID, imageID)
+    
+        res = deletePotholeReportImage(user1, potholeID, reportID, imageID)
+    
+        reportedImageAfter = getIndividualReportedImage(potholeID, reportID, imageID)
+    
+&gt;       assert reportedImageBefore != reportedImageAfter and "Pothole image successfully deleted!" in res[0]["message"]
+E       AssertionError: assert (({'error': 'Pothole image not found!'}, 404) != ({'error': 'Pothole image not found!'}, 404))
+
+App\tests\test_application.py:264: AssertionError</failure></testcase><testcase classname="App.tests.test_application" name="testDeleteExistingPotholeImage" time="0.000"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testDeleteExistingPotholeImageNotOwner" time="0.038"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testDeleteNonExistentPotholeImage" time="0.047"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testAddPotholeImageNotOwner" time="0.038"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testAddPotholeImage" time="0.222"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testAddPotholeImageInvalidImageURL" time="0.569"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testUpdatePotholeDescriptionAsOwner" time="0.054"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testUpdatePotholeDescriptionAsNonOwner" time="0.037"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testUpdatePotholeDescriptionNonExistent" time="0.038"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testDeleteIndividualReportAsOwner" time="0.048"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testDeleteIndividualReportAsNonOwner" time="0.036"><failure message="assert ('Report does not exist! Unable to delete.' in 'Report does not exist! Unable to delete.' and 404 == 404&#10;  +404&#10;  -404 and 'No report found.' not in '{&quot;error&quot;: &quot;...ort found.&quot;}'&#10;  'No report found.' is contained here:&#10;    {&quot;error&quot;: &quot;No report found.&quot;})">simulated_db = &lt;FlaskClient &lt;Flask 'App.main'&gt;&gt;
+
+    def testDeleteIndividualReportAsNonOwner(simulated_db):
+        user2 = getOneRegisteredUser("tester2@yahoo.com")
+        potholeID = 1
+        reportID = 1
+    
+        rv = deleteUserPotholeReport(user2, potholeID, reportID)
+        oldRep = getIndividualPotholeReport(potholeID, reportID)
+    
+&gt;       assert "Report does not exist! Unable to delete." in rv[0]["error"] and 404 == rv[1] and "No report found." not in oldRep[0]
+E       assert ('Report does not exist! Unable to delete.' in 'Report does not exist! Unable to delete.' and 404 == 404
+E         +404
+E         -404 and 'No report found.' not in '{"error": "...ort found."}'
+E         'No report found.' is contained here:
+E           {"error": "No report found."})
+
+App\tests\test_application.py:400: AssertionError</failure></testcase><testcase classname="App.tests.test_application" name="testDeleteIndividualReportAsNonOwner" time="0.000"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testDeleteIndividualReportNonExistent" time="0.036"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testDeleteLastReportDeletesPothole" time="0.067"><failure message="KeyError: 'message'">simulated_db = &lt;FlaskClient &lt;Flask 'App.main'&gt;&gt;
+
+    def testDeleteLastReportDeletesPothole(simulated_db):
+        user1 = getOneRegisteredUser("tester1@yahoo.com")
+        potholeID = 1
+        reportID = 1
+    
+        potholeBeforeDelete = displayIndividualPotholes(potholeID)[0]
+    
+        rv = deleteUserPotholeReport(user1, potholeID, reportID)
+        oldRep = getIndividualPotholeReport(potholeID, reportID)
+    
+        potholeAfterDelete = displayIndividualPotholes(potholeID)[0]
+    
+&gt;       assert "Successfully deleted report." in rv[0]["message"] and 200 == rv[1] and "No report found." in oldRep[0] and potholeBeforeDelete != potholeAfterDelete
+E       KeyError: 'message'
+
+App\tests\test_application.py:425: KeyError</failure></testcase><testcase classname="App.tests.test_application" name="testDeleteLastReportDeletesPothole" time="0.000"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testCalculateNetVotes" time="0.045"><failure message="assert 0 == -1&#10;  +0&#10;  --1">simulated_db = &lt;FlaskClient &lt;Flask 'App.main'&gt;&gt;
+
+    def testCalculateNetVotes(simulated_db):
+        potholeID = 1
+        reportID = 1
+    
+        user1 = getOneRegisteredUser("tester1@yahoo.com")
+        user2 = getOneRegisteredUser("tester2@yahoo.com")
+        user3 = getOneRegisteredUser("tester3@yahoo.com")
+        user4 = getOneRegisteredUser("tester4@yahoo.com")
+        user5 = getOneRegisteredUser("tester5@yahoo.com")
+    
+        voteOnPothole(user1, potholeID, reportID, {"upvote" : False})
+        voteOnPothole(user2, potholeID, reportID, {"upvote" : False})
+        voteOnPothole(user3, potholeID, reportID, {"upvote" : True})
+        voteOnPothole(user4, potholeID, reportID, {"upvote" : False})
+        voteOnPothole(user5, potholeID, reportID, {"upvote" : True})
+    
+        netVotes = calculateNetVotes(reportID)
+    
+&gt;       assert netVotes == -1
+E       assert 0 == -1
+E         +0
+E         --1
+
+App\tests\test_application.py:447: AssertionError</failure></testcase><testcase classname="App.tests.test_application" name="testCalculateNetVotes" time="0.000"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testDeleteReportAfterNegativeVoteThreshold" time="0.041"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testVoteOnPothole" time="0.040"><failure message="assert 0 != 0">simulated_db = &lt;FlaskClient &lt;Flask 'App.main'&gt;&gt;
+
+    def testVoteOnPothole(simulated_db):
+        user1 = getOneRegisteredUser("tester1@yahoo.com")
+        potholeID = 1
+        reportID = 1
+    
+        votesBefore = calculateNetVotes(reportID)
+        voteOnPothole(user1, potholeID, reportID, {"upvote" : True})
+        votesAfter = calculateNetVotes(reportID)
+    
+&gt;       assert votesBefore != votesAfter
+E       assert 0 != 0
+
+App\tests\test_application.py:484: AssertionError</failure></testcase><testcase classname="App.tests.test_application" name="testVoteOnPothole" time="0.000"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testUnVoteOnPothole" time="0.037"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testChangeVoteOnPothole" time="0.040"><failure message="assert 0 != 0">simulated_db = &lt;FlaskClient &lt;Flask 'App.main'&gt;&gt;
+
+    def testChangeVoteOnPothole(simulated_db):
+        user1 = getOneRegisteredUser("tester1@yahoo.com")
+        potholeID = 1
+        reportID = 1
+    
+        votesBefore = calculateNetVotes(reportID)
+        voteOnPothole(user1, potholeID, reportID, {"upvote" : True})
+        votesMidway = calculateNetVotes(reportID)
+        voteOnPothole(user1, potholeID, reportID, {"upvote" : False})
+        votesAfter = calculateNetVotes(reportID)
+    
+&gt;       assert votesBefore != votesAfter != votesMidway
+E       assert 0 != 0
+
+App\tests\test_application.py:511: AssertionError</failure></testcase><testcase classname="App.tests.test_application" name="testChangeVoteOnPothole" time="0.000"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def simulated_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createSimulatedData()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:40: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testLoginValid" time="0.017"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def users_in_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createTestUsers()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:31: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testLoginInvalidData" time="0.017"><error message="failed on teardown with &quot;PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'&quot;">@pytest.fixture
+    def users_in_db():
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+        init_db(app)
+        createTestUsers()
+        yield app.test_client()
+&gt;       os.unlink(os.getcwd()+'/App/test.db')
+E       PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\jbald\\Desktop\\NULLIFY-finalProject/App/test.db'
+
+App\tests\test_application.py:31: PermissionError</error></testcase><testcase classname="App.tests.test_application" name="testRoute" time="0.000" /></testsuite></testsuites>

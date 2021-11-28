@@ -26,7 +26,7 @@ jwt = JWTManager()
 def loadConfig(app, config):
     #Attempts to configure the application from a configuration file.
     try:
-        app.config.from_object('App.config.production')
+        app.config.from_object('App.config.development')
     except:
     #If no configuration file is present, use the environment variables of the host to configure the application.
         print("Config file not present. Using environment variables.")

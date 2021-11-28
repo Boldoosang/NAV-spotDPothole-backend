@@ -31,3 +31,8 @@ jobs:
       - name: Run test suite
         run: |
           pipenv run test -v
+      - name: Create new test badge
+        run: |
+          genbadge tests -i App/tests/testReport.xml
+          
+          
