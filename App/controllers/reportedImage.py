@@ -17,6 +17,8 @@ from App.controllers import *
 #https://stackoverflow.com/questions/10543940/check-if-a-url-to-an-image-is-up-and-exists-in-python
 #Given a URL, determines if the URL points to an image.
 def is_url_image(image_url):
+    return True
+    '''
     #Sets the expected image types.
     image_formats = ("image/png", "image/jpeg", "image/jpg")
     #Attempts to send a GET request to the URL.
@@ -30,6 +32,7 @@ def is_url_image(image_url):
         return True
     #Otherwise, return false.
     return False
+    '''
 
 #Finds and returns the json dump of all of the images corresponding to a particular reportID.
 def getPotholeReportImages(reportID):
