@@ -77,6 +77,10 @@ def reportPotholeStandard(user, reportDetails):
 
         #Determines if the reportDetails contains all of the neccesary fields for processing of the report.
         if "longitude" in reportDetails and "latitude" in reportDetails and "description" in reportDetails:
+            #If the description is not at least 5 characters, return an error.
+            if len(reportDetails["description"]) < 5:
+                return {"error": "Invalid description entered!"}, 400
+
             #If the coordinates reported are within the bounds for Trinidad and Tobago, process the report.
             if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
                 #Finds the closest pothole to the coordinates.
