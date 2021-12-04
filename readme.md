@@ -93,7 +93,12 @@ With the PyTest module installed, the system components can be evaluated using b
 ```
 $ pytest
 ```
-Tests can be modified by navigating to /App/tests and editing the test_application.py file.
+Tests can be modified by navigating to /App/tests and editing the test_application.py file.  
+For the purposes of testing, it is highly recommended to use gitpod to ensure a dependable environment for testing.
+Be sure to drop the config.py file into the /App directory for use of your custom configuration settings.
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/Boldoosang/NULLIFY-spotDPothole-backend)
+
 
 ## PROJECT DELIVERABLES
 * [SpotDPothole Web Application](https://spotdpothole.justinbaldeo.com/)
