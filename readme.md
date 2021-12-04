@@ -35,8 +35,8 @@ In development, configuration can be handled through the use of a 'config.py' fi
 In production, environment variables should be used as these variables ensure that the sensitive information variables can be loaded as needed without being present into the code.
 
 ## HEROKU SETUP
-The application can be deployed to heroku using the button below.  
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)  
+The application can be deployed to heroku using the button below.    
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)    
 The application must also be configured using the configuration information above. The environment variables for the heroku deployed application can be accessed in the settings of the application, after clicking on "Reveal Config Vars".
 ![Heroku Configuration Tutorial](images/heroku-tutorial.png)
 
@@ -45,6 +45,7 @@ The use of the 'manage.py' file can be used to execute various managerial tasks 
 ```
 $ py manage.py |task|
 ```
+* If using gitpod, please swap the keyword 'py' with 'python'.
 Please note that custom tasks can also be created by using the '@manager.command' as follows:
 ```
 @manager.command
@@ -59,9 +60,10 @@ $ py manage.py serve
 or
 $ npm run serve
 ```
+* If using gitpod, please swap the keyword 'py' with 'python'.  
 In the production environment, the application is interfaced with gunicorn and can be executed using:
 ```
-$ gunicorn -w 4 App.main:app
+$ gunicorn -w 4 "App.main:create_app()"
 ```
 
 ## DATABASE INITIALIZATION
@@ -71,6 +73,7 @@ $ py manage.py initDB
 or
 $ npm run initDB
 ```
+* If using gitpod, please swap the keyword 'py' with 'python'.
 * Note that if the 'SQLITEDB' configuration variable is set to true, a sqlite database 'spotDPothole.db' will be created.
 
 ## DATABASE MIGRATIONS
@@ -80,6 +83,7 @@ $ py manage.py db init
 $ py manage.py db migrate
 $ py manage.py db upgrade
 ```
+* If using gitpod, please swap the keyword 'py' with 'python'.
 
 ## TESTING
 With the PyTest module installed, the system components can be evaluated using both integration and unit tests using the following command:
