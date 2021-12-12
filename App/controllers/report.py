@@ -6,7 +6,7 @@
 
 #CONSTANTS
 #Specifies a distance threshold, in meters, that will be used to classify pothole reports to the same pothole, within this proximity.
-DISTANCE_THRESHOLD = 20
+DISTANCE_THRESHOLD = 15
 #Specifies the number of days that should be added to the expiry date of a pothole, before they are deleted.
 EXPIRY_DATE_REFRESH = 30
 #Specifies the number of days that a pothole record should be initialized with, before they are deleted.
