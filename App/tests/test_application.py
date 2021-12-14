@@ -291,7 +291,7 @@ def testDeleteNonExistentPotholeImage(simulated_db):
 
     assert "Pothole image not found!" in reportedImageResult[0]["error"]
 
-# Integration Test 10: deletePotholeReportImage should return an error message when adding a pothole image to a report that they are not the owner of.
+# Integration Test 10: addPotholeReportImage should return an error message when adding a pothole image to a report that they are not the owner of.
 def testAddPotholeImageNotOwner(simulated_db):
     user2 = getOneRegisteredUser("tester2@yahoo.com")
     potholeID = 1
