@@ -26,11 +26,3 @@ def displayPotholes():
 def displayIndividualPotholes(id):
     displayData, statusCode = getIndividualPotholeData(id)
     return displayData, statusCode
-
-
-
-############# TEST ROUTES ##############
-@potholeViews.route('/nuke', methods=["GET"])
-def nukePotholes():
-    nukePotholesInDB()
-    return json.dumps("Nuked"), 200

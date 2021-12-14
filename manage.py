@@ -58,6 +58,16 @@ def removeReport(reportID):
             print("Unable to delete report!")
 
 
+#Enables the removal of all potholes in the system.
+@manager.command
+def nukePotholes():
+        try:
+            nukePotholesInDB()
+        except:
+            db.session.rollback()
+            print("Unable to nuke potholes!")
+
+
 #Allows the flask application to be served via the 'python3 manage.py serve' command.
 #Prints the mode in which the application is running, and also serves the application.
 @manager.command
