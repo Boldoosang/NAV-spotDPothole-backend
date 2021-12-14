@@ -266,21 +266,23 @@ def reportPotholeDriver(user, reportDetails):
 
 
 #SYSTEM POTHOLE REPORT DELETE FUNCTION
-#Allows the system to delete a pothhole given the reportID and potholeID.
-def deletePotholeReport(potholeID, reportID):
+#Allows the system to delete a pothhole given the reportID.
+def deletePotholeReport(reportID):
     #Attempts to remove a pothole from the system given a pothole ID and report ID.
     try:
-        #If the potholeID or reportID is invalid, return False
-        if(not potholeID or not reportID):
+        #If the  reportID is invalid, return False
+        if(not reportID):
             return False
 
         #Finds and stores the report to be deleted using the potholeID and reportID.
-        foundReport = db.session.query(Report).filter_by(potholeID= potholeID, reportID=reportID).first()
+        foundReport = db.session.query(Report).filter_by(reportID=reportID).first()
 
         #If the report is found, delete the report.
         if foundReport:
             #Attempts to delete the report.
             try:
+                #Obtains the potholeID from the report
+                potholeID = foundReport.potholeID
                 #Deletes the report and commits the change to the database.
                 db.session.delete(foundReport)
                 db.session.commit()

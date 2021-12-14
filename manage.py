@@ -36,6 +36,28 @@ def bootstrapServer():
     #Deletes expired potholes.
     deleteExpiredPotholes()
 
+#Enables the deletion of a pothole by potholeID.
+@manager.command
+def removePothole(potholeID):
+        try:
+            deletePothole(potholeID=potholeID)
+            print("Successfully deleted pothole!")
+        except:
+            db.session.rollback()
+            print("Unable to delete pothole!")
+
+
+#Enables the deletion of a pothole by potholeID.
+@manager.command
+def removeReport(reportID):
+        try:
+            deletePotholeReport(reportID=reportID)
+            print("Successfully deleted report!")
+        except:
+            db.session.rollback()
+            print("Unable to delete report!")
+
+
 #Allows the flask application to be served via the 'python3 manage.py serve' command.
 #Prints the mode in which the application is running, and also serves the application.
 @manager.command

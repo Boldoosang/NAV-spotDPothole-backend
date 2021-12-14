@@ -108,8 +108,8 @@ def voteOnPothole(user, potholeID, reportID, voteData):
 
                         #If the net votes changes such that the net votes are now below the deletion threshold, delete the pothole report.
                         if calculateNetVotes(reportID) <= REPORT_DELETION_THRESHOLD:
-                            #Deletes the pothole report for a given reportID and potholeID.
-                            deletePotholeReport(potholeID, reportID)
+                            #Deletes the pothole report for a given reportID.
+                            deletePotholeReport(reportID)
                             #Returns a message that the report will be deleted, along with an 'OK' http status code.
                             return {"message": "This report will be deleted due to its severe negative reputation."}, 200
 
@@ -141,7 +141,7 @@ def voteOnPothole(user, potholeID, reportID, voteData):
                             #If the net votes changes such that the net votes are now below the deletion threshold, delete the pothole report.
                             if calculateNetVotes(reportID) <= REPORT_DELETION_THRESHOLD:
                                 #Deletes the pothole report for a given reportID and potholeID.
-                                deletePotholeReport(potholeID, reportID)
+                                deletePotholeReport(reportID)
                                 #Returns a message that the report will be deleted, along with an 'OK' http status code.
                                 return {"message": "This report will be deleted due to its severe negative reputation."}, 200
 
