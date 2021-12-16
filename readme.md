@@ -102,4 +102,4 @@ Be sure to drop the config.py file into the /App directory for use of your custo
 
 ## PROJECT DELIVERABLES
 * [SpotDPothole Web Application](https://spotdpothole.justinbaldeo.com/)
-* [Project Report](https://spotdpothole.justinbaldeo.com/projectReport)
+* [Project Report](https://docs.google.com/document/d/1k6Yjrqm8VEjkWNdJe1c3Nl7906Izm-eqz-5WTjxHqOg/edit?usp=sharing)
