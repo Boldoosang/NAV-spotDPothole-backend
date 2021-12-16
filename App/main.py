@@ -34,7 +34,7 @@ def loadConfig(app, config):
         DBURI = os.environ.get('DBURI')
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') if os.environ.get('SECRET_KEY') != None else "DEFAULT_SECRET_KEY"
         app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
-        app.config['JWT_EXPIRATION_DELTA'] = timedelta(days = os.environ.get('JWTDELTADAYS'))
+        app.config['JWT_EXPIRATION_DELTA'] = timedelta(days = os.environ.get('JWTDELTADAYS')) if os.environ.get('JWTDELTADAYS') else timedelta(days = 7)
         app.config['DEBUG'] = os.environ.get('DEBUG')
         app.config['ENV'] = os.environ.get('ENV')
         SQLITEDB = os.environ.get("SQLITEDB", default="False") 
