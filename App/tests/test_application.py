@@ -228,7 +228,7 @@ def testDuplicateReportSameUser(simulated_db):
     assert "Expiry date of pothole has been reset!" in r[0]["message"] and r[1] == 201
 
 
-# Integration Test 6: reportPotholeDriver should return a success message when reporting the same pothole using 2 different users.
+# Integration Test 7: reportPotholeDriver should return a success message when reporting the same pothole using 2 different users.
 def testMultipleReportsSamePothole(users_in_db):
     reportDetails = {
         "longitude" : -61.454274,
@@ -247,7 +247,7 @@ def testMultipleReportsSamePothole(users_in_db):
 
     assert user1Reports[0]["potholeID"] == user2Reports[0]["potholeID"]
 
-# Integration Test 7: deletePotholeReportImage should return a success message when deleting a pothole image as the owner.
+# Integration Test 8: deletePotholeReportImage should return a success message when deleting a pothole image as the owner.
 def testDeleteExistingPotholeImage(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
 
@@ -263,7 +263,7 @@ def testDeleteExistingPotholeImage(simulated_db):
 
     assert reportedImageBefore != reportedImageAfter and "Pothole image successfully deleted!" in res[0]["message"]
 
-# Integration Test 8: deletePotholeReportImage should not allow a user to delete a pothole image that is not owned.
+# Integration Test 9: deletePotholeReportImage should not allow a user to delete a pothole image that is not owned.
 def testDeleteExistingPotholeImageNotOwner(simulated_db):
     user2 = getOneRegisteredUser("tester2@yahoo.com")
 
@@ -279,7 +279,7 @@ def testDeleteExistingPotholeImageNotOwner(simulated_db):
 
     assert reportedImageBefore == reportedImageAfter
 
-# Integration Test 9: deletePotholeReportImage should return an error message when deleting a pothole image that does not exist.
+# Integration Test 10: deletePotholeReportImage should return an error message when deleting a pothole image that does not exist.
 def testDeleteNonExistentPotholeImage(simulated_db):
     user2 = getOneRegisteredUser("tester2@yahoo.com")
 
@@ -291,7 +291,7 @@ def testDeleteNonExistentPotholeImage(simulated_db):
 
     assert "Pothole image not found!" in reportedImageResult[0]["error"]
 
-# Integration Test 10: addPotholeReportImage should return an error message when adding a pothole image to a report that they are not the owner of.
+# Integration Test 11: addPotholeReportImage should return an error message when adding a pothole image to a report that they are not the owner of.
 def testAddPotholeImageNotOwner(simulated_db):
     user2 = getOneRegisteredUser("tester2@yahoo.com")
     potholeID = 1
@@ -306,7 +306,7 @@ def testAddPotholeImageNotOwner(simulated_db):
 
     assert "You are not the creator of this report!" in rv[0]["error"]
 
-# Integration Test 11: addPotholeReportImage should return a success message when adding a pothole image to a report that is valid.
+# Integration Test 12: addPotholeReportImage should return a success message when adding a pothole image to a report that is valid.
 def testAddPotholeImage(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 1
@@ -321,7 +321,7 @@ def testAddPotholeImage(simulated_db):
 
     assert "All images successfully added." in rv[0]["message"] and rv[1] == 201 and "https://media.gettyimages.com/photos/balanced-stones-on-a-pebble-beach-during-sunset-picture-id157373207?s=612x612" in res[0]
 
-# Integration Test 12: addPotholeReportImage should return an error message when adding an invalid pothole image to a report that is valid.
+# Integration Test 13: addPotholeReportImage should return an error message when adding an invalid pothole image to a report that is valid.
 def testAddPotholeImageInvalidImageURL(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 1
@@ -334,7 +334,7 @@ def testAddPotholeImageInvalidImageURL(simulated_db):
 
     assert "error" in rv[0] and rv[1] == 206
 
-# Integration Test 13: updateReportDescription should return a success message when updating a report that the user is owner of.
+# Integration Test 14: updateReportDescription should return a success message when updating a report that the user is owner of.
 def testUpdatePotholeDescriptionAsOwner(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 1
@@ -349,7 +349,7 @@ def testUpdatePotholeDescriptionAsOwner(simulated_db):
 
     assert "Pothole report description updated!" in rv[0]["message"] and 200 == rv[1] and '"description": "Wide pothole!"' in updatedReport[0]
 
-# Integration Test 14: updateReportDescription should return an error message when updating a report that the user is not the owner of.
+# Integration Test 15: updateReportDescription should return an error message when updating a report that the user is not the owner of.
 def testUpdatePotholeDescriptionAsNonOwner(simulated_db):
     user2 = getOneRegisteredUser("tester2@yahoo.com")
     potholeID = 1
@@ -363,7 +363,7 @@ def testUpdatePotholeDescriptionAsNonOwner(simulated_db):
     assert "Report does not exist!" in rv[0]["error"] and 404 == rv[1]
 
 
-# Integration Test 15: updateReportDescription should return an error message when updating a report that does not exist.
+# Integration Test 16: updateReportDescription should return an error message when updating a report that does not exist.
 def testUpdatePotholeDescriptionNonExistent(simulated_db):
     user2 = getOneRegisteredUser("tester2@yahoo.com")
     potholeID = 12
@@ -376,7 +376,7 @@ def testUpdatePotholeDescriptionNonExistent(simulated_db):
 
     assert "Report does not exist!" in rv[0]["error"] and 404 == rv[1]
 
-# Integration Test 16: deleteUserPotholeReport should return a success message when deleting a report that is owned.
+# Integration Test 17: deleteUserPotholeReport should return a success message when deleting a report that is owned.
 def testDeleteIndividualReportAsOwner(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 1
@@ -388,7 +388,7 @@ def testDeleteIndividualReportAsOwner(simulated_db):
     assert "Successfully deleted report." in rv[0]["message"] and 200 == rv[1] and "No report found." in oldRep[0]
 
 
-# Integration Test 17: deleteUserPotholeReport should return an error message when deleting a report that is not owned.
+# Integration Test 18: deleteUserPotholeReport should return an error message when deleting a report that is not owned.
 def testDeleteIndividualReportAsNonOwner(simulated_db):
     user2 = getOneRegisteredUser("tester2@yahoo.com")
     potholeID = 1
@@ -399,7 +399,7 @@ def testDeleteIndividualReportAsNonOwner(simulated_db):
 
     assert "Report does not exist! Unable to delete." in rv[0]["error"] and 404 == rv[1] and "No report found." not in oldRep[0]
 
-# Integration Test 18: deleteUserPotholeReport should return an error message when deleting a report that does not exist.
+# Integration Test 19: deleteUserPotholeReport should return an error message when deleting a report that does not exist.
 def testDeleteIndividualReportNonExistent(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 12
@@ -409,7 +409,7 @@ def testDeleteIndividualReportNonExistent(simulated_db):
 
     assert "Report does not exist! Unable to delete." in rv[0]["error"] and 404 == rv[1]
 
-# Integration Test 19: deleteUserPotholeReport should also delete the pothole if the report was the last report for that pothole.
+# Integration Test 20: deleteUserPotholeReport should also delete the pothole if the report was the last report for that pothole.
 def testDeleteLastReportDeletesPothole(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 1
@@ -425,7 +425,7 @@ def testDeleteLastReportDeletesPothole(simulated_db):
     assert "Successfully deleted report." in rv[0]["message"] and 200 == rv[1] and "No report found." in oldRep[0] and potholeBeforeDelete != potholeAfterDelete
 
 
-# Integration Test 20: calculateNetVotes should return the number of upvotes-downvotes for a report.
+# Integration Test 21: calculateNetVotes should return the number of upvotes-downvotes for a report.
 def testCalculateNetVotes(simulated_db):
     potholeID = 1
     reportID = 1
@@ -446,7 +446,7 @@ def testCalculateNetVotes(simulated_db):
 
     assert netVotes == -1
 
-# Integration Test 21: reports are automatically deleted if they exceed the negative report threshold.
+# Integration Test 22: reports are automatically deleted if they exceed the negative report threshold.
 def testDeleteReportAfterNegativeVoteThreshold(simulated_db):
     potholeID = 1
     reportID = 1
@@ -471,7 +471,7 @@ def testDeleteReportAfterNegativeVoteThreshold(simulated_db):
 
     assert "No report found." in repAfter[0] and 404 == repAfter[1] and "No report found." not in repBefore
 
-# Integration Test 22: voteOnPothole should change the number of votes for a report.
+# Integration Test 23: voteOnPothole should change the number of votes for a report.
 def testVoteOnPothole(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 1
@@ -483,7 +483,7 @@ def testVoteOnPothole(simulated_db):
 
     assert votesBefore != votesAfter
 
-# Integration Test 23: voteOnPothole should unvote on a report if it is submitted to the same report twice with the same vote.
+# Integration Test 24: voteOnPothole should unvote on a report if it is submitted to the same report twice with the same vote.
 def testUnVoteOnPothole(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 1
@@ -496,7 +496,7 @@ def testUnVoteOnPothole(simulated_db):
 
     assert votesBefore == votesAfter
 
-# Integration Test 24: voteOnPothole should change the vote for a pothole report.
+# Integration Test 25: voteOnPothole should change the vote for a pothole report.
 def testChangeVoteOnPothole(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 1
@@ -511,7 +511,7 @@ def testChangeVoteOnPothole(simulated_db):
     assert votesBefore != votesAfter != votesMidway
 
 
-# Integration Test 25: Login Controller should return the access token of a user if the credentials are correct, and a status code of 200
+# Integration Test 26: Login Controller should return the access token of a user if the credentials are correct, and a status code of 200
 def testLoginValid(users_in_db):
     email = "tester1@yahoo.com"
     password = "121233"
@@ -519,7 +519,7 @@ def testLoginValid(users_in_db):
     rv = loginUserController({"email" : email, "password": password})
     assert 'access_token' in rv[0] and rv[1] == 200
 
-# Integration Test 26: /login should return an error message if the credentials are invalid, and a status code of 401
+# Integration Test 27: /login should return an error message if the credentials are invalid, and a status code of 401
 def testLoginInvalidData(users_in_db):
     email = "invalidemail"
     password = "121233"
