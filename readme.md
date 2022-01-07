@@ -1,7 +1,7 @@
 # NULLIFY - SpotDPothole Backend
-Welcome to our COMP 3613 Software Engineering Project! This project aims to provide the backend of an application that is geared towards the logging of potholes located across the roadways of Trinidad and Tobago. This project will be implemented to interface with the corresponding [SpotDPothole Frontend](https://github.com/Boldoosang/NULLIFY-spotDPothole-frontend). Please note that this project reflects the various prototype stages that will be refined over the course of many sprints. Implemented features of the first prototype can be found below.
+Welcome to our COMP 3613 Software Engineering Project! This project aims to provide the backend of an application that is geared towards the logging of potholes located across the roadways of Trinidad and Tobago. This project will be implemented to interface with the corresponding [SpotDPothole Frontend](https://github.com/Boldoosang/NAV-spotDPothole-frontend). Please note that this project reflects the various prototype stages that will be refined over the course of many sprints. Implemented features of the first prototype can be found below.
 
-[![PyTest](https://github.com/Boldoosang/NULLIFY-spotDPothole-backend/actions/workflows/pytest.yml/badge.svg)](https://github.com/Boldoosang/NULLIFY-spotDPothole-backend/actions/workflows/pytest.yml)
+[![PyTest](https://github.com/Boldoosang/NAV-spotDPothole-backend/actions/workflows/pytest.yml/badge.svg)](https://github.com/Boldoosang/NAV-spotDPothole-backend/actions/workflows/pytest.yml)
 
 ## BACKEND IMPLEMENTED FEATURES
 For the first prototype of the application, the following features have been implemented during development:
@@ -23,7 +23,7 @@ For the first prototype of the application, the following features have been imp
 
 ## DEPENDENCIES
 * [Python3](https://www.python.org/downloads/) - Python as main programming language.
-* [Python3 Modules (requirements.txt)](https://github.com/Boldoosang/NULLIFY-spotDPothole-backend/blob/main/requirements.txt) - Python modules used in the development of the application.
+* [Python3 Modules (requirements.txt)](https://github.com/Boldoosang/NAV-spotDPothole-backend/blob/main/requirements.txt) - Python modules used in the development of the application.
 
 Dependencies can be installed using:
 ```
@@ -97,7 +97,7 @@ Tests can be modified by navigating to /App/tests and editing the test_applicati
 For the purposes of testing, it is highly recommended to use gitpod to ensure a dependable environment for testing.
 Be sure to drop the config.py file into the /App directory for use of your custom configuration settings.
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/Boldoosang/NULLIFY-spotDPothole-backend)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/Boldoosang/NAV-spotDPothole-backend)
 
 
 ## PROJECT DELIVERABLES
