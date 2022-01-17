@@ -37,6 +37,21 @@ def getReportData():
         db.session.rollback()
         return json.dumps({"error": "Invalid pothole reports in database."}), 400
 
+
+#Returns a json dump of all of the reports in the database.
+def getReportDataForUser(user):
+    #Attempts to get and return all of the potholes by a particular user in the database in json form.
+    try:
+        #Gets all of the reports in the database, gets the dictionary definitions, and returns them all in an array.
+        #Also returns a 'OK' http status code (200)
+        reports = db.session.query(Report).filter_by(userID=user.userID).all()
+        reportData = [r.toDict() for r in reports]
+        return json.dumps(reportData), 200
+    except:
+    #If an error was encountered in getting the pothole data, rollback the query (querying invalid datatype crashes POSTGRES database ONLY)
+        db.session.rollback()
+        return json.dumps({"error": "Invalid pothole reports in database."}), 400
+
 #Given the latitude and logitude for a report, finds the closest pothole within a threshold distance specified by DISTANCE_THRESHOLD
 def findClosestPothole(latitude, longitude):
     #Attempts to find the closest pothole.
@@ -360,7 +375,7 @@ def updateReportDescription(user, potholeID, reportID, potholeDetails):
                 #If the description is not at least 5 characters, return an error.
                 if len(potholeDetails["description"]) < 5:
                     return {"error": "Invalid description entered!"}, 400
-                    
+
                 #Finds the report, made by the creator, that is specified by the potholeID and reportID.
                 report = db.session.query(Report).filter_by(userID=user.userID, reportID=reportID, potholeID=potholeID).first()
                 #If a report is found, update the description.
