@@ -357,6 +357,10 @@ def updateReportDescription(user, potholeID, reportID, potholeDetails):
         if potholeDetails:
             #If the potholeDetails contains a "description" key field, process the data.
             if "description" in potholeDetails:
+                #If the description is not at least 5 characters, return an error.
+                if len(potholeDetails["description"]) < 5:
+                    return {"error": "Invalid description entered!"}, 400
+                    
                 #Finds the report, made by the creator, that is specified by the potholeID and reportID.
                 report = db.session.query(Report).filter_by(userID=user.userID, reportID=reportID, potholeID=potholeID).first()
                 #If a report is found, update the description.
