@@ -5,9 +5,10 @@
 #POTHOLE VIEW - Defines the view endpoints for POTHOLES.
 
 #Imports flask modules.
+from flask_jwt_extended import current_user, jwt_required
 from flask import Blueprint, redirect, request, jsonify, send_from_directory
 
-from App.controllers.pothole import getIndividualPotholeData, getPotholeData, nukePotholesInDB
+from App.controllers.pothole import getIndividualPotholeData, getPotholeData, getUserPotholeData, nukePotholesInDB
 
 #Creates a blueprint to the collection of views for potholes.
 potholeViews = Blueprint('potholeViews', __name__)
@@ -19,6 +20,13 @@ from App.controllers import *
 @potholeViews.route('/api/potholes', methods=["GET"])
 def displayPotholes():
     displayData, statusCode = getPotholeData()
+    return displayData, statusCode
+
+#Creates a GET route for the retrieval of a user's pothole data. Also returns a status code to denote the outcome of the operation.
+@potholeViews.route('/api/dashboard/potholes', methods=["GET"])
+@jwt_required()
+def displayUserPotholes():
+    displayData, statusCode = getUserPotholeData(current_user)
     return displayData, statusCode
 
 #Creates a GET route for the retrieval of a single pothole's data. Also returns a status code to denote the outcome of the operation.

@@ -19,7 +19,7 @@ class Pothole(db.Model):
     expiryDate = db.Column(db.Date, nullable = False)
 
     #Declares a relationship with the Report table, such that all of the reports for a pothole are deleted when the pothole is deleted.
-    reports = db.relationship('Report', cascade="all, delete")
+    reports = db.relationship('Report', backref=db.backref("reports", uselist=False), cascade="all, delete")
 
     #Prints the details for a particular pothole record.
     def toDict(self):
