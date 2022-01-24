@@ -32,20 +32,15 @@ def getPotholeData():
 #an 'OK' http status code (200).
 def getUserPotholeData(user):
     #Attempts to get and return all of the user's potholes in the database.
-    #try:
-        #Retrieves all of the user's potholes from the database.
+    try:
+        #Retrieves all of the potholes from the database.
         potholes = db.session.query(Pothole).filter_by().all()
 
-        for pothole in potholes:
-            if pothole.reports[0].userID == user.userID:
-                print(pothole.reports[0].toDict())
-
-
-        #Gets the dictionary definition of each of the potholes and stores them in an array.
+        #Gets the dictionary definition of each of the potholes reported by the user, and stores them in an array.
         potholeData = [p.toDict() for p in potholes if p.reports[0].userID == user.userID]
         #Returns the json form of the array, as well as an OK http status (200) code.
         return json.dumps(potholeData), 200
-    #except:
+    except:
     #If an error was encountered in getting the pothole data, rollback the query (querying invalid datatype crashes POSTGRES database ONLY)
         db.session.rollback()
         return json.dumps({"error": "Invalid pothole details specified."}), 400

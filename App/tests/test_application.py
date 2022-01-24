@@ -526,3 +526,12 @@ def testLoginInvalidData(users_in_db):
 
     rv = loginUserController({"email" : email, "password": password})
     assert 'Wrong email or password entered!' in rv[0]["error"] and rv[1] == 401
+
+
+# Integration Test 28: /api/dashboard/potholes should return an array of potholes reported by the user, if the user is logged in.
+def testGetDashboardPotholes(users_in_db):
+    user = getOneRegisteredUser("tester1@yahoo.com")
+    userPotholeData = getUserPotholeData(user)
+    print(userPotholeData)
+    
+    assert b"Pothole image not found!" in response.data and response.status_code == 404

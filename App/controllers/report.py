@@ -38,11 +38,11 @@ def getReportData():
         return json.dumps({"error": "Invalid pothole reports in database."}), 400
 
 
-#Returns a json dump of all of the reports in the database.
+#Returns a json dump of all of the reports for a particular user in the database.
 def getReportDataForUser(user):
     #Attempts to get and return all of the potholes by a particular user in the database in json form.
     try:
-        #Gets all of the reports in the database, gets the dictionary definitions, and returns them all in an array.
+        #Gets all of the user reports in the database, gets the dictionary definitions, and returns them all in an array.
         #Also returns a 'OK' http status code (200)
         reports = db.session.query(Report).filter_by(userID=user.userID).all()
         reportData = [r.toDict() for r in reports]
