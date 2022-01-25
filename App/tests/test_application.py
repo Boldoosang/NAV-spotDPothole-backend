@@ -38,7 +38,7 @@ def simulated_db():
     createSimulatedData()
     yield app.test_client()
     os.unlink(os.getcwd()+'/App/test.db')
-
+    
 
 ########## Unit Tests ########## 
 # Unit Test 1: api/potholes should return an empty array when there are no potholes, and should return a status code of 200
@@ -132,6 +132,17 @@ def testGetIndividualReportImage(simulated_db):
 def testGetNonExistentIndividualReportImage(simulated_db):
     response = simulated_db.get("/api/reports/pothole/1/report/1/images/13")
     assert b"Pothole image not found!" in response.data and response.status_code == 404
+
+# Unit Test 18: /api/dashboard/potholes should return an error when not logged in, and a return status of 401.
+def testGetDashoardPotholesNotLoggedIn(simulated_db):
+    response = simulated_db.get("/api/dashboard/potholes")
+    assert b"Missing Authorization Header" in response.data and response.status_code == 401
+
+
+# Unit Test 19: /api/dashboard/potholes should return an error when not logged in, and a return status of 401.
+def testGetDashoardReportsNotLoggedIn(simulated_db):
+    response = simulated_db.get("/api/dashboard/reports")
+    assert b"Missing Authorization Header" in response.data and response.status_code == 401
 
 ########## Integration Tests ##########  
 #Integration Test 1: registerUserController should create a user account using valid data.
@@ -529,9 +540,39 @@ def testLoginInvalidData(users_in_db):
 
 
 # Integration Test 28: /api/dashboard/potholes should return an array of potholes reported by the user, if the user is logged in.
-def testGetDashboardPotholes(users_in_db):
+def testGetDashboardPotholesLoggedIn(simulated_db):
     user = getOneRegisteredUser("tester1@yahoo.com")
-    userPotholeData = getUserPotholeData(user)
+    userPotholeData, statusCode = getUserPotholeData(user)
     print(userPotholeData)
+    expected = '[{"potholeID": 1, "longitude": -61.277001, "latitude": 10.726551, "numReports": 2, "expiryDate": "2022-02-24"}]'
     
-    assert b"Pothole image not found!" in response.data and response.status_code == 404
+    assert expected in userPotholeData and statusCode == 200
+
+# Integration Test 29: /api/dashboard/potholes should return an empty array of potholes, if the user is logged in.
+def testGetDashboardPotholesEmpty(users_in_db):
+    user = getOneRegisteredUser("tester1@yahoo.com")
+    userPotholeData, statusCode = getUserPotholeData(user)
+    print(userPotholeData)
+    expected = '[]'
+    
+    assert expected in userPotholeData and statusCode == 200
+
+# Integration Test 30: /api/dashboard/reports should return an array of reports reported by the user, if the user is logged in.
+def testGetDashboardReportsLoggedIn(simulated_db):
+    user = getOneRegisteredUser("tester1@yahoo.com")
+    userReportData, statusCode = getReportDataForUser(user)
+    print(userReportData)
+    expected = '[{"reportID": 1, "userID": 1, "potholeID": 1, "dateReported": "2022-01-25", "description": "Very large pothole spanning both lanes of the road.", "votes": [], "reportedImages": [{"imageID": 1, "reportID": 1, "imageURL": "https://www.howtogeek.com/wp-content/uploads/2018/08/Header.png"}], "reportedBy": "Moses Darren"}]'
+    
+    assert expected in userReportData and statusCode == 200
+
+
+
+# Integration Test 31: /api/dashboard/reports should return an empty array of reports, if the user is logged in.
+def testGetDashboardReportsEmpty(users_in_db):
+    user = getOneRegisteredUser("tester1@yahoo.com")
+    userReportData, statusCode = getReportDataForUser(user)
+    print(userReportData)
+    expected = '[]'
+    
+    assert expected in userReportData and statusCode == 200
