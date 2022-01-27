@@ -22,13 +22,6 @@ def displayPotholes():
     displayData, statusCode = getPotholeData()
     return displayData, statusCode
 
-#Creates a GET route for the retrieval of a user's pothole data. Also returns a status code to denote the outcome of the operation.
-@potholeViews.route('/api/dashboard/potholes', methods=["GET"])
-@jwt_required()
-def displayUserPotholes():
-    displayData, statusCode = getUserPotholeData(current_user)
-    return displayData, statusCode
-
 #Creates a GET route for the retrieval of a single pothole's data. Also returns a status code to denote the outcome of the operation.
 @potholeViews.route('/api/potholes/<id>', methods=["GET"])
 def displayIndividualPotholes(id):

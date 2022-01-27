@@ -18,6 +18,8 @@ class User(db.Model):
     firstName = db.Column(db.String(64), nullable = False)
     lastName = db.Column(db.String(64), nullable = False)
     password = db.Column(db.String(256), nullable = False)
+    moderator = db.Column(db.Boolean, nullable = False, default=0, server_default="0")
+    confirmed = db.Column(db.Boolean, nullable = False, default=1, server_default="1")
 
     #Declares a relationship with the Report table, such that all of the reports for a user are deleted when the user is deleted.
     reports = db.relationship('Report', cascade="all, delete", backref='user')
