@@ -35,10 +35,7 @@ def getUserPotholeData(user):
     try:
         #Retrieves all of the potholes from the database.
         potholes = db.session.query(Pothole).filter_by().all()
-
-
         potholeData = []
-        print(potholes[0])
         #Gets the dictionary definition of each of the potholes reported by the user, and stores them in an array.
         for pothole in potholes:
             potholeData += [pothole.toDict() for report in pothole.reports if user.userID == report.userID]
