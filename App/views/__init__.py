@@ -6,4 +6,4 @@ from .report import *
 from .reportedImage import *
 from .userReportVote import *
 from .dashboard import *
-from .admin import *
+from .moderator import *

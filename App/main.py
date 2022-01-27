@@ -11,8 +11,8 @@ import os
 
 #Imports the models and views of the application.
 from App.models import *
-from App.views import (potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews, dashboardViews, adminViews)
-views = [potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews, dashboardViews, adminViews]
+from App.views import (potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews, dashboardViews, modViews)
+views = [potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews, dashboardViews, modViews]
 
 #Registers the different view blueprints for the different API endpoints.
 def addViews(app, views):

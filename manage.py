@@ -103,7 +103,39 @@ def removeModerator(email):
         db.session.rollback()
         print("Unable to remove moderator!")
 
+@manager.command
+def banUser(email):
+    try:
+        foundUser = db.session.query(User).filter_by(email=email).first()
+        if(foundUser):
+            try:
+                foundUser.banned = True
+                db.session.add(foundUser)
+                db.session.commit()
+            except:
+                print("Unable to ban user!")
+        else:
+            print("No user found with that email!")
+    except:
+        db.session.rollback()
+        print("Unable to ban user!")
 
+@manager.command
+def unbanUser(email):
+    try:
+        foundUser = db.session.query(User).filter_by(email=email).first()
+        if(foundUser):
+            try:
+                foundUser.banned = False
+                db.session.add(foundUser)
+                db.session.commit()
+            except:
+                print("Unable to ban user!")
+        else:
+            print("No user found with that email!")
+    except:
+        db.session.rollback()
+        print("Unable to ban user!")
 
 
 #Allows the flask application to be served via the 'python3 manage.py serve' command.
