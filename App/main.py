@@ -40,7 +40,7 @@ def loadConfig(app, config):
         app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days = 30)
         app.config['UPLOAD_FOLDER'] = "/uploads"
         #Sets 10 mb file limit size
-        app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
+        app.config['MAX_CONTENT_LENGTH'] = 15 * 1000 * 1000
         app.config['DEBUG'] = os.environ.get('DEBUG')
         app.config['ENV'] = os.environ.get('ENV')
         SQLITEDB = os.environ.get("SQLITEDB", default="False") 
