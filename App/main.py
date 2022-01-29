@@ -9,6 +9,9 @@ from flask_cors import CORS
 from datetime import timedelta 
 import os
 
+
+
+
 #Imports the models and views of the application.
 from App.models import *
 from App.views import (potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews, dashboardViews, modViews)
@@ -35,6 +38,9 @@ def loadConfig(app, config):
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') if os.environ.get('SECRET_KEY') != None else "DEFAULT_SECRET_KEY"
         app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
         app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days = 30)
+        app.config['UPLOAD_FOLDER'] = "/uploads"
+        #Sets 10 mb file limit size
+        app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
         app.config['DEBUG'] = os.environ.get('DEBUG')
         app.config['ENV'] = os.environ.get('ENV')
         SQLITEDB = os.environ.get("SQLITEDB", default="False") 

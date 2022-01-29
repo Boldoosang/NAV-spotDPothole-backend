@@ -23,6 +23,7 @@ from App.controllers import *
 from App.controllers.pothole import deletePothole
 from App.controllers.reportedImage import is_url_image
 
+
 #Returns a json dump of all of the reports in the database.
 def getReportData():
     #Attempts to get and return all of the potholes in the database in json form.
