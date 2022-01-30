@@ -118,6 +118,30 @@ def loginUserController(loginDetails):
         db.session.rollback()
         return {"error" : "Unable to login with user details!"}, 400
 
+#Changes the password of the current user to match the new password details
+def changePassword(current_user, newPasswordDetails):
+    if newPasswordDetails:
+        if "oldPassword" in newPasswordDetails and "password" in newPasswordDetails and "confirmPassword" in newPasswordDetails:
+            if not current_user.checkPassword(newPasswordDetails["oldPassword"]):
+                return {"error" : "The original password you have entered is incorrect!"}, 400
+
+            if newPasswordDetails["password"] != newPasswordDetails["confirmPassword"]:
+                return {"error" : "Passwords do not match!"}, 400
+
+            if len(newPasswordDetails["password"]) < 6:
+                return {"error" : "Password is too short!"}, 400
+
+            try:
+                current_user.setPassword(newPasswordDetails["password"])
+                db.session.add(current_user)
+                db.session.commit()
+                return {"message" : "Sucesssfully changed password!"}, 200
+            except:
+                return {"error" : "An unknown error has occurred!"}, 500
+
+    return {"error" : "Invalid password details supplied!"}, 400
+
+
 #Returns the user's information given a user object.
 def identifyUser(current_user):
     #Attempts to indentify a user given their JWT identified user object.

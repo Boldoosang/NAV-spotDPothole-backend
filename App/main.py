@@ -11,8 +11,8 @@ import os
 
 #Imports the models and views of the application.
 from App.models import *
-from App.views import (potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews)
-views = [potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews]
+from App.views import (potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews, dashboardViews)
+views = [potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews, dashboardViews]
 
 #Registers the different view blueprints for the different API endpoints.
 def addViews(app, views):
@@ -34,7 +34,7 @@ def loadConfig(app, config):
         DBURI = os.environ.get('DBURI')
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') if os.environ.get('SECRET_KEY') != None else "DEFAULT_SECRET_KEY"
         app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
-        app.config['JWT_EXPIRATION_DELTA'] = timedelta(days = 7)
+        app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days = 30)
         app.config['DEBUG'] = os.environ.get('DEBUG')
         app.config['ENV'] = os.environ.get('ENV')
         SQLITEDB = os.environ.get("SQLITEDB", default="False") 

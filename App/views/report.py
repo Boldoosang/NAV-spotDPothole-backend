@@ -22,15 +22,6 @@ def displayReports():
     displayData, statusCode = getReportData()
     return displayData, statusCode
 
-
-#Creates a GET route for the retrieval of all of the report data. Also returns a status code to denote the outcome of the operation.
-@reportViews.route('/api/dashboard/reports', methods=["GET"])
-@jwt_required()
-def displayUserReports():
-    displayData, statusCode = getReportDataForUser(current_user)
-    return displayData, statusCode
-
-
 #Creates a GET route for the retrieval of all of the report data for a particular pothole. Also returns a status code to denote the outcome of the operation.
 @reportViews.route('/api/reports/pothole/<potholeID>', methods=["GET"])
 def displayPotholeReports(potholeID):

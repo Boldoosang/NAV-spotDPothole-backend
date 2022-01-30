@@ -36,9 +36,11 @@ def getUserPotholeData(user):
         #Retrieves all of the potholes from the database.
         potholes = db.session.query(Pothole).filter_by().all()
 
-        #Gets the dictionary definition of each of the potholes reported by the user, and stores them in an array.
-        potholeData = [p.toDict() for p in potholes if p.reports[0].userID == user.userID]
-        #Returns the json form of the array, as well as an OK http status (200) code.
+        potholeData = []
+
+        for pothole in potholes:
+            potholeData += [pothole.toDict() for report in pothole.reports if user.userID == report.userID]
+
         return json.dumps(potholeData), 200
     except:
     #If an error was encountered in getting the pothole data, rollback the query (querying invalid datatype crashes POSTGRES database ONLY)

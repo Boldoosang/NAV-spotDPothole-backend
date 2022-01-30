@@ -3,12 +3,14 @@
 #NULLIFY
 
 #Import Modules
+from collections import UserString
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
 #Import models and controllers
 from App.models import *
 from App.controllers import *
+from App.controllers.pothole import deleteExpiredPotholes, nukePotholesInDB
 
 #Imports the main application object 
 from App.main import *
@@ -39,33 +41,33 @@ def bootstrapServer():
 #Enables the deletion of a pothole by potholeID.
 @manager.command
 def removePothole(potholeID):
-        try:
-            deletePothole(potholeID=potholeID)
-            print("Successfully deleted pothole!")
-        except:
-            db.session.rollback()
-            print("Unable to delete pothole!")
+    try:
+        deletePothole(potholeID=potholeID)
+        print("Successfully deleted pothole!")
+    except:
+        db.session.rollback()
+        print("Unable to delete pothole!")
 
 
 #Enables the deletion of a pothole by potholeID.
 @manager.command
 def removeReport(reportID):
-        try:
-            deletePotholeReport(reportID=reportID)
-            print("Successfully deleted report!")
-        except:
-            db.session.rollback()
-            print("Unable to delete report!")
+    try:
+        deletePotholeReport(reportID=reportID)
+        print("Successfully deleted report!")
+    except:
+        db.session.rollback()
+        print("Unable to delete report!")
 
 
 #Enables the removal of all potholes in the system.
 @manager.command
 def nukePotholes():
-        try:
-            nukePotholesInDB()
-        except:
-            db.session.rollback()
-            print("Unable to nuke potholes!")
+    try:
+        nukePotholesInDB()
+    except:
+        db.session.rollback()
+        print("Unable to nuke potholes!")
 
 
 #Allows the flask application to be served via the 'python3 manage.py serve' command.
@@ -78,6 +80,42 @@ def serve():
     app.run(host='0.0.0.0', port = 8080, debug = app.config['ENV'] == 'development')
 
 
+'''
+@manager.command
+def banUser(email):
+    try:
+        foundUser = db.session.query(User).filter_by(email=email).first()
+        if(foundUser):
+            try:
+                foundUser.banned = True
+                db.session.add(foundUser)
+                db.session.commit()
+            except:
+                print("Unable to ban user!")
+        else:
+            print("No user found with that email!")
+    except:
+        db.session.rollback()
+        print("Unable to ban user!")
+
+@manager.command
+def unbanUser(email):
+    try:
+        foundUser = db.session.query(User).filter_by(email=email).first()
+        if(foundUser):
+            try:
+                foundUser.banned = False
+                db.session.add(foundUser)
+                db.session.commit()
+            except:
+                print("Unable to ban user!")
+        else:
+            print("No user found with that email!")
+    except:
+        db.session.rollback()
+        print("Unable to ban user!")
+
+'''
 #If the application is run via 'manage.py', facilitate manager arguments.
 if __name__ == "__main__":
     manager.run()
