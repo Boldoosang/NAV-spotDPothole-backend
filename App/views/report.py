@@ -20,76 +20,6 @@ reportViews = Blueprint('reportViews', __name__)
 #Imports the all of the controllers of the application.
 from App.controllers import *
 
-import time
-
-#TESTING
-
-from pyrebase import pyrebase
-from PIL import Image
-from App.firebaseConfig import config
-import tempfile
-import filetype
-
-firebase = pyrebase.initialize_app(config)
-
-storage = firebase.storage()
-
-
-
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-MYDIR = os.path.dirname(__file__)
-
-@reportViews.route("/testUpload", methods=["POST"])
-def handleTestUpload():
-    print(request.files['file'])
-    file = request.files['file']
-    filename = secure_filename(file.filename)
-
-    
-
-    #Generates filename for firebase
-    milliseconds = int(time.time() * 1000)
-    randomString = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
-    new_filename = "REPORT " + str(milliseconds) + "_" + randomString + ".jpg"
-
-
-    temp = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg", dir=os.path.join(os.getcwd(), "App/uploads"))
-    file.save(temp.name)
-
-    if not filetype.is_image(temp.name):
-        return {"error" : "File is not an image!"}, 400
-    
-    image = Image.open(temp.name)
-
-    height = int(480)
-    width = int(height / image.height * image.width)
-
-    resizedImage = image.resize((width, height))
-
-    resizedImage.save(temp.name, "JPEG")
-
-    storage.child("images/" + new_filename).put(temp.name)
-
-    directory, filename = os.path.split(temp.name)
-    print(filename)
-
-    link = storage.child("images/" + new_filename).get_url(None)
-
-    print(link)
-    #storage.delete("images/" + new_filename, None)
-
-    return "success"
-
-
-
-
-
-
-
-
-
-
-
 #Creates a GET route for the retrieval of all of the report data. Also returns a status code to denote the outcome of the operation.
 @reportViews.route('/api/reports', methods=["GET"])
 def displayReports():
@@ -130,8 +60,7 @@ def deletePotholeReport(potholeID, reportID):
 #Ensures that this route is only accessible to logged in users.
 @jwt_required()
 def standardReport():
-    reportDetails = request.get_json()
-    outcomeMessage, statusCode = reportPotholeStandard(current_user, reportDetails)
+    outcomeMessage, statusCode = reportPotholeStandard(current_user, request)
     return json.dumps(outcomeMessage), statusCode
 
 #Creates a POST route for the creating of a report of a pothole via the driver interface. Also returns a status code to denote the outcome of the operation.

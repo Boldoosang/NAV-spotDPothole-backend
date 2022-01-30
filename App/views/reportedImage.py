@@ -40,6 +40,6 @@ def deletePotholeImage(potholeID, reportID, imageID):
 #Ensures that this route is only accessible to logged in users.
 @jwt_required()
 def addPotholeImage(potholeID, reportID):
-    imageDetails = request.get_json()
-    displayData, statusCode = addPotholeReportImage(current_user, potholeID, reportID, imageDetails)
+    files = request.files.getlist("images")
+    displayData, statusCode = addPotholeReportImage(current_user, potholeID, reportID, files)
     return displayData, statusCode

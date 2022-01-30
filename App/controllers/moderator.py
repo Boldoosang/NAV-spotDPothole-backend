@@ -16,6 +16,7 @@ def moderatorDeleteReport(user, reportID):
         if user.moderator:
             try:
                 foundReport = db.session.query(Report).filter_by(reportID = reportID).first()
+                deleteAllReportImagesFromStorage(reportID)
                 db.session.delete(foundReport)
                 db.session.commit()
                 return {"message" : "Report successfully deleted!"}, 200

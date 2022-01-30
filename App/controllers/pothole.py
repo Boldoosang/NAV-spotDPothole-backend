@@ -6,6 +6,7 @@
 
 #Imports json.
 import json
+from App.controllers.reportedImage import deleteAllPotholeImagesFromStorage
 
 #Imports the all of the required models and controllers.
 from App.models import *
@@ -79,6 +80,7 @@ def deletePothole(potholeID):
         #Otherwise if it is found, delete the pothole, commit the change, and return True that the operation was successful.
         else:
             try:
+                deleteAllPotholeImagesFromStorage(pothole.potholeID)
                 db.session.delete(pothole)
                 db.session.commit()
                 return True
@@ -99,6 +101,7 @@ def deleteExpiredPotholes():
         expiredPotholes = db.session.query(Pothole).filter(datetime.now() >= Pothole.expiryDate).all()
         #Iterates over all of the expired potholes and deletes them.
         for pothole in expiredPotholes:
+            deleteAllPotholeImagesFromStorage(pothole.potholeID)
             deletePothole(pothole.potholeID)
     except:
     #If deleting the expired pothoels result in an error, print a message and rollback the transaction.
@@ -127,6 +130,7 @@ def nukePotholesInDB():
         allPotholes = db.session.query(Pothole).all()
         #Individual deletes each of all of the potholes and commits the transaction.
         for pothole in allPotholes:
+            deleteAllPotholeImagesFromStorage(pothole.potholeID)
             db.session.delete(pothole)
             db.session.commit()
     except:

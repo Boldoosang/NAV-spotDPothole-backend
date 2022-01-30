@@ -5,6 +5,7 @@
 #REPORTEDIMAGE CONTROLLERS - Facilitate interactions between the reportedImage model and the other models/controllers of the application.
 
 #Imports sqlalchemy errors, requests and json.
+import string
 from sqlalchemy.exc import IntegrityError
 import json, requests
 
@@ -12,6 +13,111 @@ import json, requests
 from App.models import *
 from App.controllers import *
 
+
+#TEST
+
+
+
+from pyrebase import pyrebase
+from PIL import Image
+from App.firebaseConfig import config
+import tempfile
+import filetype, os, time
+import random
+from werkzeug.utils import secure_filename
+from flask_jwt_extended import current_user, jwt_required
+
+firebase = pyrebase.initialize_app(config)
+
+storage = firebase.storage()
+
+MYDIR = os.path.dirname(__file__)
+
+
+
+def uploadImage(files):
+    
+    databaseURLs = []
+    fallbackURLs = []
+
+    try:
+        for indivFile in files:
+            file = indivFile
+            filename = secure_filename(file.filename)
+
+            #Generates filename for firebase
+            milliseconds = int(time.time() * 1000)
+            randomString = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+            new_filename = "REPORT " + str(milliseconds) + "_" + randomString + ".jpg"
+
+
+            temp = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg", dir=os.path.join(os.getcwd(), "App/uploads"))
+            file.save(temp.name)
+
+            if not filetype.is_image(temp.name):
+                return {"error" : "One of the files is not an image!"}, 400
+            
+            image = Image.open(temp.name)
+
+            height = int(480)
+            width = int(height / image.height * image.width)
+
+            resizedImage = image.resize((width, height))
+            resizedImage = resizedImage.convert("RGB")
+            resizedImage.save(temp.name, format="JPEG")
+
+            storage.child("images/" + new_filename).put(temp.name)
+
+        
+            link = storage.child("images/" + new_filename).get_url(None)
+            databaseURLs.append(link)
+            fallbackURLs.append(link.split("/")[-1].split("?")[0])
+            
+    except:
+        for dbFilename in fallbackURLs:
+            filePath = dbFilename.replace("%2F", "/").replace("%20", " ")
+            print(filePath)
+            storage.delete(filePath, None)
+
+        return "error"
+        
+
+    return databaseURLs
+
+
+def deleteImageFromStorage(imageID):
+    try:
+        image = db.session.query(ReportedImage).filter_by(imageID = imageID).first()
+        filePath = image.imageURL.split("/")[-1].split("?")[0]
+        filePath = filePath.replace("%2F", "/").replace("%20", " ")
+
+        print(filePath)
+        storage.delete(filePath, None)
+        print("Successfully deleted this image!")
+        return True
+    except:
+        db.session.rollback()
+        print("Unable to delete this image!")
+        return False
+
+def deleteAllReportImagesFromStorage(reportID):
+    try:
+        images = db.session.query(ReportedImage).filter_by(reportID = reportID).all()
+        for image in images:
+            deleteImageFromStorage(image.imageID)
+    except:
+        db.session.rollback()
+        print("Unable to delete all report images!")
+
+def deleteAllPotholeImagesFromStorage(potholeID):
+    try:
+        images = db.session.query(ReportedImage).filter_by(potholeID = potholeID).all()
+        for image in images:
+            deleteImageFromStorage(image.imageID)
+    except:
+        db.session.rollback()
+        print("Unable to delete all pothole images!")
+#TEST
 
 #Referenced from StackOverflow
 #https://stackoverflow.com/questions/10543940/check-if-a-url-to-an-image-is-up-and-exists-in-python
@@ -96,9 +202,11 @@ def deletePotholeReportImage(user, potholeID, reportID, imageID):
 
             #Attempts to delete the found image from the database.
             try:
+                deleteImageFromStorage(foundImage.imageID)
                 #Deletes the found image from the database, commits the change, and returns a success message along with a 'OK' http status code.
                 db.session.delete(foundImage)
                 db.session.commit()
+                
                 return {"message" : "Pothole image successfully deleted!"}, 200
             except:
             #If an error has occurred, rollback the database and return an error and an "INTERNAL SERVER ERROR" http status code.
@@ -115,26 +223,25 @@ def deletePotholeReportImage(user, potholeID, reportID, imageID):
         return {"error": "Invalid request submitted."}, 400
 
 #For the original report poster, adds an image to their report given the imageDetails.
-def addPotholeReportImage(user, potholeID, reportID, imageDetails):
+def addPotholeReportImage(user, potholeID, reportID, files):
     #Attempts to add the report image to a particular report.
     try:
         #If the user, reportID and imageDetails are non null, facilitate the addition of the image.
-        if user and reportID and imageDetails:
+        if user and reportID:
             #If the imageDetails contains an "images" attribute, it meets the format request. Proceed with facilitating image addition.
-            if "images" in imageDetails:
-                #Finds report, for the user, that corresponds with the reportID and potholeID.
-                foundReport = db.session.query(Report).filter_by(userID=user.userID, reportID=reportID, potholeID = potholeID).first()
+            if files:
+                uploadedImages = uploadImage(files)
 
-                #If no report was found for the user, return an error to the user and a 'NOT FOUND' http status code.
-                if not foundReport:
-                    return {"error" : "You are not the creator of this report!"}, 404
+                if uploadedImages != "error":
+                    #Finds report, for the user, that corresponds with the reportID and potholeID.
+                    foundReport = db.session.query(Report).filter_by(userID=user.userID, reportID=reportID, potholeID = potholeID).first()
 
-                #Sets invalidCount to 0 to denote that no images have failed to be added to the database.
-                invalidCount = 0
-                #Iterates over the different image URLs in the user request.
-                for imageURL in imageDetails["images"]:
-                    #If the URL points to an image, add the image to the database.
-                    if is_url_image(imageURL):
+                    #If no report was found for the user, return an error to the user and a 'NOT FOUND' http status code.
+                    if not foundReport:
+                        return {"error" : "You are not the creator of this report!"}, 404
+
+                    #Iterates over the different image URLs in the user request.
+                    for imageURL in uploadedImages:
                         #Attempts to add the image to the database.
                         try:
                             #Adds the image for the report to the database using the URL and reportID.
@@ -142,25 +249,15 @@ def addPotholeReportImage(user, potholeID, reportID, imageDetails):
                             db.session.add(reportImage)
                             db.session.commit()
                             print("Pothole image succesfully added!")
-                        #If an entry with the same URL exists, rollback the error, count the invalid entry, and print an error message.
-                        except IntegrityError:
-                            db.session.rollback()
-                            invalidCount += 1
-                            print("Pothole image already exists!")
+                            return {"message" : "All images successfully added."}, 201
                         #Otherwise if an unknown error is found, count the invalid entry and print an error message.
                         except:
-                            invalidCount += 1
                             db.session.rollback()
                             print("Pothole image could not be added.")
-                    else:
-                        invalidCount += 1
-                
-                #If the invalid count is greater than 0, return the outcome along with a 'PARTIAL CONTENT' http status code (206).
-                if invalidCount > 0:
-                    return {"error" : "One or more images were not succesfully added."}, 206
-                #Otherwise, return a success message and a 'CREATED' http status code (201).
+                            #If the invalid count is greater than 0, return the outcome along with a 'PARTIAL CONTENT' http status code (206).
+                            return {"error" : "Unable to add all images."}, 206   
                 else:
-                    return {"message" : "All images successfully added."}, 201
+                    return {"error" : "Unable to upload all images to the database!"}, 400  
             #If there is no 'images' key field in the dictionary, the request is empty. Return an error message and a 'BAD REQUEST' http status code.
             else:
                 return {"error" : "No pothole images submitted!"}, 400

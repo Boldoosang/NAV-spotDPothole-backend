@@ -16,12 +16,13 @@ EXPIRY_DATE_PRIMARY = 60
 from geopy import distance
 from datetime import datetime, timedelta
 import json
+from flask import request
 
 #Imports the all of the required models and controllers.
 from App.models import *
 from App.controllers import *
 from App.controllers.pothole import deletePothole
-from App.controllers.reportedImage import is_url_image
+from App.controllers.reportedImage import deleteAllReportImagesFromStorage, is_url_image, uploadImage
 
 
 #Returns a json dump of all of the reports in the database.
@@ -52,6 +53,9 @@ def getReportDataForUser(user):
     #If an error was encountered in getting the pothole data, rollback the query (querying invalid datatype crashes POSTGRES database ONLY)
         db.session.rollback()
         return json.dumps({"error": "Invalid pothole reports in database."}), 400
+
+
+
 
 #Given the latitude and logitude for a report, finds the closest pothole within a threshold distance specified by DISTANCE_THRESHOLD
 def findClosestPothole(latitude, longitude):
@@ -85,7 +89,9 @@ def findClosestPothole(latitude, longitude):
         return "error"
 
 #Validates a report of a user via the standard interface before adding it to the database.
-def reportPotholeStandard(user, reportDetails):
+def reportPotholeStandard(user, request):
+    reportDetails = json.loads(request.form.get('data'))
+
     #Attempts to process a standard report.
     try:
         #Initializes the finalPothole to be added to None.
@@ -147,13 +153,14 @@ def reportPotholeStandard(user, reportDetails):
                     db.session.commit()
 
                     #If there are images in the reportDetails, add the images to the report.
-                    if "images" in reportDetails:
-                        #Iterates over the images within the images field of the reportDetails and adds them to the reportedImage database.
-                        for imageURL in reportDetails["images"]:
-                            
-                            #Determines if the URL is valid and leads to an image.
-                            if is_url_image(imageURL):
-
+                    files = request.files.getlist("images")
+                    
+                    if files:
+                        uploadedImages = uploadImage(files)
+                        
+                        if uploadedImages != "error":
+                            #Iterates over the images within the images field of the reportDetails and adds them to the reportedImage database.
+                            for imageURL in uploadedImages:
                                 print(imageURL)
                                 #If valid, add the imageURL to the reportedImage database for the reportID.
                                 try:
@@ -165,6 +172,8 @@ def reportPotholeStandard(user, reportDetails):
                                 #Otherwise, rollback the changes for the database and print an appropriate error.
                                     db.session.rollback()
                                     print("Unable to add this image to database.")
+                        else:
+                            return {"error" : "Unable to upload all images to the database!"}, 400
 
                     #Once a new report has been created for a pothole, update the expiry date for the pothole.
                     #Attempt to update the expiry date of the pothole.
@@ -299,6 +308,7 @@ def deletePotholeReport(reportID):
             try:
                 #Obtains the potholeID from the report
                 potholeID = foundReport.potholeID
+                deleteAllReportImagesFromStorage(reportID)
                 #Deletes the report and commits the change to the database.
                 db.session.delete(foundReport)
                 db.session.commit()
@@ -337,9 +347,9 @@ def deleteUserPotholeReport(user, potholeID, reportID):
             if foundReport:
                 #Attempts to delete the found report and commit to database.
                 try:
+                    deleteAllReportImagesFromStorage(reportID)
                     db.session.delete(foundReport)
                     db.session.commit()
-
                     #Determines if there are any more reports for the pothole after the deletion.
                     potholeReports = db.session.query(Report).filter_by(potholeID = potholeID).first()
                     #If there are no more reports for that pothole, the pothole can be deleted.
