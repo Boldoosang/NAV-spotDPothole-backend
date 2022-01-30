@@ -3,3 +3,5 @@ __pycache__/
 App/config.py
 App/test.db
 *.db
+serviceAccountKey.json
+App/firebaseConfig.py
