@@ -6,6 +6,7 @@
 
 #Imports flask modules and json.
 from flask_jwt_extended import create_access_token, jwt_required
+from flask import session
 from sqlalchemy.exc import IntegrityError, OperationalError
 import json
 
@@ -107,6 +108,7 @@ def loginUserController(loginDetails):
                 #The access token would then be returned along with an 'OK' http status code (200).
                 if userAccount and userAccount.checkPassword(loginDetails["password"]):
                     access_token = create_access_token(identity = loginDetails["email"])
+                    session.permanent = True
                     return {"access_token" : access_token}, 200
 
         #If the login data is null, return an error message along with an 'UNAUTHORIZED' http status code (401).   
@@ -140,6 +142,32 @@ def changePassword(current_user, newPasswordDetails):
                 return {"error" : "An unknown error has occurred!"}, 500
 
     return {"error" : "Invalid password details supplied!"}, 400
+
+
+#Changes the password of the current user to match the new password details
+def updateProfile(current_user, profileDetails):
+    if profileDetails:
+        if "firstName" in profileDetails and "lastName" in profileDetails:
+            parsedFirstName = profileDetails["firstName"].replace(" ", "")
+            parsedLastName = profileDetails["lastName"].replace(" ", "")
+
+            if len(parsedFirstName) < 2:
+                return {"error" : "First name is too short!"}, 400
+
+            if len(parsedLastName) < 2:
+                return {"error" : "Last name is too short!"}, 400
+
+            try:
+                current_user.firstName = parsedFirstName
+                current_user.lastName = parsedLastName
+
+                db.session.add(current_user)
+                db.session.commit()
+                return {"message" : "Sucesssfully updated profile!"}, 200
+            except:
+                return {"error" : "An unknown error has occurred!"}, 500
+
+    return {"error" : "Invalid profile details supplied!"}, 400
 
 
 #Returns the user's information given a user object.

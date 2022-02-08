@@ -80,6 +80,24 @@ def serve():
     app.run(host='0.0.0.0', port = 8080, debug = app.config['ENV'] == 'development')
 
 
+@manager.command
+def forceChangePassword(email, password):
+    try:
+        foundUser = db.session.query(User).filter_by(email=email).first()
+        if(foundUser):
+            try:
+                foundUser.setPassword(password)
+                db.session.add(foundUser)
+                db.session.commit()
+                print("Updated password of user!")
+            except:
+                print("Unable to update password of user!")
+        else:
+            print("No user found with that email!")
+    except:
+        db.session.rollback()
+        print("Unable to update password of user!")
+
 '''
 @manager.command
 def banUser(email):

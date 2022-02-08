@@ -32,11 +32,19 @@ def loginUserView():
     return json.dumps(outcomeMessage), statusCode
 
 #Creates a PUT route to facilitate the change of a password of an existing user. Also returns a status code to denote the outcome of the operation.
-@userViews.route('/user', methods=["PUT"])
+@userViews.route('/user/password', methods=["PUT"])
 @jwt_required()
 def changePasswordView():
     passwordDetails = request.get_json()
     outcomeMessage, statusCode = changePassword(current_user, passwordDetails)
+    return json.dumps(outcomeMessage), statusCode
+
+#Creates a PUT route to facilitate the change of a password of an existing user. Also returns a status code to denote the outcome of the operation.
+@userViews.route('/user/profile', methods=["PUT"])
+@jwt_required()
+def changeNameView():
+    profileDetails = request.get_json()
+    outcomeMessage, statusCode = updateProfile(current_user, profileDetails)
     return json.dumps(outcomeMessage), statusCode
 
 
