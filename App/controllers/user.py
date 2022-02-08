@@ -108,7 +108,8 @@ def loginUserController(loginDetails):
                 #The access token would then be returned along with an 'OK' http status code (200).
                 if userAccount and userAccount.checkPassword(loginDetails["password"]):
                     access_token = create_access_token(identity = loginDetails["email"])
-                    session.permanent = True
+                    if loginDetails["email"].find("tester") == -1:
+                        session.permanent = True
                     return {"access_token" : access_token}, 200
 
         #If the login data is null, return an error message along with an 'UNAUTHORIZED' http status code (401).   
