@@ -1,4 +1,4 @@
-# NULLIFY - SpotDPothole Backend
+# NAV - SpotDPothole Backend
 Welcome to our COMP 3613 Software Engineering Project! This project aims to provide the backend of an application that is geared towards the logging of potholes located across the roadways of Trinidad and Tobago. This project will be implemented to interface with the corresponding [SpotDPothole Frontend](https://github.com/Boldoosang/NAV-spotDPothole-frontend). Please note that this project reflects the various prototype stages that will be refined over the course of many sprints. Implemented features of the first prototype can be found below.
 
 [![PyTest](https://github.com/Boldoosang/NAV-spotDPothole-backend/actions/workflows/pytest.yml/badge.svg)](https://github.com/Boldoosang/NAV-spotDPothole-backend/actions/workflows/pytest.yml)
@@ -101,8 +101,8 @@ Be sure to drop the config.py file into the /App directory for use of your custo
 
 
 ## PROJECT DELIVERABLES
-* [SpotDPothole Web Application](https://spotdpothole.web.app/)
-* [Project Report](https://docs.google.com/document/d/1k6Yjrqm8VEjkWNdJe1c3Nl7906Izm-eqz-5WTjxHqOg/edit?usp=sharing)
+* [SpotDPothole Web Application](https://spotdpoth.web.app/)
+* [Project Report](https://docs.google.com/document/d/18kbN5YyZ8pcmEhLy0BDKr7YezFgyay--QyvI0m3OSU4/edit)
 * [Trello Board](https://trello.com/b/bCe8RVWj/spotdpothole-board)
 * [Presentation Video](https://drive.google.com/file/d/1I26Kmw9RUOWzvvWH7LVCLmI33z4OshX7/view)
-* [Sprint Reports](https://docs.google.com/document/d/1rzwRfEgYDmo_6frSKnmDBtEQMES-08MSD8YJcVXLk3E)
+* [Sprint Reports](https://docs.google.com/document/d/1jxIfp3vwikRcj7EJdyDVY7riiU0riKOS5hV0pR2tbb8/edit#)

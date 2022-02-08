@@ -5,3 +5,4 @@ App/test.db
 *.db
 serviceAccountKey.json
 App/firebaseConfig.py
+migrations/
