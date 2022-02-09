@@ -6,4 +6,3 @@ App/test.db
 serviceAccountKey.json
 App/firebaseConfig.py
 migrations/
-Pipfile.lock
