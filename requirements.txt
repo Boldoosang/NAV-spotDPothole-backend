@@ -1,4 +1,4 @@
-﻿alembic==1.7.5
+alembic==1.7.5
 aniso8601==9.0.1
 atomicwrites==1.4.0
 attrs==21.2.0

@@ -15,7 +15,7 @@ EXPIRY_DATE_PRIMARY = 60
 #Imports geopy, datetime and json.
 from geopy import distance
 from datetime import datetime, timedelta
-import json
+import json, requests
 
 #Imports the all of the required models and controllers.
 from App.models import *
@@ -83,6 +83,16 @@ def findClosestPothole(latitude, longitude):
     #If an error is encountered, return an error message.
         return "error"
 
+def snapCoordsToStreet(latitude, longitude):
+    latitude = str(latitude)
+    longitude = str(longitude)
+    r = requests.get('http://osrm.justinbaldeo.com:5000/nearest/v1/driving/' + longitude + ',' + latitude)
+    if r.status_code == 200:
+        jsonReq = r.json()
+        return jsonReq["waypoints"][0]["location"][1], jsonReq["waypoints"][0]["location"][0]
+    else:
+        raise Exception("OSRM server did not return a valid response.")
+
 #Validates a report of a user via the standard interface before adding it to the database.
 def reportPotholeStandard(user, reportDetails):
     #Attempts to process a standard report.
@@ -98,6 +108,13 @@ def reportPotholeStandard(user, reportDetails):
 
             #If the coordinates reported are within the bounds for Trinidad and Tobago, process the report.
             if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
+               #Attempts to perform coordinate street matching
+                try:
+                    (reportDetails["latitude"], reportDetails["longitude"]) = snapCoordsToStreet(reportDetails["latitude"], reportDetails["longitude"])
+                except:
+                #If the get request fails, retain the use of the original values; in the event of osrm server failure.
+                    pass
+
                 #Finds the closest pothole to the coordinates.
                 finalPothole = findClosestPothole(reportDetails["latitude"], reportDetails["longitude"])
 
@@ -205,6 +222,13 @@ def reportPotholeDriver(user, reportDetails):
         if "longitude" in reportDetails and "latitude" in reportDetails:
             #If the coordinates reported are within the bounds for Trinidad and Tobago, process the report.
             if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
+                #Attempts to perform coordinate street matching
+                try:
+                    (reportDetails["latitude"], reportDetails["longitude"]) = snapCoordsToStreet(reportDetails["latitude"], reportDetails["longitude"])
+                except:
+                #If the get request fails, retain the use of the original values; in the event of osrm server failure.
+                    pass
+
                 #Finds the closest pothole to the coordinates.
                 finalPothole = findClosestPothole(reportDetails["latitude"], reportDetails["longitude"])
 
