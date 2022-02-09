@@ -574,3 +574,18 @@ def testGetDashboardReportsEmpty(users_in_db):
     expected = '[]'
     
     assert expected in userReportData and statusCode == 200
+
+# Integration Test 32: The pothole should not exist in the database if it has expired and the system is bootstrapped.
+def testAutoExpiryDeletion(empty_db):
+    persistentPothole = Pothole(longitude=10.67, latitude=-61.23, expiryDate=datetime.now() + timedelta(days=30))
+    newPothole = Pothole(longitude=10.64, latitude=-61.25, expiryDate=datetime.now())
+    db.session.add(persistentPothole)
+    db.session.add(newPothole)
+    db.session.commit()
+    beforeExpiryPotholeCount = len(db.session.query(Pothole).filter_by().all())
+    deleteExpiredPotholes()
+    afterExpiryPotholeCount = len(db.session.query(Pothole).filter_by().all())
+    queriedPersistent = db.session.query(Pothole).filter_by().all()
+
+    
+    assert beforeExpiryPotholeCount == 2 and afterExpiryPotholeCount == 1 and persistentPothole in queriedPersistent
