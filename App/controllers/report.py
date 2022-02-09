@@ -91,8 +91,7 @@ def snapCoordsToStreet(latitude, longitude):
         jsonReq = r.json()
         return jsonReq["waypoints"][0]["location"][1], jsonReq["waypoints"][0]["location"][0]
     else:
-        print("Whoops")
-        return None
+        raise Exception("OSRM server did not return a valid response.")
 
 #Validates a report of a user via the standard interface before adding it to the database.
 def reportPotholeStandard(user, reportDetails):
@@ -109,8 +108,12 @@ def reportPotholeStandard(user, reportDetails):
 
             #If the coordinates reported are within the bounds for Trinidad and Tobago, process the report.
             if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
-                #Perform snapping here
-                (reportDetails["latitude"], reportDetails["longitude"]) = snapCoordsToStreet(reportDetails["latitude"], reportDetails["longitude"])
+               #Attempts to perform coordinate street matching
+                try:
+                    (reportDetails["latitude"], reportDetails["longitude"]) = snapCoordsToStreet(reportDetails["latitude"], reportDetails["longitude"])
+                except:
+                #If the get request fails, retain the use of the original values; in the event of osrm server failure.
+                    pass
 
                 #Finds the closest pothole to the coordinates.
                 finalPothole = findClosestPothole(reportDetails["latitude"], reportDetails["longitude"])
@@ -219,8 +222,12 @@ def reportPotholeDriver(user, reportDetails):
         if "longitude" in reportDetails and "latitude" in reportDetails:
             #If the coordinates reported are within the bounds for Trinidad and Tobago, process the report.
             if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
-                #Perform snapping here
-                (reportDetails["latitude"], reportDetails["longitude"]) = snapCoordsToStreet(reportDetails["latitude"], reportDetails["longitude"])
+                #Attempts to perform coordinate street matching
+                try:
+                    (reportDetails["latitude"], reportDetails["longitude"]) = snapCoordsToStreet(reportDetails["latitude"], reportDetails["longitude"])
+                except:
+                #If the get request fails, retain the use of the original values; in the event of osrm server failure.
+                    pass
 
                 #Finds the closest pothole to the coordinates.
                 finalPothole = findClosestPothole(reportDetails["latitude"], reportDetails["longitude"])
