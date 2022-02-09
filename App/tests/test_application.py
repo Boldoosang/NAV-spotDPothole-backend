@@ -89,7 +89,7 @@ def testNoIndividualReportImage(empty_db):
 
 # Unit Test 10: /api/potholes/<potholeID> should return the pothole data for an existing pothole, and a return status of 200.
 def testGetExistingPothole(simulated_db):
-    potholeJson = b'{"potholeID": 1, "longitude": -61.277001, "latitude": 10.726551'
+    potholeJson = b'{"potholeID": 1, "longitude": '
     response = simulated_db.get("/api/potholes/1")
     print(response.data)
     assert potholeJson in response.data and response.status_code == 200
