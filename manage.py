@@ -98,7 +98,7 @@ def forceChangePassword(email, password):
         db.session.rollback()
         print("Unable to update password of user!")
 
-'''
+
 @manager.command
 def banUser(email):
     try:
@@ -133,7 +133,6 @@ def unbanUser(email):
         db.session.rollback()
         print("Unable to ban user!")
 
-'''
 #If the application is run via 'manage.py', facilitate manager arguments.
 if __name__ == "__main__":
     manager.run()
