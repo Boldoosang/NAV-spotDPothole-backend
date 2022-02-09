@@ -7,6 +7,7 @@
 #Imports flask modules and datetime.
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import bleach
 
 #Imports the shared database to be used in defining the model without overwriting the database.
 from .sharedDB import db
@@ -34,8 +35,8 @@ class Report(db.Model):
             "userID" : self.userID,
             "potholeID" : self.potholeID,
             "dateReported" : self.dateReported.strftime("%Y-%m-%d"),
-            "description" : self.description,
+            "description" : bleach.clean(self.description),
             "votes" : [vote.toDict() for vote in self.votes],
             "reportedImages" : [rImage.toDict() for rImage in self.reportedImages],
-            "reportedBy" : self.user.firstName + " " + self.user.lastName
+            "reportedBy" : bleach.clean(self.user.firstName + " " + self.user.lastName)
         }

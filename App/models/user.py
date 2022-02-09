@@ -7,6 +7,7 @@
 #Imports flask modules and werkzeug security modules.
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+import bleach
 
 #Imports the shared database to be used in defining the model without overwriting the database.
 from .sharedDB import db
@@ -45,8 +46,8 @@ class User(db.Model):
         return {
             "userID" : self.userID,
             "email" : self.email,
-            "firstName" : self.firstName,
-            "lastName" : self.lastName,
+            "firstName" : bleach.clean(self.firstName),
+            "lastName" : bleach.clean(self.lastName),
             "password" : self.password
         }
     
