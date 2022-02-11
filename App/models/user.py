@@ -15,10 +15,11 @@ from .sharedDB import db
 #Defines the User database table.
 class User(db.Model):
     userID = db.Column(db.Integer, primary_key = True)
+    googleID = db.Column(db.String(32), unique = True, nullable = True)
     email = db.Column(db.String(64), unique = True)
     firstName = db.Column(db.String(64), nullable = False)
     lastName = db.Column(db.String(64), nullable = False)
-    password = db.Column(db.String(256), nullable = False)
+    picture = db.Column(db.String(300), nullable = True)
     banned = db.Column(db.Boolean, nullable = False, default=0, server_default="0")
 
     #Declares a relationship with the Report table, such that all of the reports for a user are deleted when the user is deleted.
@@ -27,19 +28,13 @@ class User(db.Model):
     votes = db.relationship('UserReportVote', cascade="all, delete", backref='voter')
 
     #Defines the constructor used to initialize a new user instance/object.
-    def __init__(self, email, firstName, lastName, password):
+    def __init__(self, googleID, email, firstName, lastName, banned, picture):
         self.email = email
         self.firstName = firstName
         self.lastName = lastName
-        self.setPassword(password)
-
-    #Sets the password of a user by hashing and storing the input password.
-    def setPassword(self, password):
-        self.password = generate_password_hash(password, method='sha256')
-    
-    #Checks the hashed input password to the stored hashed user password to determine if the user can be verified. Returns true if matches.
-    def checkPassword(self, password):
-        return check_password_hash(self.password, password)
+        self.googleID = googleID
+        self.banned = banned
+        self.picture = picture
 
     #Prints the details for a particular user record.
     def toDict(self):
@@ -48,6 +43,5 @@ class User(db.Model):
             "email" : self.email,
             "firstName" : bleach.clean(self.firstName),
             "lastName" : bleach.clean(self.lastName),
-            "password" : self.password
         }
     

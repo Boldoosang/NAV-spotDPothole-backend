@@ -18,173 +18,61 @@ from App.controllers.report import reportPotholeDriver, reportPotholeStandard
 
 #Facilitates the registration of a user in the application given a dictionary containing registration information.
 #The appropriate outcome and status codes are then returned.
-def registerUserController(regData):  
+def processGoogleUserController(userData):  
     #Attempts to register the user using the registration data.
     try:
         #If the registration data is not null, process the data.
-        if regData:
-            #Ensures that all of the fields for registration are contained in the dictionary.
-            if "email" in regData and "firstName" in regData and "lastName" in regData and "password" in regData and "confirmPassword" in regData and "agreeToS" in regData:
-                #Parses the emails, first names and last names to ensure that there are no padded spaces.
-                parsedEmail = regData["email"].replace(" ", "")
-                parsedFirstName = regData["firstName"].replace(" ", "")
-                parsedLastName = regData["lastName"].replace(" ", "")
+        if userData:
+            try:
+                foundUser = db.session.query(User).filter_by(googleID=userData["id"]).one_or_none()            
 
-                #Ensures the user has agreed to the terms of service, and returns an appropriate error and status code if otherwise.
-                if regData["agreeToS"] != True:
-                    return {"error" : "User did not agree to terms of service."}, 400
+                if foundUser == None:
+                    try:
+                        newUser = User(googleID = userData["id"], email = userData["email"], firstName = userData["given_name"], lastName = userData["family_name"], banned = 0, picture = userData["picture"])
+                        #Adds and commits the user to the database, and returns a success message and 'CREATED' http status code (201).
+                        db.session.add(newUser)
+                        db.session.commit()
+                        return {"message" : "Sucesssfully registered!"}, 201
+                    except Exception as e:
+                        return {"error" : "Unable to create new user!"}, 500
+                else:
+                    return {"message" : "Sucesssfully logged in as successful user!"}, 200
 
-                #Ensures the user has entered a valid email, and returns an appropriate error and status code if otherwise.
-                if len(parsedEmail) < 3 or not "@" in parsedEmail or not "." in parsedEmail:
-                    return {"error" : "Email is invalid!"}, 400
+            except:
+                #If registering the user fails (Due to invalid data types being used), rollback the database and return an error.
+                db.session.rollback()
+                return {"error" : "Unable to load user!"}, 500
 
-                #Ensures the user has entered a valid first name, and returns an appropriate error and status code if otherwise.
-                if len(parsedFirstName) < 2:
-                    return {"error" : "First name is invalid!"}, 400
-                
-                #Ensures the user has entered a valid last name, and returns an appropriate error and status code if otherwise.
-                if len(parsedLastName) < 2:
-                    return {"error": "Last name is invalid!"}, 400
-
-                #Ensures the user has entered a long enough password, and returns an appropriate error and status code if otherwise.
-                if len(regData["password"]) < 6:
-                    return {"error": "Password is too short"}, 400
-                
-                #Ensures the user has entered matching passwords, and returns an appropriate error and status code if otherwise.
-                if regData["password"] != regData["confirmPassword"]:
-                    return {"error" : "Passwords do not match!"}, 400
-
-                #Attempts to register the user by adding them to the database.
-                try:
-                    #Creates a new user object using the parsed registration data.
-                    newUser = User(parsedEmail, parsedFirstName, parsedLastName, regData["password"])
-                    #Adds and commits the user to the database, and returns a success message and 'CREATED' http status code (201).
-                    db.session.add(newUser)
-                    db.session.commit()
-                    return {"message" : "Sucesssfully registered!"}, 201
-                #If an integrity error exception is generated, there would already exist a user with the same email in the database.
-                except IntegrityError:
-                    #Rollback the database and return an error message and a 'CONFLICT' http status code (409)
-                    db.session.rollback()
-                    return {"error" : "User already exists!"}, 409
-                #If an operational error exception is generated, the database would not be initialized to handle the request.
-                except OperationalError:
-                    #Print a message to the application console and notify the user that there was an error via an error message response.
-                    #Returns a "INTERNAL SERVER ERROR" http status code (500).
-                    print("Database not initialized!")
-                    return {"error" : "Database not initialized! Contact the administrator of the application!"}, 500
-                #Otherwise, return an error message stating that an unknown error has occured and a 'INTERNAL SERVER ERROR' http status code (500).
-                except:
-                    #Rollback the database
-                    db.session.rollback()
-                    return {"error" : "An unknown error has occurred!"}, 500
-                    
-
-        #If the registration data is null, return an error message along with a 'BAD REQUEST' http status code (400).    
-        db.session.rollback()    
-        return {"error" : "Invalid registration details provided!"}, 400
+        else:
+            #If registering the user fails (Due to invalid data types being used), rollback the database and return an error.
+            db.session.rollback()
+            return {"error" : "No user data provided!"}, 400
     except:
     #If registering the user fails (Due to invalid data types being used), rollback the database and return an error.
         db.session.rollback()
-        return {"error" : "Unable to register with user details!"}, 400
-
-#Facilitates the login of a user in the application given a dictionary containing login information.
-#The appropriate outcome and status codes are then returned.
-def loginUserController(loginDetails): 
-    #Attempts to login the user with their login details. 
-    try:
-        #If the login data is not null, process the data.
-        if loginDetails:
-            #Ensures that all of the fields for login are contained in the dictionary.
-            if "email" in loginDetails and "password" in loginDetails:
-                #Finds and stores the user account object for the associated email, within the database.
-                userAccount = User.query.filter_by(email=loginDetails["email"]).first()
-                
-                #If the account does not exist or the password is invalid, return an error stating that the wrong details were entered.
-                #Also return a "UNAUTHORIZED" http status code (401).
-                if not userAccount or not userAccount.checkPassword(loginDetails["password"]):
-                    return {"error" : "Wrong email or password entered!"}, 401
-
-                #If the login credentials are verified, create an access token for the user's session.
-                #The access token would then be returned along with an 'OK' http status code (200).
-                if userAccount and userAccount.checkPassword(loginDetails["password"]):
-                    access_token = create_access_token(identity = loginDetails["email"])
-                    if loginDetails["email"].find("tester") == -1:
-                        session.permanent = True
-                    return {"access_token" : access_token}, 200
-
-        #If the login data is null, return an error message along with an 'UNAUTHORIZED' http status code (401).   
-        db.session.rollback()
-        return {"error" : "Invalid login details provided!"}, 401
-    except:
-    #If the login details are composed using invalid datatypes, the query for the user object will fail and there will be no rollback to recover.
-        #Rollback recovers the error in the event of invalid data in the login request. Also returns an error.
-        db.session.rollback()
-        return {"error" : "Unable to login with user details!"}, 400
-
-#Changes the password of the current user to match the new password details
-def changePassword(current_user, newPasswordDetails):
-    if newPasswordDetails:
-        if "oldPassword" in newPasswordDetails and "password" in newPasswordDetails and "confirmPassword" in newPasswordDetails:
-            if not current_user.checkPassword(newPasswordDetails["oldPassword"]):
-                return {"error" : "The original password you have entered is incorrect!"}, 400
-
-            if newPasswordDetails["password"] != newPasswordDetails["confirmPassword"]:
-                return {"error" : "Passwords do not match!"}, 400
-
-            if len(newPasswordDetails["password"]) < 6:
-                return {"error" : "Password is too short!"}, 400
-
-            try:
-                current_user.setPassword(newPasswordDetails["password"])
-                db.session.add(current_user)
-                db.session.commit()
-                return {"message" : "Sucesssfully changed password!"}, 200
-            except:
-                return {"error" : "An unknown error has occurred!"}, 500
-
-    return {"error" : "Invalid password details supplied!"}, 400
-
-
-#Changes the password of the current user to match the new password details
-def updateProfile(current_user, profileDetails):
-    if profileDetails:
-        if "firstName" in profileDetails and "lastName" in profileDetails:
-            parsedFirstName = profileDetails["firstName"].replace(" ", "")
-            parsedLastName = profileDetails["lastName"].replace(" ", "")
-
-            if len(parsedFirstName) < 2:
-                return {"error" : "First name is too short!"}, 400
-
-            if len(parsedLastName) < 2:
-                return {"error" : "Last name is too short!"}, 400
-
-            try:
-                current_user.firstName = parsedFirstName
-                current_user.lastName = parsedLastName
-
-                db.session.add(current_user)
-                db.session.commit()
-                return {"message" : "Sucesssfully updated profile!"}, 200
-            except:
-                return {"error" : "An unknown error has occurred!"}, 500
-
-    return {"error" : "Invalid profile details supplied!"}, 400
+        return {"error" : "Unable to process user with user details!"}, 400
 
 
 #Returns the user's information given a user object.
-def identifyUser(current_user):
-    #Attempts to indentify a user given their JWT identified user object.
+def identifyUser(session):
     try:
-        #If the user object is not null, return the details for the user object.
+        current_user = loadUser(session)
+
         if current_user:
-            return {"userID" : current_user.userID, "email" : bleach.clean(current_user.email), "firstName" : bleach.clean(current_user.firstName), "lastName": bleach.clean(current_user.lastName)}, 200
-        #Otherwise, return an error message and an 'UNAUTHORIZED' http status code (401).
+            return {"userID" : current_user.userID, "email" : bleach.clean(current_user.email), "firstName" : bleach.clean(current_user.firstName), "lastName": bleach.clean(current_user.lastName), "picture" : current_user.picture}, 200
+
         return {"error" : "User is not logged in!"}, 401
     except:
-    #If identifying the user fails, rollback the database.
+        return {"error" : "Unable to identify user!"}, 500
+
+
+def loadUser(session):
+    try:
+        foundUser = db.session.query(User).filter_by(googleID=session["id"]).one_or_none()  
+        return foundUser
+    except:
         db.session.rollback()
-        return {"error" : "Unable to identify user!"}, 400
+        return None
 
 ##################### TEST CONTROLLERS #####################
 #Creates test users for fixtures.

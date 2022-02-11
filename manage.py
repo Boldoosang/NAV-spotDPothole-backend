@@ -66,7 +66,8 @@ def serve():
     print('Application running in ' + app.config['ENV'] + ' mode!')
     #Carries out startup tasks for application server.
     bootstrapServer()
-    app.run(host='0.0.0.0', port = 8080, debug = app.config['ENV'] == 'development')
+    app.run(debug=True)
+    #app.run(host='0.0.0.0', port = 8080, debug = app.config['ENV'] == 'development')
 
 
 @manager.command
