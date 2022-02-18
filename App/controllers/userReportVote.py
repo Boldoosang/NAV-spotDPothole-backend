@@ -54,7 +54,7 @@ def getAllDownvotesForReport(reportID):
     try:
         #If the reportID is invalid, return an error and BAD REQUEST status code (400)
         if(not reportID):
-            return json.dumps({"error": "Invalid report ID specified."}), 400
+            return {"error": "Invalid report ID specified."}, 400
 
         #Gets all of the downvotes for a particular report, stores their dictionary definition in an array, and returns a json dump of the array.
         #Also returns an 'OK' http status code (200).
@@ -70,9 +70,12 @@ def getAllDownvotesForReport(reportID):
 def voteOnPothole(user, potholeID, reportID, voteData):
     #Attempts to vote on a pothole.
     try:
+        if user.banned:
+            return {"error": "User is banned."}, 403
+
         #If the potholeID or reportID is invalid, return an error and BAD REQUEST status code (400)
         if(not potholeID or not reportID):
-            return json.dumps({"error": "Invalid pothole ID or report ID specified."}), 400
+            return {"error": "Invalid pothole ID or report ID specified."}, 400
 
 
         #If voteData is null, return an error that no data was provided along with the 'BAD REQUEST' http status code (400).
@@ -170,7 +173,7 @@ def calculateNetVotes(reportID):
     try:
         #If the reportID is invalid, return an error and BAD REQUEST status code (400)
         if(not reportID):
-            return json.dumps({"error": "Invalid report ID specified."}), 400
+            return {"error": "Invalid report ID specified."}, 400
 
         #Finds the number of upvotes and downvotes for a particular report, in the vote database.
         upvotes = db.session.query(UserReportVote).filter_by(reportID=reportID, upvote=True).count()

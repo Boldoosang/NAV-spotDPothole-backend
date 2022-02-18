@@ -80,6 +80,9 @@ def deletePotholeReportImage(user, potholeID, reportID, imageID):
     try:
         #If the user, reportID and imageID are not null, facilitate the deletion.
         if user and reportID and imageID:
+            if user.banned:
+                return {"error": "User is banned."}, 403
+
             #Finds the report, posted by the user, that matches the reportID and potholeID.
             foundReport = db.session.query(Report).filter_by(userID=user.userID, reportID=reportID, potholeID = potholeID).first()
 
@@ -120,6 +123,9 @@ def addPotholeReportImage(user, potholeID, reportID, imageDetails):
     try:
         #If the user, reportID and imageDetails are non null, facilitate the addition of the image.
         if user and reportID and imageDetails:
+            if user.banned:
+                return {"error": "User is banned."}, 403
+
             #If the imageDetails contains an "images" attribute, it meets the format request. Proceed with facilitating image addition.
             if "images" in imageDetails:
                 #Finds report, for the user, that corresponds with the reportID and potholeID.

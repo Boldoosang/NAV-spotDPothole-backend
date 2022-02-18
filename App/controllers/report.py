@@ -97,6 +97,8 @@ def snapCoordsToStreet(latitude, longitude):
 def reportPotholeStandard(user, reportDetails):
     #Attempts to process a standard report.
     try:
+        if user.banned:
+            return {"error": "User is banned."}, 403
         #Initializes the finalPothole to be added to None.
         finalPothole = None
 
@@ -215,6 +217,9 @@ def reportPotholeStandard(user, reportDetails):
 def reportPotholeDriver(user, reportDetails):
     #Attempts to process a standard report.
     try:
+        if user.banned:
+            return {"error": "User is banned."}, 403
+
         #Initializes the finalPothole to be added to None.
         finalPothole = None
         
@@ -351,6 +356,8 @@ def deletePotholeReport(reportID):
 def deleteUserPotholeReport(user, potholeID, reportID):
     #Attempts to delete a pothole from the database.
     try:
+        if user.banned:
+            return {"error": "User is banned."}, 403
         #Ensures that the potholeID and reportID are non-null before deleting the data.
         if potholeID and reportID:
             #Finds the report, reported by the user, that corresponds to the potholeID and reportID.
@@ -392,6 +399,8 @@ def deleteUserPotholeReport(user, potholeID, reportID):
 def updateReportDescription(user, potholeID, reportID, potholeDetails):
     #Attempts to delete the report description of a pothole.
     try:
+        if user.banned:
+            return {"error": "User is banned."}, 403
         #Determines if the potholeDetails is not null before processing the data.
         if potholeDetails:
             #If the potholeDetails contains a "description" key field, process the data.

@@ -99,6 +99,9 @@ def loginUserController(loginDetails):
             if "email" in loginDetails and "password" in loginDetails:
                 #Finds and stores the user account object for the associated email, within the database.
                 userAccount = User.query.filter_by(email=loginDetails["email"]).first()
+
+                if userAccount.banned:
+                    return {"error": "User is banned."}, 403
                 
                 #If the account does not exist or the password is invalid, return an error stating that the wrong details were entered.
                 #Also return a "UNAUTHORIZED" http status code (401).
