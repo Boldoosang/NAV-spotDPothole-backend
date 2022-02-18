@@ -100,13 +100,13 @@ def loginUserController(loginDetails):
                 #Finds and stores the user account object for the associated email, within the database.
                 userAccount = User.query.filter_by(email=loginDetails["email"]).first()
 
-                if userAccount.banned:
-                    return {"error": "User is banned."}, 403
-                
                 #If the account does not exist or the password is invalid, return an error stating that the wrong details were entered.
                 #Also return a "UNAUTHORIZED" http status code (401).
                 if not userAccount or not userAccount.checkPassword(loginDetails["password"]):
                     return {"error" : "Wrong email or password entered!"}, 401
+
+                if userAccount.banned:
+                    return {"error": "User is banned."}, 403
 
                 #If the login credentials are verified, create an access token for the user's session.
                 #The access token would then be returned along with an 'OK' http status code (200).
@@ -188,6 +188,41 @@ def identifyUser(current_user):
     #If identifying the user fails, rollback the database.
         db.session.rollback()
         return {"error" : "Unable to identify user!"}, 400
+
+########### SYSTEM CONTROLLERS ###########
+#Used for banning a user given their email.
+def banUserController(email):
+    try:
+        foundUser = db.session.query(User).filter_by(email=email).first()
+        if(foundUser):
+            try:
+                foundUser.banned = True
+                db.session.add(foundUser)
+                db.session.commit()
+            except:
+                print("Unable to ban user!")
+        else:
+            print("No user found with that email!")
+    except:
+        db.session.rollback()
+        print("Unable to ban user!")
+
+#User for unbanning a user given their email.
+def unbanUserController(email):
+    try:
+        foundUser = db.session.query(User).filter_by(email=email).first()
+        if(foundUser):
+            try:
+                foundUser.banned = False
+                db.session.add(foundUser)
+                db.session.commit()
+            except:
+                print("Unable to ban user!")
+        else:
+            print("No user found with that email!")
+    except:
+        db.session.rollback()
+        print("Unable to ban user!")
 
 ##################### TEST CONTROLLERS #####################
 #Creates test users for fixtures.

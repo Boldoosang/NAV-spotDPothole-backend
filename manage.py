@@ -90,37 +90,11 @@ def forceChangePassword(email, password):
 
 @manager.command
 def banUser(email):
-    try:
-        foundUser = db.session.query(User).filter_by(email=email).first()
-        if(foundUser):
-            try:
-                foundUser.banned = True
-                db.session.add(foundUser)
-                db.session.commit()
-            except:
-                print("Unable to ban user!")
-        else:
-            print("No user found with that email!")
-    except:
-        db.session.rollback()
-        print("Unable to ban user!")
+    banUserController(email)
 
 @manager.command
 def unbanUser(email):
-    try:
-        foundUser = db.session.query(User).filter_by(email=email).first()
-        if(foundUser):
-            try:
-                foundUser.banned = False
-                db.session.add(foundUser)
-                db.session.commit()
-            except:
-                print("Unable to ban user!")
-        else:
-            print("No user found with that email!")
-    except:
-        db.session.rollback()
-        print("Unable to ban user!")
+    unbanUserController(email)
 
 #If the application is run via 'manage.py', facilitate manager arguments.
 if __name__ == "__main__":

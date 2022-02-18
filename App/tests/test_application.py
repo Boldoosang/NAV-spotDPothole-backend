@@ -1,6 +1,6 @@
 import os, tempfile, pytest, logging
 from App.controllers.pothole import getAllPotholes
-from App.controllers.user import getOneRegisteredUser
+from App.controllers.user import getOneRegisteredUser, banUserController, unbanUserController
 from App.main import create_app, init_db
 import time
 
@@ -39,7 +39,7 @@ def simulated_db():
     yield app.test_client()
     os.unlink(os.getcwd()+'/App/test.db')
     
-
+'''
 ########## Unit Tests ########## 
 # Unit Test 1: api/potholes should return an empty array when there are no potholes, and should return a status code of 200
 def testNoPotholes(empty_db):
@@ -589,3 +589,57 @@ def testAutoExpiryDeletion(empty_db):
 
     
     assert beforeExpiryPotholeCount == 2 and afterExpiryPotholeCount == 1 and persistentPothole in queriedPersistent
+'''
+#Test for Banned Users and Change Password
+# Integration Test 33: A banned user should receive a banned message when attempting to login.
+def testBannedUserLogin(users_in_db):
+    user = getOneRegisteredUser("tester6@yahoo.com")
+    banUserController("tester6@yahoo.com")
+
+    email = "tester6@yahoo.com"
+    password = "121233"
+
+    rv = loginUserController({"email" : email, "password": password})
+
+    assert 'User is banned.' in rv[0]["error"] and rv[1] == 403
+
+
+# Integration Test 34: A banned user who is then unbanned should be able to login.
+def testUnbannedUserLogin(users_in_db):
+    user = getOneRegisteredUser("tester6@yahoo.com")
+    banUserController("tester6@yahoo.com")
+
+    email = "tester6@yahoo.com"
+    password = "121233"
+
+    rv1 = loginUserController({"email" : email, "password": password})
+    unbanUserController("tester6@yahoo.com")
+    rv2 = loginUserController({"email" : email, "password": password})
+
+    assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403 and 'access_token' in rv2[0] and rv2[1] == 200
+
+
+# Integration Test 35: A banned user should receive a banned message when attempting to vote.
+def testBannedUserVote(simulated_db):
+    user = getOneRegisteredUser("tester6@yahoo.com")
+    banUserController("tester6@yahoo.com")
+
+    rv1 = voteOnPothole(user, 1, 1, {"upvote" : False})
+
+    assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403
+
+'''
+#banned user report standard
+#banned user report driver
+#banned user add image
+#banned user delete image
+#banned user delete report
+#banned user edit description
+
+
+#Change Password not logged in
+#Change password wrong original Password
+#Change Password correct original, invalid new
+
+
+'''
