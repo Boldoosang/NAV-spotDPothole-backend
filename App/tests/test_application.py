@@ -39,7 +39,7 @@ def simulated_db():
     yield app.test_client()
     os.unlink(os.getcwd()+'/App/test.db')
     
-'''
+
 ########## Unit Tests ########## 
 # Unit Test 1: api/potholes should return an empty array when there are no potholes, and should return a status code of 200
 def testNoPotholes(empty_db):
@@ -589,7 +589,7 @@ def testAutoExpiryDeletion(empty_db):
 
     
     assert beforeExpiryPotholeCount == 2 and afterExpiryPotholeCount == 1 and persistentPothole in queriedPersistent
-'''
+
 #Test for Banned Users and Change Password
 # Integration Test 33: A banned user should receive a banned message when attempting to login.
 def testBannedUserLogin(users_in_db):
@@ -628,18 +628,175 @@ def testBannedUserVote(simulated_db):
 
     assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403
 
-'''
-#banned user report standard
-#banned user report driver
-#banned user add image
-#banned user delete image
-#banned user delete report
-#banned user edit description
+
+# Integration Test 36: A banned user should receive a banned message when attempting to file a standard report.
+def testBannedUserStandardReport(simulated_db):
+    user = getOneRegisteredUser("tester6@yahoo.com")
+    banUserController("tester6@yahoo.com")
+
+    #do task here
+    reportDetails = {
+        "longitude" : -61.277001,
+        "latitude" : 10.726551,
+        "constituencyID" : "arima",
+        "description": "Very large pothole spanning both lanes of the road.",
+        "images" : [
+            "https://www.howtogeek.com/wp-content/uploads/2018/08/Header.png"
+        ]
+    }
+
+    rv1 = reportPotholeStandard(user, reportDetails)
+
+    assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403
 
 
-#Change Password not logged in
-#Change password wrong original Password
-#Change Password correct original, invalid new
+# Integration Test 37: A banned user should receive a banned message when attempting to file a driver report.
+def testBannedUserDriverReport(simulated_db):
+    user = getOneRegisteredUser("tester6@yahoo.com")
+    banUserController("tester6@yahoo.com")
+
+    #do task here
+    reportDetails = {
+        "longitude" : -61.277001,
+        "latitude" : 10.726551
+    }
+
+    rv1 = reportPotholeDriver(user, reportDetails)
+
+    assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403
+
+# Integration Test 38: A banned user should receive a banned message when attempting to add an image to their report.
+def testBannedUserAddImage(simulated_db):
+    user = getOneRegisteredUser("tester1@yahoo.com")
+    banUserController("tester1@yahoo.com")
+    potholeID = 1
+    reportID = 1
+
+    #do task here
+    imageDetails = {
+        "images" : ["https://media.gettyimages.com/photos/balanced-stones-on-a-pebble-beach-during-sunset-picture-id157373207?s=612x612"]
+    }
+
+    rv1 = addPotholeReportImage(user, potholeID, reportID, imageDetails)
+    assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403
 
 
-'''
+# Integration Test 39: A banned user should receive a banned message when attempting to delete an image from a report.
+def testBannedUserDeleteImage(simulated_db):
+    user = getOneRegisteredUser("tester1@yahoo.com")
+    banUserController("tester1@yahoo.com")
+    potholeID = 1
+    reportID = 1
+    imageID = 1
+
+    rv1 = deletePotholeReportImage(user, potholeID, reportID, imageID)
+    assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403
+
+# Integration Test 40: A banned user should receive a banned message when attempting to delete the entire report.
+def testBannedUserDeleteReport(simulated_db):
+    user = getOneRegisteredUser("tester1@yahoo.com")
+    banUserController("tester1@yahoo.com")
+    potholeID = 1
+    reportID = 1
+
+    rv1 = deleteUserPotholeReport(user, potholeID, reportID)
+
+    assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403
+
+# Integration Test 41: A banned user should receive a banned message when attempting to edit the pothole description.
+def testBannedUserDeleteReport(simulated_db):
+    user = getOneRegisteredUser("tester1@yahoo.com")
+    banUserController("tester1@yahoo.com")
+    potholeID = 1
+    reportID = 1
+    description = "New Description!"
+    potholeDetails = {
+        "description": description
+    }
+
+    rv1 = updateReportDescription(user, potholeID, reportID, potholeDetails)
+
+    assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403 and description not in getIndividualPotholeReport(potholeID, reportID)
+
+
+# Integration Test 42: A success message should be returned to the user upon successful password change.
+def testChangePasswordValid(simulated_db):
+    email = "tester1@yahoo.com"
+    password = "121233"
+    newPassword = "newTestPassword123"
+    user = getOneRegisteredUser(email)
+    newPasswordDetails = {
+        "oldPassword": password,
+        "password": newPassword,
+        "confirmPassword": newPassword
+    }
+    
+    #Before changing password
+    rv1 = loginUserController({"email" : email, "password": password})
+    #Changing Password
+    rv2 = changePassword(user, newPasswordDetails)
+    #Login with new password
+    rv3 = loginUserController({"email" : email, "password": newPassword})
+
+    assert 'Sucesssfully changed password!' in rv2[0]["message"] and rv2[1] == 200 and 'access_token' in rv1[0] and rv1[1] == 200 and 'access_token' in rv3[0] and rv3[1] == 200
+
+
+# Integration Test 43: An error message should be returned to the user upon attempting a password change when not logged in.
+def testChangePasswordNotLoggedIn(simulated_db):
+    password = "121233"
+    newPassword = "newTestPassword123"
+    user = None
+    newPasswordDetails = {
+        "oldPassword": password,
+        "password": newPassword,
+        "confirmPassword": newPassword
+    }
+    
+    #Changing Password
+    rv2 = changePassword(user, newPasswordDetails)
+    print(rv2)
+    assert 'You are not logged in!' in rv2[0]["error"] and rv2[1] == 400
+
+# Integration Test 44: An error message should be returned to the user upon attempting to change the password with a wrong original password.
+def testChangePasswordWrongOriginal(simulated_db):
+    email = "tester1@yahoo.com"
+    password = "121233"
+    wrongPassword = "defAWrongPassword"
+    newPassword = "newTestPassword123"
+    user = getOneRegisteredUser(email)
+    newPasswordDetails = {
+        "oldPassword": wrongPassword,
+        "password": newPassword,
+        "confirmPassword": newPassword
+    }
+    
+    #Before changing password
+    rv1 = loginUserController({"email" : email, "password": password})
+    #Changing Password
+    rv2 = changePassword(user, newPasswordDetails)
+    #Login with new password
+    rv3 = loginUserController({"email" : email, "password": newPassword})
+
+    assert 'The original password you have entered is incorrect!' in rv2[0]["error"] and rv2[1] == 400 and 'access_token' in rv1[0] and rv1[1] == 200 and 'error' in rv3[0] and rv3[1] == 401
+
+
+# Integration Test 45: An error message should be returned to the user upon attempting to change the password with an invalid new password.
+def testChangePasswordInvalidNew(simulated_db):
+    email = "tester1@yahoo.com"
+    password = "121233"
+    invalidNewPassword = "12"
+    user = getOneRegisteredUser(email)
+    newPasswordDetails = {
+        "oldPassword": password,
+        "password": invalidNewPassword,
+        "confirmPassword": invalidNewPassword
+    }
+    
+    #Before changing password
+    rv1 = loginUserController({"email" : email, "password": password})
+    #Changing Password
+    rv2 = changePassword(user, newPasswordDetails)
+    #Login with new password
+    rv3 = loginUserController({"email" : email, "password": invalidNewPassword})
+
+    assert 'Password is too short!' in rv2[0]["error"] and rv2[1] == 400 and 'access_token' in rv1[0] and rv1[1] == 200 and 'error' in rv3[0] and rv3[1] == 401
