@@ -7,6 +7,7 @@
 #Imports flask modules and json.
 from flask_jwt_extended import create_access_token, jwt_required
 from flask import session
+from flask_mail import Mail, Message
 from sqlalchemy.exc import IntegrityError, OperationalError
 import json
 import bleach
@@ -15,6 +16,9 @@ import bleach
 from App.models import *
 from App.controllers import *
 from App.controllers.report import reportPotholeDriver, reportPotholeStandard
+from ..token import confirm_token, generate_confirmation_token
+
+mail = Mail()
 
 #Facilitates the registration of a user in the application given a dictionary containing registration information.
 #The appropriate outcome and status codes are then returned.
@@ -61,6 +65,20 @@ def registerUserController(regData):
                     #Adds and commits the user to the database, and returns a success message and 'CREATED' http status code (201).
                     db.session.add(newUser)
                     db.session.commit()
+
+                    token = generate_confirmation_token(newUser.email)
+                    print(token)
+
+                    subject = "SpotDPothole - Please confirm your email"
+
+                    msg = Message(
+                        subject = "SpotDPothole - Please confirm your email",
+                        recipients=[newUser.email], 
+                        body = f"Please use the following confirmation token: {token}",
+                        sender = "spotdpothole-email-confirmation@justinbaldeo.com"
+                    )
+
+                    mail.send(msg)
                     return {"message" : "Sucesssfully registered!"}, 201
                 #If an integrity error exception is generated, there would already exist a user with the same email in the database.
                 except IntegrityError:
@@ -107,6 +125,9 @@ def loginUserController(loginDetails):
 
                 if userAccount.banned:
                     return {"error": "User is banned."}, 403
+
+                if not userAccount.confirmed:
+                    return {"error": "Please confirm your account before proceeding. Check your email for a verification link."}, 403
 
                 #If the login credentials are verified, create an access token for the user's session.
                 #The access token would then be returned along with an 'OK' http status code (200).
@@ -227,6 +248,54 @@ def unbanUserController(email):
     except:
         db.session.rollback()
         print("Unable to ban user!")
+
+def confirmEmailController(token):
+    try:
+        try:
+            email = confirm_token(token)
+        except:
+            return {"error" : "Confirmation link is invalid or has expired!"}, 400
+        
+        user = User.query.filter_by(email=email).first_or_404()
+        print(user)
+        if user.confirmed:
+            return {"message" : "User already confirmed!"}, 200
+        else:
+            user.confirmed = True
+            db.session.add(user)
+            db.session.commit()
+            return {"message" : "User has been confirmed. You may now login."}, 200
+    except:
+        db.session.rollback()
+        return {"error" : "Confirmation link is invalid or has expired!"}, 400
+
+def resendConfirmationController(details):
+    try:
+        if details:
+            if "email" in details:
+                email = details["email"]
+                token = generate_confirmation_token(email)
+
+                subject = "SpotDPothole - Please confirm your email"
+
+                msg = Message(
+                    subject = "SpotDPothole - Please confirm your email",
+                    recipients=[email], 
+                    body = f"Please use the following confirmation token: {token}",
+                    sender = "spotdpothole-email-confirmation@justinbaldeo.com"
+                )
+
+                mail.send(msg)
+
+                return {"message": "Confirmation remail resent!"}, 200
+            else:
+                return {"error": "Invalid email provided!"}, 400
+        else:
+            return {"error": "Invalid email provided!"}, 400
+    except:
+        db.session.rollback()
+        return {"error": "Unable to send confirmation link!"}, 400
+
 
 ##################### TEST CONTROLLERS #####################
 #Creates test users for fixtures.

@@ -96,6 +96,11 @@ def banUser(email):
 def unbanUser(email):
     unbanUserController(email)
 
+@manager.command
+def userState(email):
+    user = getOneRegisteredUser(email)
+    print(user.toDict())
+    
 #If the application is run via 'manage.py', facilitate manager arguments.
 if __name__ == "__main__":
     manager.run()

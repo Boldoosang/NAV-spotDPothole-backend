@@ -55,3 +55,16 @@ def changeNameView():
 def identify():
     outcomeMessage, statusCode = identifyUser(current_user)
     return json.dumps(outcomeMessage), statusCode
+
+
+
+@userViews.route('/confirm/<token>', methods=["GET"])
+def confirmEmail(token):
+    outcomeMessage, statusCode = confirmEmailController(token)
+    return json.dumps(outcomeMessage), statusCode
+
+@userViews.route('/resendConfirmation', methods=["GET"])
+def resendConfirmation():
+    details = request.get_json()
+    outcomeMessage, statusCode = resendConfirmationController(details)
+    return json.dumps(outcomeMessage), statusCode

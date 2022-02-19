@@ -20,6 +20,7 @@ class User(db.Model):
     lastName = db.Column(db.String(64), nullable = False)
     password = db.Column(db.String(256), nullable = False)
     banned = db.Column(db.Boolean, nullable = False, default=0, server_default="0")
+    confirmed = db.Column(db.Boolean, nullable = False, default=0, server_default="1")
 
     #Declares a relationship with the Report table, such that all of the reports for a user are deleted when the user is deleted.
     reports = db.relationship('Report', cascade="all, delete", backref='user')
@@ -48,6 +49,8 @@ class User(db.Model):
             "email" : self.email,
             "firstName" : bleach.clean(self.firstName),
             "lastName" : bleach.clean(self.lastName),
-            "password" : self.password
+            "password" : self.password,
+            "confirmed" : self.confirmed,
+            "banned" : self.banned
         }
     
