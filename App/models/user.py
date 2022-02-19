@@ -20,7 +20,7 @@ class User(db.Model):
     lastName = db.Column(db.String(64), nullable = False)
     password = db.Column(db.String(256), nullable = False)
     banned = db.Column(db.Boolean, nullable = False, default=0, server_default="0")
-    confirmed = db.Column(db.Boolean, nullable = False, default=0, server_default="1")
+    confirmed = db.Column(db.Boolean, nullable = False, default=0, server_default="0")
 
     #Declares a relationship with the Report table, such that all of the reports for a user are deleted when the user is deleted.
     reports = db.relationship('Report', cascade="all, delete", backref='user')
@@ -28,11 +28,13 @@ class User(db.Model):
     votes = db.relationship('UserReportVote', cascade="all, delete", backref='voter')
 
     #Defines the constructor used to initialize a new user instance/object.
-    def __init__(self, email, firstName, lastName, password):
+    def __init__(self, email, firstName, lastName, password, confirmed = True):
         self.email = email
         self.firstName = firstName
         self.lastName = lastName
         self.setPassword(password)
+        #Remove in production
+        self.confirmed = confirmed
 
     #Sets the password of a user by hashing and storing the input password.
     def setPassword(self, password):

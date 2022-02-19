@@ -70,7 +70,7 @@ def registerUserController(regData):
                     print(token)
 
                     subject = "SpotDPothole - Please confirm your email"
-
+                    
                     msg = Message(
                         subject = "SpotDPothole - Please confirm your email",
                         recipients=[newUser.email], 
@@ -78,7 +78,8 @@ def registerUserController(regData):
                         sender = "spotdpothole-email-confirmation@justinbaldeo.com"
                     )
 
-                    mail.send(msg)
+                    #mail.send(msg)
+
                     return {"message" : "Sucesssfully registered!"}, 201
                 #If an integrity error exception is generated, there would already exist a user with the same email in the database.
                 except IntegrityError:
@@ -206,7 +207,7 @@ def identifyUser(current_user):
     try:
         #If the user object is not null, return the details for the user object.
         if current_user:
-            return {"userID" : current_user.userID, "email" : bleach.clean(current_user.email), "firstName" : bleach.clean(current_user.firstName), "lastName": bleach.clean(current_user.lastName)}, 200
+            return {"userID" : current_user.userID, "email" : bleach.clean(current_user.email), "firstName" : bleach.clean(current_user.firstName), "lastName": bleach.clean(current_user.lastName), "confirmed": current_user.confirmed}, 200
         #Otherwise, return an error message and an 'UNAUTHORIZED' http status code (401).
         return {"error" : "User is not logged in!"}, 401
     except:
