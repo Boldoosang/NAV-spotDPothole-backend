@@ -58,13 +58,26 @@ def identify():
 
 
 
-@userViews.route('/confirm/<token>', methods=["GET"])
+@userViews.route('/confirm/<token>', methods=["PUT"])
 def confirmEmail(token):
-    outcomeMessage, statusCode = confirmEmailController(token)
+    details = request.get_json()
+    outcomeMessage, statusCode = confirmEmailController(token, details)
     return json.dumps(outcomeMessage), statusCode
 
-@userViews.route('/resendConfirmation', methods=["GET"])
+@userViews.route('/resendConfirmation', methods=["POST"])
 def resendConfirmation():
     details = request.get_json()
     outcomeMessage, statusCode = resendConfirmationController(details)
+    return json.dumps(outcomeMessage), statusCode
+
+@userViews.route('/resetPassword', methods=["POST"])
+def sendPasswordReset():
+    details = request.get_json()
+    outcomeMessage, statusCode = sendPasswordResetController(details)
+    return json.dumps(outcomeMessage), statusCode
+
+@userViews.route('/resetPassword/<token>', methods=["POST"])
+def resetPassword(token):
+    details = request.get_json()
+    outcomeMessage, statusCode = resetPasswordController(details, token)
     return json.dumps(outcomeMessage), statusCode

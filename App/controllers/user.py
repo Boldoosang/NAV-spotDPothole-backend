@@ -23,6 +23,7 @@ mail = Mail()
 #Facilitates the registration of a user in the application given a dictionary containing registration information.
 #The appropriate outcome and status codes are then returned.
 def registerUserController(regData):  
+    validDomains = ["gmail.com", "yahoo.com", "hotmail.com", "my.uwi.edu", "outlook.com"]
     #Attempts to register the user using the registration data.
     try:
         #If the registration data is not null, process the data.
@@ -41,6 +42,10 @@ def registerUserController(regData):
                 #Ensures the user has entered a valid email, and returns an appropriate error and status code if otherwise.
                 if len(parsedEmail) < 3 or not "@" in parsedEmail or not "." in parsedEmail:
                     return {"error" : "Email is invalid!"}, 400
+
+                domain = parsedEmail.split('@')[1]
+                if domain not in validDomains:
+                    return {"error" : "Please use gmail, yahoo, hotmail, outlook, or my.uwi.edu email providers."}, 400
 
                 #Ensures the user has entered a valid first name, and returns an appropriate error and status code if otherwise.
                 if len(parsedFirstName) < 2:
@@ -69,8 +74,6 @@ def registerUserController(regData):
                     token = generate_confirmation_token(newUser.email)
                     print(token)
 
-                    subject = "SpotDPothole - Please confirm your email"
-                    
                     msg = Message(
                         subject = "SpotDPothole - Please confirm your email",
                         recipients=[newUser.email], 
@@ -167,6 +170,7 @@ def changePassword(current_user, newPasswordDetails):
                     db.session.commit()
                     return {"message" : "Sucesssfully changed password!"}, 200
                 except:
+                    db.session.rollback()
                     return {"error" : "An unknown error has occurred!"}, 500
 
         return {"error" : "Invalid password details supplied!"}, 400
@@ -250,12 +254,25 @@ def unbanUserController(email):
         db.session.rollback()
         print("Unable to ban user!")
 
-def confirmEmailController(token):
+def confirmEmailController(token, details):
     try:
+        try:
+            if "email" in details:
+                activeUser = user = User.query.filter_by(email=details["email"]).first()
+
+                if not activeUser:
+                    return {"error" : "Email address not registered!"}, 400
+        except Exception as e:
+            print(e)
+            return {"error" : "Email address not provided!"}, 400
+
         try:
             email = confirm_token(token)
         except:
-            return {"error" : "Confirmation link is invalid or has expired!"}, 400
+            return {"error" : "Confirmation token is invalid or has expired!"}, 400
+
+        if email != details["email"]:
+            return {"error" : "Token is not associated with this email address!"}, 400
         
         user = User.query.filter_by(email=email).first_or_404()
         print(user)
@@ -268,16 +285,21 @@ def confirmEmailController(token):
             return {"message" : "User has been confirmed. You may now login."}, 200
     except:
         db.session.rollback()
-        return {"error" : "Confirmation link is invalid or has expired!"}, 400
+        return {"error" : "Confirmation token is invalid or has expired!"}, 400
 
 def resendConfirmationController(details):
     try:
         if details:
             if "email" in details:
                 email = details["email"]
-                token = generate_confirmation_token(email)
+                
+                activeUser = user = User.query.filter_by(email=email, confirmed=False).first()
 
-                subject = "SpotDPothole - Please confirm your email"
+                if not activeUser:
+                    return {"error" : "Email address not registered or user already confirmed!"}, 400
+
+
+                token = generate_confirmation_token(email)
 
                 msg = Message(
                     subject = "SpotDPothole - Please confirm your email",
@@ -288,14 +310,100 @@ def resendConfirmationController(details):
 
                 mail.send(msg)
 
-                return {"message": "Confirmation remail resent!"}, 200
+                return {"message": "Confirmation email resent!"}, 200
             else:
                 return {"error": "Invalid email provided!"}, 400
         else:
             return {"error": "Invalid email provided!"}, 400
     except:
         db.session.rollback()
-        return {"error": "Unable to send confirmation link!"}, 400
+        return {"error": "Unable to send confirmation token!"}, 400
+
+
+def sendPasswordResetController(details):
+    try:
+        if details:
+            if "email" in details:
+                email = details["email"]
+
+                try:
+                    user = db.session.query(User).filter_by(email=email).first()
+                    if user == None:
+                        return {"error": "Invalid email provided!"}, 400
+                except:
+                    db.session.rollback()
+                    return {"error": "Invalid email provided!"}, 400
+
+                token = generate_confirmation_token(email)
+
+                msg = Message(
+                    subject = "SpotDPothole - Please reset your password",
+                    recipients=[email], 
+                    body = f"Please use the following confirmation token: {token}",
+                    sender = "spotdpothole-email-confirmation@justinbaldeo.com"
+                )
+
+                mail.send(msg)
+
+                return {"message": "Password reset email resent!"}, 200
+            else:
+                return {"error": "Invalid email provided!"}, 400
+        else:
+            return {"error": "Invalid email provided!"}, 400
+    except:
+        db.session.rollback()
+        return {"error": "Unable to send reset email!"}, 400
+
+def resetPasswordController(details, token):
+    try:
+        if details:
+            try:
+                if "email" in details:
+                    activeUser = user = User.query.filter_by(email=details["email"]).first()
+
+                    if not activeUser:
+                        return {"error" : "Email address not registered!"}, 400
+            except:
+                return {"error" : "Email address not provided!"}, 400
+            
+
+            try:
+                email = confirm_token(token)
+            except:
+                return {"error" : "Confirmation token is invalid or has expired!"}, 400
+            
+            if email != details["email"]:
+                return {"error" : "Token is not associated with this email address!"}, 400
+
+            user = User.query.filter_by(email=email).first_or_404()
+
+
+            if "password" in details and "confirmPassword" in details:
+                if details["password"] != details["confirmPassword"]:
+                    return {"error" : "Passwords do not match!"}, 400
+
+                if len(details["password"]) < 6:
+                    return {"error" : "Password is too short!"}, 400
+
+                try:
+                    user.setPassword(details["password"])
+                    db.session.add(user)
+                    db.session.commit()
+                    return {"message" : "Sucesssfully reset password!"}, 200
+                except:
+                    db.session.rollback()
+                    return {"error" : "An unknown error has occurred!"}, 500
+
+
+        else:
+            return {"error" : "No updated password details provided!"}, 400
+    except:
+        db.session.rollback()
+        return {"error" : "Confirmation token is invalid or has expired!"}, 400
+
+
+
+
 
 
 ##################### TEST CONTROLLERS #####################
