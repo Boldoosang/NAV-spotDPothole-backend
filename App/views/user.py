@@ -55,3 +55,29 @@ def changeNameView():
 def identify():
     outcomeMessage, statusCode = identifyUser(current_user)
     return json.dumps(outcomeMessage), statusCode
+
+
+
+@userViews.route('/confirm/<token>', methods=["PUT"])
+def confirmEmail(token):
+    details = request.get_json()
+    outcomeMessage, statusCode = confirmEmailController(token, details)
+    return json.dumps(outcomeMessage), statusCode
+
+@userViews.route('/resendConfirmation', methods=["POST"])
+def resendConfirmation():
+    details = request.get_json()
+    outcomeMessage, statusCode = resendConfirmationController(details)
+    return json.dumps(outcomeMessage), statusCode
+
+@userViews.route('/resetPassword', methods=["POST"])
+def sendPasswordReset():
+    details = request.get_json()
+    outcomeMessage, statusCode = sendPasswordResetController(details)
+    return json.dumps(outcomeMessage), statusCode
+
+@userViews.route('/resetPassword/<token>', methods=["POST"])
+def resetPassword(token):
+    details = request.get_json()
+    outcomeMessage, statusCode = resetPasswordController(details, token)
+    return json.dumps(outcomeMessage), statusCode

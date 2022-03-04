@@ -7,6 +7,7 @@
 #Imports flask modules and json.
 from flask_jwt_extended import create_access_token, jwt_required
 from flask import session
+from flask_mail import Mail, Message
 from sqlalchemy.exc import IntegrityError, OperationalError
 import json
 import bleach
@@ -15,10 +16,14 @@ import bleach
 from App.models import *
 from App.controllers import *
 from App.controllers.report import reportPotholeDriver, reportPotholeStandard
+from ..token import confirm_token, generate_confirmation_token
+
+mail = Mail()
 
 #Facilitates the registration of a user in the application given a dictionary containing registration information.
 #The appropriate outcome and status codes are then returned.
 def registerUserController(regData):  
+    validDomains = ["gmail.com", "yahoo.com", "hotmail.com", "my.uwi.edu", "outlook.com"]
     #Attempts to register the user using the registration data.
     try:
         #If the registration data is not null, process the data.
@@ -37,6 +42,10 @@ def registerUserController(regData):
                 #Ensures the user has entered a valid email, and returns an appropriate error and status code if otherwise.
                 if len(parsedEmail) < 3 or not "@" in parsedEmail or not "." in parsedEmail:
                     return {"error" : "Email is invalid!"}, 400
+
+                domain = parsedEmail.split('@')[1]
+                if domain not in validDomains:
+                    return {"error" : "Please use gmail, yahoo, hotmail, outlook, or my.uwi.edu email providers."}, 400
 
                 #Ensures the user has entered a valid first name, and returns an appropriate error and status code if otherwise.
                 if len(parsedFirstName) < 2:
@@ -61,6 +70,19 @@ def registerUserController(regData):
                     #Adds and commits the user to the database, and returns a success message and 'CREATED' http status code (201).
                     db.session.add(newUser)
                     db.session.commit()
+
+                    token = generate_confirmation_token(newUser.email)
+                    print(token)
+
+                    msg = Message(
+                        subject = "SpotDPothole - Please confirm your email",
+                        recipients=[newUser.email], 
+                        body = f"Please use the following confirmation token: {token}",
+                        sender = "spotdpothole-email-confirmation@justinbaldeo.com"
+                    )
+
+                    #mail.send(msg)
+
                     return {"message" : "Sucesssfully registered!"}, 201
                 #If an integrity error exception is generated, there would already exist a user with the same email in the database.
                 except IntegrityError:
@@ -108,6 +130,9 @@ def loginUserController(loginDetails):
                 if userAccount.banned:
                     return {"error": "User is banned."}, 403
 
+                if not userAccount.confirmed:
+                    return {"error": "Please confirm your account before proceeding. Check your email for a verification link."}, 403
+
                 #If the login credentials are verified, create an access token for the user's session.
                 #The access token would then be returned along with an 'OK' http status code (200).
                 if userAccount and userAccount.checkPassword(loginDetails["password"]):
@@ -145,6 +170,7 @@ def changePassword(current_user, newPasswordDetails):
                     db.session.commit()
                     return {"message" : "Sucesssfully changed password!"}, 200
                 except:
+                    db.session.rollback()
                     return {"error" : "An unknown error has occurred!"}, 500
 
         return {"error" : "Invalid password details supplied!"}, 400
@@ -185,7 +211,7 @@ def identifyUser(current_user):
     try:
         #If the user object is not null, return the details for the user object.
         if current_user:
-            return {"userID" : current_user.userID, "email" : bleach.clean(current_user.email), "firstName" : bleach.clean(current_user.firstName), "lastName": bleach.clean(current_user.lastName)}, 200
+            return {"userID" : current_user.userID, "email" : bleach.clean(current_user.email), "firstName" : bleach.clean(current_user.firstName), "lastName": bleach.clean(current_user.lastName), "confirmed": current_user.confirmed}, 200
         #Otherwise, return an error message and an 'UNAUTHORIZED' http status code (401).
         return {"error" : "User is not logged in!"}, 401
     except:
@@ -227,6 +253,158 @@ def unbanUserController(email):
     except:
         db.session.rollback()
         print("Unable to ban user!")
+
+def confirmEmailController(token, details):
+    try:
+        try:
+            if "email" in details:
+                activeUser = user = User.query.filter_by(email=details["email"]).first()
+
+                if not activeUser:
+                    return {"error" : "Email address not registered!"}, 400
+        except Exception as e:
+            print(e)
+            return {"error" : "Email address not provided!"}, 400
+
+        try:
+            email = confirm_token(token)
+        except:
+            return {"error" : "Confirmation token is invalid or has expired!"}, 400
+
+        if email != details["email"]:
+            return {"error" : "Token is not associated with this email address!"}, 400
+        
+        user = User.query.filter_by(email=email).first_or_404()
+        print(user)
+        if user.confirmed:
+            return {"message" : "User already confirmed!"}, 200
+        else:
+            user.confirmed = True
+            db.session.add(user)
+            db.session.commit()
+            return {"message" : "User has been confirmed. You may now login."}, 200
+    except:
+        db.session.rollback()
+        return {"error" : "Confirmation token is invalid or has expired!"}, 400
+
+def resendConfirmationController(details):
+    try:
+        if details:
+            if "email" in details:
+                email = details["email"]
+                
+                activeUser = user = User.query.filter_by(email=email, confirmed=False).first()
+
+                if not activeUser:
+                    return {"error" : "Email address not registered or user already confirmed!"}, 400
+
+
+                token = generate_confirmation_token(email)
+
+                msg = Message(
+                    subject = "SpotDPothole - Please confirm your email",
+                    recipients=[email], 
+                    body = f"Please use the following confirmation token: {token}",
+                    sender = "spotdpothole-email-confirmation@justinbaldeo.com"
+                )
+
+                mail.send(msg)
+
+                return {"message": "Confirmation email resent!"}, 200
+            else:
+                return {"error": "Invalid email provided!"}, 400
+        else:
+            return {"error": "Invalid email provided!"}, 400
+    except:
+        db.session.rollback()
+        return {"error": "Unable to send confirmation token!"}, 400
+
+
+def sendPasswordResetController(details):
+    try:
+        if details:
+            if "email" in details:
+                email = details["email"]
+
+                try:
+                    user = db.session.query(User).filter_by(email=email).first()
+                    if user == None:
+                        return {"error": "Invalid email provided!"}, 400
+                except:
+                    db.session.rollback()
+                    return {"error": "Invalid email provided!"}, 400
+
+                token = generate_confirmation_token(email)
+
+                msg = Message(
+                    subject = "SpotDPothole - Please reset your password",
+                    recipients=[email], 
+                    body = f"Please use the following confirmation token: {token}",
+                    sender = "spotdpothole-email-confirmation@justinbaldeo.com"
+                )
+
+                mail.send(msg)
+
+                return {"message": "Password reset email resent!"}, 200
+            else:
+                return {"error": "Invalid email provided!"}, 400
+        else:
+            return {"error": "Invalid email provided!"}, 400
+    except:
+        db.session.rollback()
+        return {"error": "Unable to send reset email!"}, 400
+
+def resetPasswordController(details, token):
+    try:
+        if details:
+            try:
+                if "email" in details:
+                    activeUser = user = User.query.filter_by(email=details["email"]).first()
+
+                    if not activeUser:
+                        return {"error" : "Email address not registered!"}, 400
+            except:
+                return {"error" : "Email address not provided!"}, 400
+            
+
+            try:
+                email = confirm_token(token)
+            except:
+                return {"error" : "Confirmation token is invalid or has expired!"}, 400
+            
+            if email != details["email"]:
+                return {"error" : "Token is not associated with this email address!"}, 400
+
+            user = User.query.filter_by(email=email).first_or_404()
+
+
+            if "password" in details and "confirmPassword" in details:
+                if details["password"] != details["confirmPassword"]:
+                    return {"error" : "Passwords do not match!"}, 400
+
+                if len(details["password"]) < 6:
+                    return {"error" : "Password is too short!"}, 400
+
+                try:
+                    user.setPassword(details["password"])
+                    db.session.add(user)
+                    db.session.commit()
+                    return {"message" : "Sucesssfully reset password!"}, 200
+                except:
+                    db.session.rollback()
+                    return {"error" : "An unknown error has occurred!"}, 500
+
+
+        else:
+            return {"error" : "No updated password details provided!"}, 400
+    except:
+        db.session.rollback()
+        return {"error" : "Confirmation token is invalid or has expired!"}, 400
+
+
+
+
+
 
 ##################### TEST CONTROLLERS #####################
 #Creates test users for fixtures.

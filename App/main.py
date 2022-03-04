@@ -6,11 +6,13 @@
 from flask import Flask, request, session
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from flask_mail import Mail, Message
 from datetime import timedelta 
 import os
 
 #Imports the models and views of the application.
 from App.models import *
+from App.controllers.user import mail
 from App.views import (potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews, dashboardViews)
 views = [potholeViews, userViews, reportedImageViews, reportViews, userReportVoteViews, dashboardViews]
 
@@ -22,6 +24,7 @@ def addViews(app, views):
 
 #Creates the manager for the application, for the JSON web tokens using in authentication.
 jwt = JWTManager()
+mail = Mail()
 
 #Loads the configuration into the application from either a config file, or using environment variables.
 def loadConfig(app, config):
@@ -35,10 +38,17 @@ def loadConfig(app, config):
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') if os.environ.get('SECRET_KEY') != None else "DEFAULT_SECRET_KEY"
         app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
         app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days = 30)
+        app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT') if os.environ.get('SECURITY_PASSWORD_SALT') != None else "DEFAULT_SECRET_SALT"
+        app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
+        app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+        app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+        app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
+        app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL') 
+        app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS')
+        app.config['MAIL_DEBUG'] = False
         app.config['DEBUG'] = os.environ.get('DEBUG')
         app.config['ENV'] = os.environ.get('ENV')
         SQLITEDB = os.environ.get("SQLITEDB", default="False") 
-
         app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///spotDPothole.db" if SQLITEDB in ["True", "true", "TRUE"] else os.environ.get('DBURI')
 
     
@@ -59,6 +69,7 @@ def create_app(config={}):
     loadConfig(app, config)
     addViews(app, views)
     db.init_app(app)
+    Mail(app)
     app.app_context().push()
     jwt.init_app(app)
     return app
