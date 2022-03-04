@@ -43,8 +43,8 @@ def loadConfig(app, config):
         app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
         app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
         app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
-        app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL') 
-        app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS')
+        app.config['MAIL_USE_SSL'] = True
+        app.config['MAIL_USE_TLS'] = False
         app.config['MAIL_DEBUG'] = False
         app.config['DEBUG'] = os.environ.get('DEBUG')
         app.config['ENV'] = os.environ.get('ENV')
