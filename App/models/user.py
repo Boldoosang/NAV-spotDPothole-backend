@@ -33,7 +33,6 @@ class User(db.Model):
         self.firstName = firstName
         self.lastName = lastName
         self.setPassword(password)
-        #Remove in production
         self.confirmed = confirmed
 
     #Sets the password of a user by hashing and storing the input password.

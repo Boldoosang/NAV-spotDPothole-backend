@@ -22,7 +22,9 @@ mail = Mail()
 
 #Facilitates the registration of a user in the application given a dictionary containing registration information.
 #The appropriate outcome and status codes are then returned.
-def registerUserController(regData):  
+
+##### CHANGE TESTCONFIRMED TO FALSE WHEN FULLY DEPLOYING TO AVOID EMAIL CONFIRMATION #########
+def registerUserController(regData, testConfirmed=True):  
     validDomains = ["gmail.com", "yahoo.com", "hotmail.com", "my.uwi.edu", "outlook.com"]
     #Attempts to register the user using the registration data.
     try:
@@ -66,7 +68,7 @@ def registerUserController(regData):
                 #Attempts to register the user by adding them to the database.
                 try:
                     #Creates a new user object using the parsed registration data.
-                    newUser = User(parsedEmail, parsedFirstName, parsedLastName, regData["password"])
+                    newUser = User(parsedEmail, parsedFirstName, parsedLastName, regData["password"], confirmed=testConfirmed)
                     #Adds and commits the user to the database, and returns a success message and 'CREATED' http status code (201).
                     db.session.add(newUser)
                     db.session.commit()
@@ -81,7 +83,7 @@ def registerUserController(regData):
                         sender = "spotdpothole-email-confirmation@justinbaldeo.com"
                     )
 
-                    #mail.send(msg)
+                    mail.send(msg)
 
                     return {"message" : "Sucesssfully registered!"}, 201
                 #If an integrity error exception is generated, there would already exist a user with the same email in the database.
@@ -416,7 +418,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    })
+    }, True)
     registerUserController({
         "email" : "tester2@yahoo.com",
         "firstName" : "Jose",
@@ -424,7 +426,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    })
+    }, True)
     registerUserController({
         "email" : "tester3@yahoo.com",
         "firstName" : "Mary",
@@ -432,7 +434,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    })
+    }, True)
     registerUserController({
         "email" : "tester4@yahoo.com",
         "firstName" : "Keisha",
@@ -440,7 +442,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    })
+    }, True)
     registerUserController({
         "email" : "tester5@yahoo.com",
         "firstName" : "Harry",
@@ -448,7 +450,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    })
+    }, True)
     registerUserController({
         "email" : "tester6@yahoo.com",
         "firstName" : "Terrence",
@@ -456,7 +458,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    })
+    }, True)
 
 #Returns all registered users in the database.
 def getAllRegisteredUsers():
