@@ -98,10 +98,11 @@ def registerUserController(regData, testConfirmed=True):
                     print("Database not initialized!")
                     return {"error" : "Database not initialized! Contact the administrator of the application!"}, 500
                 #Otherwise, return an error message stating that an unknown error has occured and a 'INTERNAL SERVER ERROR' http status code (500).
-                except:
+                except Exception as e:
+                    print(e)
                     #Rollback the database
                     db.session.rollback()
-                    return {"error" : "An unknown error has occurred!"}, 500
+                    return {"error" : "An unknown error has occurred! (H)"}, 500
                     
 
         #If the registration data is null, return an error message along with a 'BAD REQUEST' http status code (400).    
