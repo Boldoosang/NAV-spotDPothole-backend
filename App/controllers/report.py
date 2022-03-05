@@ -21,7 +21,8 @@ import json, requests
 from App.models import *
 from App.controllers import *
 from App.controllers.pothole import deletePothole
-from App.controllers.reportedImage import is_url_image
+from App.controllers.reportedImage import is_url_image, uploadImage
+from App.controllers.reportedImage import deleteAllPotholeImagesFromStorage, deleteAllReportImagesFromStorage, deleteImageFromStorage
 
 #Returns a json dump of all of the reports in the database.
 def getReportData():
@@ -167,8 +168,9 @@ def reportPotholeStandard(user, reportDetails):
                     #If there are images in the reportDetails, add the images to the report.
                     if "images" in reportDetails:
                         #Iterates over the images within the images field of the reportDetails and adds them to the reportedImage database.
-                        for imageURL in reportDetails["images"]:
-                            
+                        for base64Image in reportDetails["images"]:
+                            imageURL = uploadImage(base64Image)
+                            print(imageURL)
                             #Determines if the URL is valid and leads to an image.
                             if is_url_image(imageURL):
 
@@ -327,9 +329,12 @@ def deletePotholeReport(reportID):
             try:
                 #Obtains the potholeID from the report
                 potholeID = foundReport.potholeID
+                deleteAllReportImagesFromStorage(potholeID)
                 #Deletes the report and commits the change to the database.
                 db.session.delete(foundReport)
                 db.session.commit()
+
+                
 
                 #Determines if there are any reports for a pothole given the potholeID.
                 potholeReports = db.session.query(Report).filter_by(potholeID = potholeID).first()
@@ -367,8 +372,10 @@ def deleteUserPotholeReport(user, potholeID, reportID):
             if foundReport:
                 #Attempts to delete the found report and commit to database.
                 try:
+                    deleteAllReportImagesFromStorage(potholeID)
                     db.session.delete(foundReport)
                     db.session.commit()
+                    
 
                     #Determines if there are any more reports for the pothole after the deletion.
                     potholeReports = db.session.query(Report).filter_by(potholeID = potholeID).first()
