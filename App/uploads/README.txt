@@ -1,0 +1,1 @@
+Used as temporary image storage for uploading to firebase.

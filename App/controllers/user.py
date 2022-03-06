@@ -76,14 +76,15 @@ def registerUserController(regData, testConfirmed=True):
                     token = generate_confirmation_token(newUser.email)
                     print(token)
 
-                    msg = Message(
-                        subject = "SpotDPothole - Please confirm your email",
-                        recipients=[newUser.email], 
-                        body = f"Please use the following confirmation token: {token}",
-                        sender = "spotdpothole-email-confirmation@justinbaldeo.com"
-                    )
+                    if not testConfirmed:
+                        msg = Message(
+                            subject = "SpotDPothole - Please confirm your email",
+                            recipients=[newUser.email], 
+                            body = f"Please use the following confirmation token: {token}",
+                            sender = "spotdpothole-email-confirmation@justinbaldeo.com"
+                        )
 
-                    mail.send(msg)
+                        mail.send(msg)
 
                     return {"message" : "Sucesssfully registered!"}, 201
                 #If an integrity error exception is generated, there would already exist a user with the same email in the database.
@@ -474,6 +475,7 @@ def getOneRegisteredUser(email):
 #Creates simulated report data, simulated users, and has those simulated users file those simulated reports.
 def createSimulatedData():
     createTestUsers()
+    data = open("App/tests/testImage.txt", "r").read()
 
     reportDetails1 = {
         "longitude" : -61.277001,
@@ -481,7 +483,7 @@ def createSimulatedData():
         "constituencyID" : "arima",
         "description": "Very large pothole spanning both lanes of the road.",
         "images" : [
-            "https://www.howtogeek.com/wp-content/uploads/2018/08/Header.png"
+            data
         ]
     }
 
@@ -491,7 +493,7 @@ def createSimulatedData():
         "constituencyID" : "chaguanas",
         "description": "Small pothole in center of road",
         "images" : [
-            "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
+            data
         ]
     }
 
@@ -501,7 +503,7 @@ def createSimulatedData():
         "constituencyID" : "chaguanas",
         "description": "Very large pothole.",
         "images" : [
-            "https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8Mnx8fGVufDB8fHx8&w=1000&q=80"
+            data
         ]
     }
 
