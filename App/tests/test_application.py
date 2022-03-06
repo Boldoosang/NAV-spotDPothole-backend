@@ -38,7 +38,7 @@ def simulated_db():
     createSimulatedData()
     yield app.test_client()
     os.unlink(os.getcwd()+'/App/test.db')
-    
+
 ########## Unit Tests ########## 
 # Unit Test 1: api/potholes should return an empty array when there are no potholes, and should return a status code of 200
 def testNoPotholes(empty_db):
@@ -117,13 +117,13 @@ def testGetAllReportsForPothole(simulated_db):
 
 # Unit Test 15: /api/potholes/<potholeID>/report/<reportID>/images should return an array of images for a report, and a return status of 200.
 def testGetAllReportImagesForPothole(simulated_db):
-    imagesJson = b'[{"imageID": 1, "reportID": 1, "imageURL": https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images'
+    imagesJson = b'[{"imageID": 1, "reportID": 1, "imageURL": "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images'
     response = simulated_db.get("/api/reports/pothole/1/report/1/images")
     assert imagesJson in response.data and response.status_code == 200
 
 # Unit Test 16: /api/potholes/<potholeID>/report/<reportID>/images/<imageID> should return an image for a report, and a return status of 200.
 def testGetIndividualReportImage(simulated_db):
-    imageJson = b'{"imageID": 1, "reportID": 1, "imageURL": https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images'
+    imageJson = b'{"imageID": 1, "reportID": 1, "imageURL": "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images'
     response = simulated_db.get("/api/reports/pothole/1/report/1/images/1")
     assert imageJson in response.data and response.status_code == 200
 
