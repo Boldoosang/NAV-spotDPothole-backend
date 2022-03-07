@@ -4,5 +4,5 @@ App/config.py
 App/test.db
 *.db
 serviceAccountKey.json
-App/firebaseConfig.py
 migrations/
+App/uploads/*.jpg

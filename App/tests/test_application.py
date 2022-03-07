@@ -38,7 +38,6 @@ def simulated_db():
     createSimulatedData()
     yield app.test_client()
     os.unlink(os.getcwd()+'/App/test.db')
-    
 
 ########## Unit Tests ########## 
 # Unit Test 1: api/potholes should return an empty array when there are no potholes, and should return a status code of 200
@@ -118,13 +117,13 @@ def testGetAllReportsForPothole(simulated_db):
 
 # Unit Test 15: /api/potholes/<potholeID>/report/<reportID>/images should return an array of images for a report, and a return status of 200.
 def testGetAllReportImagesForPothole(simulated_db):
-    imagesJson = b'[{"imageID": 1, "reportID": 1, "imageURL": "https://www.howtogeek.com/wp-content/uploads/2018/08/Header.png"}]'
+    imagesJson = b'[{"imageID": 1, "reportID": 1, "imageURL": "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images'
     response = simulated_db.get("/api/reports/pothole/1/report/1/images")
     assert imagesJson in response.data and response.status_code == 200
 
 # Unit Test 16: /api/potholes/<potholeID>/report/<reportID>/images/<imageID> should return an image for a report, and a return status of 200.
 def testGetIndividualReportImage(simulated_db):
-    imageJson = b'{"imageID": 1, "reportID": 1, "imageURL": "https://www.howtogeek.com/wp-content/uploads/2018/08/Header.png"}'
+    imageJson = b'{"imageID": 1, "reportID": 1, "imageURL": "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images'
     response = simulated_db.get("/api/reports/pothole/1/report/1/images/1")
     assert imageJson in response.data and response.status_code == 200
 
@@ -196,13 +195,14 @@ def testAddNewPotholeReportDriver(users_in_db):
 
 # Integration Test 5: reportPotholeStandard should return a success message when reporting a pothole with valid data.
 def testAddNewPotholeReportStandard(users_in_db):
+    data = open("App/tests/testImage.txt", "r").read()
     reportDetails = {
         "longitude" : -61.277001,
         "latitude" : 10.726551,
         "constituencyID" : "arima",
         "description": "Very large pothole spanning both lanes of the road.",
         "images" : [
-            "https://www.howtogeek.com/wp-content/uploads/2018/08/Header.png"
+            data
         ]
     }
 
@@ -214,7 +214,7 @@ def testAddNewPotholeReportStandard(users_in_db):
     check2 = False
 
     for oneReportByUser in allReportsByUser:
-        if reportDetails["description"] == oneReportByUser["description"] and reportDetails["images"][0] == oneReportByUser["reportedImages"][0]["imageURL"]:
+        if reportDetails["description"] == oneReportByUser["description"] and "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images" in oneReportByUser["reportedImages"][0]["imageURL"]:
             check2 = True
 
     rPotholes = getAllPotholes()
@@ -224,7 +224,8 @@ def testAddNewPotholeReportStandard(users_in_db):
             check1 = True
 
     assert check1 and check2 and "Successfully added pothole report to database!" in r[0]["message"] and r[1] == 201
-
+'''
+'''
 # Integration Test 6: reportPothole(driver/standard) should return a expiry reset message when reporting a pothole that they previously reported.
 def testDuplicateReportSameUser(simulated_db):
     reportDetails = {
@@ -307,8 +308,9 @@ def testAddPotholeImageNotOwner(simulated_db):
     user2 = getOneRegisteredUser("tester2@yahoo.com")
     potholeID = 1
     reportID = 1
+    data = open("App/tests/testImage.txt", "r").read()
     imageDetails = {
-        "images" : ["https://media.gettyimages.com/photos/balanced-stones-on-a-pebble-beach-during-sunset-picture-id157373207?s=612x612"]
+        "images" : [data]
     }
 
     rv = addPotholeReportImage(user2, potholeID, reportID, imageDetails)
@@ -322,28 +324,30 @@ def testAddPotholeImage(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 1
     reportID = 1
+    data = open("App/tests/testImage.txt", "r").read()
     imageDetails = {
-        "images" : ["https://media.gettyimages.com/photos/balanced-stones-on-a-pebble-beach-during-sunset-picture-id157373207?s=612x612"]
+        "images" : [data]
     }
 
     rv = addPotholeReportImage(user1, potholeID, reportID, imageDetails)
 
     res = getIndividualReportedImage(potholeID, reportID, 4)
 
-    assert "All images successfully added." in rv[0]["message"] and rv[1] == 201 and "https://media.gettyimages.com/photos/balanced-stones-on-a-pebble-beach-during-sunset-picture-id157373207?s=612x612" in res[0]
+    assert "All images successfully added." in rv[0]["message"] and rv[1] == 201 and "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images" in res[0]
 
 # Integration Test 13: addPotholeReportImage should return an error message when adding an invalid pothole image to a report that is valid.
-def testAddPotholeImageInvalidImageURL(simulated_db):
+def testAddPotholeImageInvalidImage(simulated_db):
     user1 = getOneRegisteredUser("tester1@yahoo.com")
     potholeID = 1
     reportID = 1
+    data = "invalidImageBase64String"
     imageDetails = {
-        "images" : ["https://myelearning.sta.uwi.edu"]
+        "images" : [data]
     }
 
     rv = addPotholeReportImage(user1, potholeID, reportID, imageDetails)
 
-    assert "error" in rv[0] and rv[1] == 206
+    assert "error" in rv[0] and rv[1] == 400
 
 # Integration Test 14: updateReportDescription should return a success message when updating a report that the user is owner of.
 def testUpdatePotholeDescriptionAsOwner(simulated_db):

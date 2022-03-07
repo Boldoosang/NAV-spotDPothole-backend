@@ -13,6 +13,119 @@ from App.models import *
 from App.controllers import *
 
 
+#TEST UPLOAD
+
+from PIL import Image
+from io import BytesIO
+import filetype, os, time, random, base64, tempfile, string
+from werkzeug.utils import secure_filename
+from pyrebase import pyrebase
+from App.firebaseConfig import config
+
+firebase = pyrebase.initialize_app(config)
+storage = firebase.storage()
+MYDIR = os.path.dirname(__file__)
+
+
+def uploadImage(base64Image):
+    try:
+        fileData = str(base64Image).split("base64")[1]
+
+        #Generates filename for firebase
+        milliseconds = int(time.time() * 1000)
+        randomString = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+        new_filename = "REPORT " + str(milliseconds) + "_" + randomString + ".jpg"
+
+        temp = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg", dir=os.path.join(os.getcwd(), "App/uploads"))
+
+        im = Image.open(BytesIO(base64.b64decode(fileData)))
+        im.save(temp.name)
+
+        if not filetype.is_image(temp.name):
+            return {"error" : "The file is not an image!"}, 400
+        
+        image = Image.open(temp.name)
+
+        height = int(480)
+        width = int(height / image.height * image.width)
+
+        resizedImage = image.resize((width, height))
+        resizedImage = resizedImage.convert("RGB")
+        resizedImage.save(temp.name, format="JPEG")
+        print("Written to file!")
+
+        storage.child("images/" + new_filename).put(temp.name)
+        link = storage.child("images/" + new_filename).get_url(None)
+
+        print("Uploaded to cloud via: " + link)
+        return link
+
+    except Exception as e:
+        print(e)
+        return null
+
+
+def deleteImageFromStorage(imageID):
+    try:
+        image = db.session.query(ReportedImage).filter_by(imageID = imageID).first()
+        filePath = image.imageURL.split("/")[-1].split("?")[0]
+        filePath = filePath.replace("%2F", "/").replace("%20", " ")
+
+        print(filePath)
+        storage.delete(filePath, None)
+        print("Successfully deleted this image!")
+        return True
+    except:
+        db.session.rollback()
+        print("Unable to delete this image!")
+        return False
+
+def deleteAllReportImagesFromStorage(reportID):
+    try:
+        images = db.session.query(ReportedImage).filter_by(reportID = reportID).all()
+        for image in images:
+            deleteImageFromStorage(image.imageID)
+    except:
+        db.session.rollback()
+        print("Unable to delete all report images!")
+
+def deleteAllPotholeImagesFromStorage(potholeID):
+    try:
+        images = db.session.query(ReportedImage).filter_by(potholeID = potholeID).all()
+        for image in images:
+            deleteImageFromStorage(image.imageID)
+    except:
+        db.session.rollback()
+        print("Unable to delete all pothole images!")
+
+
+
+
+#TEST UPLOAD
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #Referenced from StackOverflow
 #https://stackoverflow.com/questions/10543940/check-if-a-url-to-an-image-is-up-and-exists-in-python
 #Given a URL, determines if the URL points to an image.
@@ -100,11 +213,14 @@ def deletePotholeReportImage(user, potholeID, reportID, imageID):
             #Attempts to delete the found image from the database.
             try:
                 #Deletes the found image from the database, commits the change, and returns a success message along with a 'OK' http status code.
+                deleteImageFromStorage(foundImage.imageID)
                 db.session.delete(foundImage)
                 db.session.commit()
+                
                 return {"message" : "Pothole image successfully deleted!"}, 200
-            except:
+            except Exception as e:
             #If an error has occurred, rollback the database and return an error and an "INTERNAL SERVER ERROR" http status code.
+                print(e)
                 db.session.rollback()
                 return {"error" : "Unable to delete report!"}, 500
 
@@ -138,7 +254,9 @@ def addPotholeReportImage(user, potholeID, reportID, imageDetails):
                 #Sets invalidCount to 0 to denote that no images have failed to be added to the database.
                 invalidCount = 0
                 #Iterates over the different image URLs in the user request.
-                for imageURL in imageDetails["images"]:
+                for base64Image in imageDetails["images"]:
+
+                    imageURL = uploadImage(base64Image)
                     #If the URL points to an image, add the image to the database.
                     if is_url_image(imageURL):
                         #Attempts to add the image to the database.
