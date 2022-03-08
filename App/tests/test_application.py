@@ -226,7 +226,7 @@ def testAddNewPotholeReportStandard(users_in_db):
     }
 
     user1 = getOneRegisteredUser("tester1@yahoo.com")
-    r = reportPotholeStandard(user1, reportDetails)
+    r = reportPotholeStandard(user1, reportDetails, Testing=True)
 
 
     allReportsByUser = getAllPotholeReportsByUser(user1)
@@ -668,7 +668,7 @@ def testBannedUserStandardReport(simulated_db):
         ]
     }
 
-    rv1 = reportPotholeStandard(user, reportDetails)
+    rv1 = reportPotholeStandard(user, reportDetails, Testing=True)
 
     assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403
 
