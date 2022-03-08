@@ -348,11 +348,11 @@ def testAddPotholeImage(simulated_db):
         "images" : [data]
     }
 
-    rv = addPotholeReportImage(user1, potholeID, reportID, imageDetails)
+    rv = addPotholeReportImage(user1, potholeID, reportID, imageDetails, Testing=True)
 
     res = getIndividualReportedImage(potholeID, reportID, 4)
 
-    assert "All images successfully added." in rv[0]["message"] and rv[1] == 201 and "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images" in res[0]
+    assert "All images successfully added." in rv[0]["message"] and rv[1] == 201 and "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/" in res[0]
 
 # Integration Test 13: addPotholeReportImage should return an error message when adding an invalid pothole image to a report that is valid.
 def testAddPotholeImageInvalidImage(simulated_db):

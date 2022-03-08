@@ -237,7 +237,7 @@ def deletePotholeReportImage(user, potholeID, reportID, imageID):
         return {"error": "Invalid request submitted."}, 400
 
 #For the original report poster, adds an image to their report given the imageDetails.
-def addPotholeReportImage(user, potholeID, reportID, imageDetails):
+def addPotholeReportImage(user, potholeID, reportID, imageDetails, Testing=False):
     #Attempts to add the report image to a particular report.
     try:
         #If the user, reportID and imageDetails are non null, facilitate the addition of the image.
@@ -259,7 +259,7 @@ def addPotholeReportImage(user, potholeID, reportID, imageDetails):
                 #Iterates over the different image URLs in the user request.
                 for base64Image in imageDetails["images"]:
 
-                    imageURL = uploadImage(base64Image)
+                    imageURL = uploadImage(base64Image, Testing=Testing)
                     #If the URL points to an image, add the image to the database.
                     if is_url_image(imageURL):
                         #Attempts to add the image to the database.
