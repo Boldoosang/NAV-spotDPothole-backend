@@ -95,7 +95,7 @@ def snapCoordsToStreet(latitude, longitude):
         raise Exception("OSRM server did not return a valid response.")
 
 #Validates a report of a user via the standard interface before adding it to the database.
-def reportPotholeStandard(user, reportDetails):
+def reportPotholeStandard(user, reportDetails, Testing=False):
     #Attempts to process a standard report.
     try:
         if user.banned:
@@ -169,7 +169,7 @@ def reportPotholeStandard(user, reportDetails):
                     if "images" in reportDetails:
                         #Iterates over the images within the images field of the reportDetails and adds them to the reportedImage database.
                         for base64Image in reportDetails["images"]:
-                            imageURL = uploadImage(base64Image)
+                            imageURL = uploadImage(base64Image, Testing)
                             print(imageURL)
                             #Determines if the URL is valid and leads to an image.
                             if is_url_image(imageURL):

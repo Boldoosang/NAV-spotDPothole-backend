@@ -24,7 +24,7 @@ mail = Mail()
 #The appropriate outcome and status codes are then returned.
 
 ##### CHANGE TESTCONFIRMED TO FALSE WHEN FULLY DEPLOYING TO AVOID EMAIL CONFIRMATION #########
-def registerUserController(regData, testConfirmed=True):  
+def registerUserController(regData, testConfirmed=True, testing=False):  
     validDomains = ["gmail.com", "yahoo.com", "hotmail.com", "my.uwi.edu", "outlook.com"]
     #Attempts to register the user using the registration data.
     try:
@@ -74,7 +74,6 @@ def registerUserController(regData, testConfirmed=True):
                     db.session.commit()
 
                     token = generate_confirmation_token(newUser.email)
-                    print(token)
 
                     if not testConfirmed:
                         msg = Message(
@@ -84,7 +83,8 @@ def registerUserController(regData, testConfirmed=True):
                             sender = "spotdpothole-email-confirmation@justinbaldeo.com"
                         )
 
-                        mail.send(msg)
+                        if not testing:
+                            mail.send(msg)
 
                     return {"message" : "Sucesssfully registered!"}, 201
                 #If an integrity error exception is generated, there would already exist a user with the same email in the database.
@@ -276,7 +276,7 @@ def confirmEmailController(token, details):
             return {"error" : "Confirmation token is invalid or has expired!"}, 400
 
         if email != details["email"]:
-            return {"error" : "Token is not associated with this email address!"}, 400
+            return {"error" : "Token is not associated with this email address or is invalid!"}, 400
         
         user = User.query.filter_by(email=email).first_or_404()
         print(user)
@@ -291,7 +291,7 @@ def confirmEmailController(token, details):
         db.session.rollback()
         return {"error" : "Confirmation token is invalid or has expired!"}, 400
 
-def resendConfirmationController(details):
+def resendConfirmationController(details, testing=False):
     try:
         if details:
             if "email" in details:
@@ -312,7 +312,8 @@ def resendConfirmationController(details):
                     sender = "spotdpothole-email-confirmation@justinbaldeo.com"
                 )
 
-                mail.send(msg)
+                if not testing:
+                    mail.send(msg)
 
                 return {"message": "Confirmation email resent!"}, 200
             else:
@@ -324,7 +325,7 @@ def resendConfirmationController(details):
         return {"error": "Unable to send confirmation token!"}, 400
 
 
-def sendPasswordResetController(details):
+def sendPasswordResetController(details, testing=False):
     try:
         if details:
             if "email" in details:
@@ -333,7 +334,7 @@ def sendPasswordResetController(details):
                 try:
                     user = db.session.query(User).filter_by(email=email).first()
                     if user == None:
-                        return {"error": "Invalid email provided!"}, 400
+                        return {"error": "Unregistered email provided!"}, 404
                 except:
                     db.session.rollback()
                     return {"error": "Invalid email provided!"}, 400
@@ -347,7 +348,8 @@ def sendPasswordResetController(details):
                     sender = "spotdpothole-email-confirmation@justinbaldeo.com"
                 )
 
-                mail.send(msg)
+                if not testing:
+                    mail.send(msg)
 
                 return {"message": "Password reset email resent!"}, 200
             else:
@@ -366,7 +368,7 @@ def resetPasswordController(details, token):
                     activeUser = user = User.query.filter_by(email=details["email"]).first()
 
                     if not activeUser:
-                        return {"error" : "Email address not registered!"}, 400
+                        return {"error" : "Email address not registered!"}, 404
             except:
                 return {"error" : "Email address not provided!"}, 400
             
@@ -377,7 +379,7 @@ def resetPasswordController(details, token):
                 return {"error" : "Confirmation token is invalid or has expired!"}, 400
             
             if email != details["email"]:
-                return {"error" : "Token is not associated with this email address!"}, 400
+                return {"error" : "Token is not associated with this email address or is invalid!"}, 400
 
             user = User.query.filter_by(email=email).first_or_404()
 
@@ -534,9 +536,9 @@ def createSimulatedData():
 
 
 
-    reportPotholeStandard(user1, reportDetails1)
-    reportPotholeStandard(user2, reportDetails2)
-    reportPotholeStandard(user3, reportDetails3)   
+    reportPotholeStandard(user1, reportDetails1, Testing=True)
+    reportPotholeStandard(user2, reportDetails2, Testing=True)
+    reportPotholeStandard(user3, reportDetails3, Testing=True)   
     reportPotholeDriver(user4, reportDetails4)
     reportPotholeDriver(user5, reportDetails5)
     reportPotholeDriver(user6, reportDetails6)

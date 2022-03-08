@@ -6,11 +6,15 @@ import time
 
 from App.controllers import *
 from App.views import *
+from App.models import *
 
 # https://stackoverflow.com/questions/4673373/logging-within-pytest-testshttps://stackoverflow.com/questions/4673373/logging-within-pytest-tests
 
 LOGGER = logging.getLogger(__name__)
 
+def cleanupImages(db):
+    allImages = db.session.query(ReportedImage).filter_by().all()
+    print(allImages)
 
 # fixtures are used to setup state in the app before the test
 @pytest.fixture
@@ -19,7 +23,7 @@ def empty_db():
     init_db(app)
     yield app.test_client()
     os.unlink(os.getcwd()+'/App/test.db')
-    
+
 # This fixture depends on create_users which is tested in test #5 test_create_user
 
 @pytest.fixture
@@ -29,7 +33,7 @@ def users_in_db():
     createTestUsers()
     yield app.test_client()
     os.unlink(os.getcwd()+'/App/test.db')
-
+    
 
 @pytest.fixture
 def simulated_db():
@@ -38,6 +42,7 @@ def simulated_db():
     createSimulatedData()
     yield app.test_client()
     os.unlink(os.getcwd()+'/App/test.db')
+
 
 ########## Unit Tests ########## 
 # Unit Test 1: api/potholes should return an empty array when there are no potholes, and should return a status code of 200
@@ -117,13 +122,13 @@ def testGetAllReportsForPothole(simulated_db):
 
 # Unit Test 15: /api/potholes/<potholeID>/report/<reportID>/images should return an array of images for a report, and a return status of 200.
 def testGetAllReportImagesForPothole(simulated_db):
-    imagesJson = b'[{"imageID": 1, "reportID": 1, "imageURL": "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images'
+    imagesJson = b'[{"imageID": 1, "reportID": 1, "imageURL": "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/'
     response = simulated_db.get("/api/reports/pothole/1/report/1/images")
     assert imagesJson in response.data and response.status_code == 200
 
 # Unit Test 16: /api/potholes/<potholeID>/report/<reportID>/images/<imageID> should return an image for a report, and a return status of 200.
 def testGetIndividualReportImage(simulated_db):
-    imageJson = b'{"imageID": 1, "reportID": 1, "imageURL": "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images'
+    imageJson = b'{"imageID": 1, "reportID": 1, "imageURL": "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/'
     response = simulated_db.get("/api/reports/pothole/1/report/1/images/1")
     assert imageJson in response.data and response.status_code == 200
 
@@ -142,6 +147,20 @@ def testGetDashoardPotholesNotLoggedIn(simulated_db):
 def testGetDashoardReportsNotLoggedIn(simulated_db):
     response = simulated_db.get("/api/dashboard/reports")
     assert b"Missing Authorization Header" in response.data and response.status_code == 401
+
+# Unit Test 20: generate_confirmation_token should generate a valid token from an email address, that can be verified by confirm_token.
+def testVerifyConfirmationToken(simulated_db):
+    email = "tester1@yahoo.com"
+    token = generate_confirmation_token(email)
+    returned_email = confirm_token(token)
+    assert email == returned_email
+
+# Unit Test 21: confirm_token should return False if a token could not be matched to a user's email address.
+def testConfirmationTokenInvalid(simulated_db):
+    token = "invalidToken"
+    returned_email = confirm_token(token)
+    assert returned_email == False
+
 
 ########## Integration Tests ##########  
 #Integration Test 1: registerUserController should create a user account using valid data.
@@ -214,7 +233,7 @@ def testAddNewPotholeReportStandard(users_in_db):
     check2 = False
 
     for oneReportByUser in allReportsByUser:
-        if reportDetails["description"] == oneReportByUser["description"] and "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/images" in oneReportByUser["reportedImages"][0]["imageURL"]:
+        if reportDetails["description"] == oneReportByUser["description"] and "https://firebasestorage.googleapis.com/v0/b/spotdpoth.appspot.com/o/" in oneReportByUser["reportedImages"][0]["imageURL"]:
             check2 = True
 
     rPotholes = getAllPotholes()
@@ -724,7 +743,7 @@ def testBannedUserDeleteReport(simulated_db):
 
 
 # Integration Test 42: A success message should be returned to the user upon successful password change.
-def testChangePasswordValid(simulated_db):
+def testChangePasswordValid(users_in_db):
     email = "tester1@yahoo.com"
     password = "121233"
     newPassword = "newTestPassword123"
@@ -746,7 +765,7 @@ def testChangePasswordValid(simulated_db):
 
 
 # Integration Test 43: An error message should be returned to the user upon attempting a password change when not logged in.
-def testChangePasswordNotLoggedIn(simulated_db):
+def testChangePasswordNotLoggedIn(users_in_db):
     password = "121233"
     newPassword = "newTestPassword123"
     user = None
@@ -762,7 +781,7 @@ def testChangePasswordNotLoggedIn(simulated_db):
     assert 'You are not logged in!' in rv2[0]["error"] and rv2[1] == 400
 
 # Integration Test 44: An error message should be returned to the user upon attempting to change the password with a wrong original password.
-def testChangePasswordWrongOriginal(simulated_db):
+def testChangePasswordWrongOriginal(users_in_db):
     email = "tester1@yahoo.com"
     password = "121233"
     wrongPassword = "defAWrongPassword"
@@ -785,7 +804,7 @@ def testChangePasswordWrongOriginal(simulated_db):
 
 
 # Integration Test 45: An error message should be returned to the user upon attempting to change the password with an invalid new password.
-def testChangePasswordInvalidNew(simulated_db):
+def testChangePasswordInvalidNew(users_in_db):
     email = "tester1@yahoo.com"
     password = "121233"
     invalidNewPassword = "12"
@@ -804,3 +823,268 @@ def testChangePasswordInvalidNew(simulated_db):
     rv3 = loginUserController({"email" : email, "password": invalidNewPassword})
 
     assert 'Password is too short!' in rv2[0]["error"] and rv2[1] == 400 and 'access_token' in rv1[0] and rv1[1] == 200 and 'error' in rv3[0] and rv3[1] == 401
+
+
+# Integration Test 46: sendPasswordResetControllers should return a success message and code if attempting to reset an account that exists with the email.
+def testSendPasswordResetValid(users_in_db):
+    email = "tester1@yahoo.com"
+    details = {
+        "email" : email
+    }
+    rv = sendPasswordResetController(details, testing=True)
+
+    assert 'Password reset email resent!' in rv[0]["message"] and rv[1] == 200
+
+# Integration Test 47: sendPasswordResetControllers should return an error message and code if attempting to reset an account that does not exist with the email.
+def testSendPasswordResetUnregisteredEmail(users_in_db):
+    email = "notRegisteredAccount@yahoo.com"
+    details = {
+        "email" : email
+    }
+    rv = sendPasswordResetController(details, testing=True)
+
+    assert 'Unregistered email provided!' in rv[0]["error"] and rv[1] == 404
+
+# Integration Test 48: sendPasswordResetControllers should return an error message and code if attempting to reset an account with no supplied email.
+def testSendPasswordResetUnregisteredEmail(users_in_db):
+    email = None
+    details = {
+        "email" : email
+    }
+    rv = sendPasswordResetController(details, testing=True)
+
+    assert 'Unregistered email provided!' in rv[0]["error"] and rv[1] == 404
+
+# Integration Test 49: resendConfirmationController should return a success message and code if attempting to resend a confirmation for an existing, unconfirmed email.
+def testResendConfirmationValid(users_in_db):
+    email = "DansPhantom@gmail.com"
+    registerUserController({'firstName' : 'Danny', 'lastName' : 'Phantom', 'email' : email, 'password' : 'danny123', 'confirmPassword' : 'danny123', 'agreeToS' : True}, testConfirmed=False, testing=True)
+    
+    details = {
+        "email" : email
+    }
+    rv = resendConfirmationController(details, testing=True)
+    assert 'Confirmation email resent!' in rv[0]["message"] and rv[1] == 200
+
+# Integration Test 50: resendConfirmationController should return an error message and code if attempting to resend a confirmation for an already confirmed email.
+def testResendConfirmationAlreadyConfirmed(users_in_db):
+    email = "tester1@yahoo.com"
+    
+    details = {
+        "email" : email
+    }
+
+    rv = resendConfirmationController(details, testing=True)
+    assert 'Email address not registered or user already confirmed!' in rv[0]["error"] and rv[1] == 400
+
+
+# Integration Test 51: resendConfirmationController should return an error message and code if attempting to resend a confirmation for an unregistered email.
+def testResendConfirmationUnregisteredEmail(users_in_db):
+    email = "unRegisteredEmail@yahoo.com"
+    
+    details = {
+        "email" : email
+    }
+
+    rv = resendConfirmationController(details, testing=True)
+    assert 'Email address not registered or user already confirmed!' in rv[0]["error"] and rv[1] == 400
+
+# Integration Test 52: resendConfirmationController should return an error message and code if attempting to resend a confirmation for an invalid email.
+def testResendConfirmationInvalidEmail(users_in_db):
+    email = None
+    
+    details = {
+        "email" : email
+    }
+
+    rv = resendConfirmationController(details, testing=True)
+    assert 'Email address not registered or user already confirmed!' in rv[0]["error"] and rv[1] == 400
+
+# Integration Test 53: confirmEmailController should return a successful confirmation message if confirming a valid user who has not already been confirmed.
+def testConfirmEmailValidToken(users_in_db):
+    email = "DansPhantom@gmail.com"
+    registerUserController({'firstName' : 'Danny', 'lastName' : 'Phantom', 'email' : email, 'password' : 'danny123', 'confirmPassword' : 'danny123', 'agreeToS' : True}, testConfirmed=False, testing=True)
+    
+    details = {
+        "email" : email
+    }
+
+    token = generate_confirmation_token(email)
+
+    rv = confirmEmailController(token, details)
+    
+    assert 'User has been confirmed. You may now login.' in rv[0]["message"] and rv[1] == 200
+
+
+# Integration Test 54: confirmEmailController should return a success message if confirming a user who has already been confirmed.
+def testConfirmEmailAlreadyConfirmed(users_in_db):
+    email = "tester1@yahoo.com"
+
+    details = {
+        "email" : email
+    }
+
+    token = generate_confirmation_token(email)
+
+    rv = confirmEmailController(token, details)
+    
+    assert 'User already confirmed!' in rv[0]["message"] and rv[1] == 200
+
+# Integration Test 55: confirmEmailController should return an error message if confirming a user who is not registered.
+def testConfirmEmailUnregistered(users_in_db):
+    email = "unregisteredEmail@yahoo.com"
+
+    details = {
+        "email" : email
+    }
+
+    token = generate_confirmation_token(email)
+
+    rv = confirmEmailController(token, details)
+    
+    assert 'Email address not registered!' in rv[0]["error"] and rv[1] == 400
+
+
+# Integration Test 56: confirmEmailController should return an error message if confirming a user with a token of another user.
+def testConfirmEmailTokenOfAnotherAccount(users_in_db):
+    email = "DansPhantom@gmail.com"
+    registerUserController({'firstName' : 'Danny', 'lastName' : 'Phantom', 'email' : email, 'password' : 'danny123', 'confirmPassword' : 'danny123', 'agreeToS' : True}, testConfirmed=False, testing=True)
+    
+    alreadyRegisteredEmail = 'tester1@yahoo.com'
+
+    details = {
+        "email" : email
+    }
+
+    token = generate_confirmation_token(alreadyRegisteredEmail)
+
+    rv = confirmEmailController(token, details)
+    
+    assert 'Token is not associated with this email address or is invalid!' in rv[0]["error"] and rv[1] == 400
+
+
+# Integration Test 57: confirmEmailController should return an error message if confirming a user with an invalid token.
+def testConfirmEmailInvalidToken(users_in_db):
+    email = "DansPhantom@gmail.com"
+    registerUserController({'firstName' : 'Danny', 'lastName' : 'Phantom', 'email' : email, 'password' : 'danny123', 'confirmPassword' : 'danny123', 'agreeToS' : True}, testConfirmed=False, testing=True)
+    
+    details = {
+        "email" : email
+    }
+
+    token = "invalidToken"
+
+    rv = confirmEmailController(token, details)
+    
+    assert 'Token is not associated with this email address or is invalid!' in rv[0]["error"] and rv[1] == 400
+
+# Integration Test 58: resetPasswordController should return a success message when resetting a password with valid details.
+def testResetPasswordControllerValid(users_in_db):
+    email = "tester1@yahoo.com"
+    password = "121233"
+    newPassword = "333333"
+
+    details = {
+        "email" : email,
+        "password" : newPassword,
+        "confirmPassword" : newPassword
+    }
+
+    beforeReset = loginUserController({"email" : email, "password": password})
+
+    token = generate_confirmation_token(email)
+    rv = resetPasswordController(details, token)
+    
+    afterReset = loginUserController({"email" : email, "password": newPassword})
+
+    assert 'Sucesssfully reset password!' in rv[0]["message"] and rv[1] == 200 and 'access_token' in beforeReset[0] and beforeReset[1] == 200 and 'access_token' in afterReset[0] and afterReset[1] == 200
+
+# Integration Test 59: resetPasswordController should return an error when resetting a password for an account that does not exist.
+def testResetPasswordControllerUnregistered(users_in_db):
+    email = "unregisteredAccount@yahoo.com"
+    password = "121233"
+    newPassword = "333333"
+
+    details = {
+        "email" : email,
+        "password" : newPassword,
+        "confirmPassword" : newPassword
+    }
+
+    token = generate_confirmation_token(email)
+    rv = resetPasswordController(details, token)
+
+    assert 'Email address not registered!' in rv[0]["error"] and rv[1] == 404 
+
+# Integration Test 60: resetPasswordController should return an error when resetting a password for an account with an invalid token.
+def testResetPasswordControllerInvalidToken(users_in_db):
+    email = "tester1@yahoo.com"
+    password = "121233"
+    newPassword = "333333"
+
+    details = {
+        "email" : email,
+        "password" : newPassword,
+        "confirmPassword" : newPassword
+    }
+
+    token = "invalid token"
+    rv = resetPasswordController(details, token)
+
+    assert 'Token is not associated with this email address or is invalid!' in rv[0]["error"] and rv[1] == 400 
+
+# Integration Test 61: resetPasswordController should return an error when resetting a password for an account with an another account's token.
+def testResetPasswordControllerOtherAccountToken(users_in_db):
+    otherAccount = "tester2@yahoo.com"
+    email = "tester1@yahoo.com"
+    password = "121233"
+    newPassword = "333333"
+
+    details = {
+        "email" : email,
+        "password" : newPassword,
+        "confirmPassword" : newPassword
+    }
+
+    token = generate_confirmation_token(otherAccount)
+    rv = resetPasswordController(details, token)
+
+    assert 'Token is not associated with this email address or is invalid!' in rv[0]["error"] and rv[1] == 400 
+
+
+# Integration Test 62: resetPasswordController should return an error when resetting a password using weak password criteria.
+def testResetPasswordControllerWeakPassword(users_in_db):
+    email = "tester1@yahoo.com"
+    password = "121233"
+    newPassword = "weak"
+
+    details = {
+        "email" : email,
+        "password" : newPassword,
+        "confirmPassword" : newPassword
+    }
+
+    token = generate_confirmation_token(email)
+    rv = resetPasswordController(details, token)
+
+    assert 'Password is too short!' in rv[0]["error"] and rv[1] == 400 
+
+
+
+# Integration Test 63: resetPasswordController should return an error when resetting a password with mismatched updated passwords.
+def testResetPasswordControllerMismatchedPassword(users_in_db):
+    email = "tester1@yahoo.com"
+    password = "121233"
+    newPassword = "weak"
+    newPasswordConfirm = "mismatched"
+
+    details = {
+        "email" : email,
+        "password" : newPassword,
+        "confirmPassword" : newPasswordConfirm
+    }
+
+    token = generate_confirmation_token(email)
+    rv = resetPasswordController(details, token)
+
+    assert 'Passwords do not match!' in rv[0]["error"] and rv[1] == 400 

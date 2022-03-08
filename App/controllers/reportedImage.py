@@ -27,7 +27,7 @@ storage = firebase.storage()
 MYDIR = os.path.dirname(__file__)
 
 
-def uploadImage(base64Image):
+def uploadImage(base64Image, Testing=False):
     try:
         fileData = str(base64Image).split("base64")[1]
 
@@ -54,14 +54,17 @@ def uploadImage(base64Image):
         resizedImage.save(temp.name, format="JPEG")
         print("Written to file!")
 
-        storage.child("images/" + new_filename).put(temp.name)
-        link = storage.child("images/" + new_filename).get_url(None)
+        cloudDirectory = "images/"
+        if Testing:
+            cloudDirectory = "test/"
+
+        storage.child(cloudDirectory + new_filename).put(temp.name)
+        link = storage.child(cloudDirectory + new_filename).get_url(None)
 
         print("Uploaded to cloud via: " + link)
         return link
 
-    except Exception as e:
-        print(e)
+    except:
         return null
 
 
