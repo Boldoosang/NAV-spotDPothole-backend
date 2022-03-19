@@ -86,7 +86,7 @@ def registerUserController(regData, testConfirmed=True, testing=False):
                         if not testing:
                             mail.send(msg)
 
-                    return {"message" : "Sucesssfully registered!"}, 201
+                    return {"message" : "Successfully registered! Please check your email for your confirmation token!"}, 201
                 #If an integrity error exception is generated, there would already exist a user with the same email in the database.
                 except IntegrityError:
                     #Rollback the database and return an error message and a 'CONFLICT' http status code (409)
@@ -172,7 +172,7 @@ def changePassword(current_user, newPasswordDetails):
                     current_user.setPassword(newPasswordDetails["password"])
                     db.session.add(current_user)
                     db.session.commit()
-                    return {"message" : "Sucesssfully changed password!"}, 200
+                    return {"message" : "Successfully changed password!"}, 200
                 except:
                     db.session.rollback()
                     return {"error" : "An unknown error has occurred!"}, 500
@@ -202,7 +202,7 @@ def updateProfile(current_user, profileDetails):
 
                 db.session.add(current_user)
                 db.session.commit()
-                return {"message" : "Sucesssfully updated profile!"}, 200
+                return {"message" : "Successfully updated profile!"}, 200
             except:
                 return {"error" : "An unknown error has occurred!"}, 500
 
@@ -395,7 +395,7 @@ def resetPasswordController(details, token):
                     user.setPassword(details["password"])
                     db.session.add(user)
                     db.session.commit()
-                    return {"message" : "Sucesssfully reset password!"}, 200
+                    return {"message" : "Successfully reset password!"}, 200
                 except:
                     db.session.rollback()
                     return {"error" : "An unknown error has occurred!"}, 500
