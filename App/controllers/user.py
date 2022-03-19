@@ -25,7 +25,7 @@ mail = Mail()
 
 ##### CHANGE TESTCONFIRMED TO FALSE WHEN FULLY DEPLOYING TO AVOID EMAIL CONFIRMATION #########
 def registerUserController(regData, testConfirmed=True, testing=False):  
-    validDomains = ["gmail.com", "yahoo.com", "hotmail.com", "my.uwi.edu", "outlook.com"]
+    validDomains = ["gmail.com", "yahoo.com", "hotmail.com", "my.uwi.edu", "sta.uwi.edu", "outlook.com"]
     #Attempts to register the user using the registration data.
     try:
         #If the registration data is not null, process the data.
