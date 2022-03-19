@@ -760,7 +760,7 @@ def testChangePasswordValid(users_in_db):
     #Login with new password
     rv3 = loginUserController({"email" : email, "password": newPassword})
 
-    assert 'Sucesssfully changed password!' in rv2[0]["message"] and rv2[1] == 200 and 'access_token' in rv1[0] and rv1[1] == 200 and 'access_token' in rv3[0] and rv3[1] == 200
+    assert 'Successfully changed password!' in rv2[0]["message"] and rv2[1] == 200 and 'access_token' in rv1[0] and rv1[1] == 200 and 'access_token' in rv3[0] and rv3[1] == 200
 
 
 # Integration Test 43: An error message should be returned to the user upon attempting a password change when not logged in.
@@ -996,7 +996,7 @@ def testResetPasswordControllerValid(users_in_db):
     
     afterReset = loginUserController({"email" : email, "password": newPassword})
 
-    assert 'Sucesssfully reset password!' in rv[0]["message"] and rv[1] == 200 and 'access_token' in beforeReset[0] and beforeReset[1] == 200 and 'access_token' in afterReset[0] and afterReset[1] == 200
+    assert 'Successfully reset password!' in rv[0]["message"] and rv[1] == 200 and 'access_token' in beforeReset[0] and beforeReset[1] == 200 and 'access_token' in afterReset[0] and afterReset[1] == 200
 
 # Integration Test 59: resetPasswordController should return an error when resetting a password for an account that does not exist.
 def testResetPasswordControllerUnregistered(users_in_db):
