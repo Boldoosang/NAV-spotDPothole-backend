@@ -562,7 +562,7 @@ def testLoginInvalidData(users_in_db):
     assert 'Wrong email or password entered!' in rv[0]["error"] and rv[1] == 401
 
 
-# Integration Test 28: /api/dashboard/potholes should return an array of potholes reported by the user, if the user is logged in.
+# Integration Test 28: getUserPotholeData should return an array of potholes reported by a given user.
 def testGetDashboardPotholesLoggedIn(simulated_db):
     user = getOneRegisteredUser("tester1@yahoo.com")
     userPotholeData, statusCode = getUserPotholeData(user)
@@ -570,7 +570,7 @@ def testGetDashboardPotholesLoggedIn(simulated_db):
     
     assert "error" not in userPotholeData and statusCode == 200
 
-# Integration Test 29: /api/dashboard/potholes should return an empty array of potholes, if the user is logged in.
+# Integration Test 29: getUserPotholeData should return an empty array of potholes, if the user has no potholes reported.
 def testGetDashboardPotholesEmpty(users_in_db):
     user = getOneRegisteredUser("tester1@yahoo.com")
     userPotholeData, statusCode = getUserPotholeData(user)
@@ -579,7 +579,7 @@ def testGetDashboardPotholesEmpty(users_in_db):
     
     assert expected in userPotholeData and statusCode == 200
 
-# Integration Test 30: /api/dashboard/reports should return an array of reports reported by the user, if the user is logged in.
+# Integration Test 30: getReportDataForUser should return an array of reports reported by a given user.
 def testGetDashboardReportsLoggedIn(simulated_db):
     user = getOneRegisteredUser("tester1@yahoo.com")
     userReportData, statusCode = getReportDataForUser(user)
@@ -589,7 +589,7 @@ def testGetDashboardReportsLoggedIn(simulated_db):
 
 
 
-# Integration Test 31: /api/dashboard/reports should return an empty array of reports, if the user is logged in.
+# Integration Test 31: getReportDataForUser should return an empty array of reports for a user with no reports.
 def testGetDashboardReportsEmpty(users_in_db):
     user = getOneRegisteredUser("tester1@yahoo.com")
     userReportData, statusCode = getReportDataForUser(user)
@@ -598,7 +598,7 @@ def testGetDashboardReportsEmpty(users_in_db):
     
     assert expected in userReportData and statusCode == 200
 
-# Integration Test 32: The pothole should not exist in the database if it has expired and the system is bootstrapped.
+# Integration Test 32: deleteExpiredPotholes should delete potholes with a passed expiry date.
 def testAutoExpiryDeletion(empty_db):
     persistentPothole = Pothole(longitude=10.67, latitude=-61.23, expiryDate=datetime.now() + timedelta(days=30))
     newPothole = Pothole(longitude=10.64, latitude=-61.25, expiryDate=datetime.now())
@@ -613,7 +613,6 @@ def testAutoExpiryDeletion(empty_db):
     
     assert beforeExpiryPotholeCount == 2 and afterExpiryPotholeCount == 1 and persistentPothole in queriedPersistent
 
-#Test for Banned Users and Change Password
 # Integration Test 33: A banned user should receive a banned message when attempting to login.
 def testBannedUserLogin(users_in_db):
     user = getOneRegisteredUser("tester6@yahoo.com")
@@ -1075,7 +1074,7 @@ def testResetPasswordControllerWeakPassword(users_in_db):
 def testResetPasswordControllerMismatchedPassword(users_in_db):
     email = "tester1@yahoo.com"
     password = "121233"
-    newPassword = "weak"
+    newPassword = "weakened"
     newPasswordConfirm = "mismatched"
 
     details = {
