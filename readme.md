@@ -1,10 +1,10 @@
 # NAV - SpotDPothole Backend
-Welcome to our COMP 3613 Software Engineering Project! This project aims to provide the backend of an application that is geared towards the logging of potholes located across the roadways of Trinidad and Tobago. This project will be implemented to interface with the corresponding [SpotDPothole Frontend](https://github.com/Boldoosang/NAV-spotDPothole-frontend). Please note that this project reflects the various prototype stages that will be refined over the course of many sprints. Implemented features of the first prototype can be found below.
+Welcome to our University of the West Indies, Computer Science, Final Year Project! This project aims to provide the backend of an application that is geared towards the logging of potholes located across the roadways of Trinidad and Tobago. This project will be implemented to interface with the corresponding [SpotDPothole Frontend](https://github.com/Boldoosang/NAV-spotDPothole-frontend). Please note that this project reflects the various prototype stages that will be refined over the course of many sprints. Implemented features of the second prototype can be found below.
 
 [![PyTest](https://github.com/Boldoosang/NAV-spotDPothole-backend/actions/workflows/pytest.yml/badge.svg)](https://github.com/Boldoosang/NAV-spotDPothole-backend/actions/workflows/pytest.yml)
 
 ## BACKEND IMPLEMENTED FEATURES
-For the first prototype of the application, the following features have been implemented during development:
+For the second prototype of the application, the following features have been implemented during development:
 * Registration and login to application
 * Reporting of a pothole via standard interface.
 * Reporting of a pothole via driver interface.
@@ -17,6 +17,11 @@ For the first prototype of the application, the following features have been imp
 * Automatic timeout of potholes that have not been reported.
 * Accessing analytical information for potholes.
 * Voting on a report of a pothole.
+* Generating navigational routes from source to destination, preferring pothole free routes.
+* Automatic snapping of reports to roads.
+* Dynamic image resizing and compression upon upload.
+* Email based account confirmation.
+* Password resetting.
 
 ## POSTMAN COLLECTIONS
 * [SpotDPothole Postman Collections](https://linktr.ee/spotDPothole)
@@ -31,7 +36,7 @@ $ pip3 install -r requirements.txt
 ```
 
 ## CONFIGURATION
-In development, configuration can be handled through the use of a 'config.py' file, with a class of 'development' that will specify the parameters for the flask backend server. This file should make use of the various flask configuration settings in order to confgure the application. Please note that this file is not included in the repository as it contains sensitive information that would be dependent on the application deployment use. In the absense of the 'config.py' file, the configuration will default to the use of the environment variables; which are preset variables of the machine that will be hosting the application.
+In development, configuration can be handled through the use of a 'config.py' file, with a class of 'development' that will specify the parameters for the flask backend server. This file should make use of the various flask configuration settings in order to confgure the application. Please note that this file is not included in the repository as it contains sensitive information that would be dependent on the application deployment use. However, an example file is provided, 'config.example.py', that will show the required information fields for deployment of the application. In the absense of the 'config.py' file, the configuration will default to the use of the environment variables; which are preset variables of the machine that will be hosting the application.
 In production, environment variables should be used as these variables ensure that the sensitive information variables can be loaded as needed without being present into the code.
 
 ## HEROKU SETUP
@@ -55,6 +60,12 @@ Please note that custom tasks can also be created by using the '@manager.command
 def task():
     print("Testing Task")
 ```
+
+Some available useful commands include:
+* banUser (email)
+* unbanUser (email)
+* removePothole (potholeID)
+* removeReport (reportID)
 
 ## SERVING THE PROJECT
 In the development environment, the application can be served using both:
@@ -102,7 +113,7 @@ Be sure to drop the config.py file into the /App directory for use of your custo
 
 ## PROJECT DELIVERABLES
 * [SpotDPothole Web Application](https://spotdpoth.web.app/)
-* [Project Report](https://docs.google.com/document/d/18kbN5YyZ8pcmEhLy0BDKr7YezFgyay--QyvI0m3OSU4/edit)
+* [Project Report](https://docs.google.com/document/d/1MbG_XzXLCaeWMDBc3Zezz9sAgkBU1_tGtYckHa-LVjU/edit)
 * [Trello Board](https://trello.com/b/bCe8RVWj/spotdpothole-board)
-* [Presentation Video](https://drive.google.com/file/d/1I26Kmw9RUOWzvvWH7LVCLmI33z4OshX7/view)
-* [Sprint Reports](https://docs.google.com/document/d/1jxIfp3vwikRcj7EJdyDVY7riiU0riKOS5hV0pR2tbb8/edit#)
+* **[Presentation Video](https://drive.google.com/file/d/1I26Kmw9RUOWzvvWH7LVCLmI33z4OshX7/view)
+* [Sprint Reports](https://docs.google.com/document/d/1jxIfp3vwikRcj7EJdyDVY7riiU0riKOS5hV0pR2tbb8/edit)
