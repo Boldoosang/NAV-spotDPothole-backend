@@ -8,6 +8,7 @@
 from flask_jwt_extended import current_user, jwt_required
 from flask import Blueprint, redirect, request, jsonify, send_from_directory
 
+#Imports controllers
 from App.controllers.pothole import getIndividualPotholeData, getPotholeData, getUserPotholeData, nukePotholesInDB
 
 #Creates a blueprint to the collection of views for potholes.

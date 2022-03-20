@@ -69,6 +69,7 @@ def serve():
     app.run(host='0.0.0.0', port = 8080, debug = app.config['ENV'] == 'development')
 
 
+#Used to reset the password of the user forcibly.
 @manager.command
 def forceChangePassword(email, password):
     try:
@@ -88,18 +89,15 @@ def forceChangePassword(email, password):
         print("Unable to update password of user!")
 
 
+#Used to ban a user given an email address.
 @manager.command
 def banUser(email):
     banUserController(email)
 
+#Used to unban a user given an email address.
 @manager.command
 def unbanUser(email):
     unbanUserController(email)
-
-@manager.command
-def userState(email):
-    user = getOneRegisteredUser(email)
-    print(user.toDict())
     
 #If the application is run via 'manage.py', facilitate manager arguments.
 if __name__ == "__main__":

@@ -12,10 +12,6 @@ from App.models import *
 
 LOGGER = logging.getLogger(__name__)
 
-def cleanupImages(db):
-    allImages = db.session.query(ReportedImage).filter_by().all()
-    print(allImages)
-
 # fixtures are used to setup state in the app before the test
 @pytest.fixture
 def empty_db():
@@ -42,7 +38,6 @@ def simulated_db():
     createSimulatedData()
     yield app.test_client()
     os.unlink(os.getcwd()+'/App/test.db')
-
 
 ########## Unit Tests ########## 
 # Unit Test 1: api/potholes should return an empty array when there are no potholes, and should return a status code of 200

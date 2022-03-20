@@ -70,6 +70,7 @@ def getAllDownvotesForReport(reportID):
 def voteOnPothole(user, potholeID, reportID, voteData):
     #Attempts to vote on a pothole.
     try:
+        #If the user is banned, return an error and do not let them vote.
         if user.banned:
             return {"error": "User is banned."}, 403
 

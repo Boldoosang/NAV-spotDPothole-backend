@@ -37,11 +37,12 @@ def getUserPotholeData(user):
         #Retrieves all of the potholes from the database.
         potholes = db.session.query(Pothole).filter_by().all()
 
+        #Creates an empty array and iterates over all of the pothole and stores their toDict in the array.
         potholeData = []
-
         for pothole in potholes:
             potholeData += [pothole.toDict() for report in pothole.reports if user.userID == report.userID]
 
+        #Returns the dump of the pothole data, and OK status code.
         return json.dumps(potholeData), 200
     except:
     #If an error was encountered in getting the pothole data, rollback the query (querying invalid datatype crashes POSTGRES database ONLY)
@@ -76,6 +77,7 @@ def deletePothole(potholeID):
             return False
         #Otherwise if it is found, delete the pothole, commit the change, and return True that the operation was successful.
         else:
+            #If a pothle is found, delete all the images associated with the pothole, and delete the pothole.
             try:
                 deleteAllPotholeImagesFromStorage(pothole.potholeID)
                 db.session.delete(pothole)
@@ -98,6 +100,7 @@ def deleteExpiredPotholes():
         expiredPotholes = db.session.query(Pothole).filter(datetime.now() >= Pothole.expiryDate).all()
         #Iterates over all of the expired potholes and deletes them.
         for pothole in expiredPotholes:
+            #Deletes the images associated with each pothole, as well as the pothole itself.
             deleteAllPotholeImagesFromStorage(pothole.potholeID)
             deletePothole(pothole.potholeID)
     except:

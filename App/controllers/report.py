@@ -74,8 +74,7 @@ def findClosestPothole(latitude, longitude):
 
             #If the distance between the current pothole is less than the smallest distance, set the finalPothole to match the current pothole.
             #This effectively finds the nearest pothole, within the distance threshold, that the report can be matched to.
-            if distanceBetweenPotholes < smallestDistance:
-                
+            if distanceBetweenPotholes < smallestDistance:                
                 finalPothole = pothole
 
         #Returns the final pothole to be used for the report.
@@ -84,14 +83,19 @@ def findClosestPothole(latitude, longitude):
     #If an error is encountered, return an error message.
         return "error"
 
+#Given a set of coordinates, longitude and latitude, will attempt to use the OSRM server to correct the coordinates of the report.
 def snapCoordsToStreet(latitude, longitude):
+    #Converts the coordinates to strings.
     latitude = str(latitude)
     longitude = str(longitude)
+    #Sends a request to the OSRM server and stores the result.
     r = requests.get('http://osrm.justinbaldeo.com:5000/nearest/v1/driving/' + longitude + ',' + latitude)
+    #If the status code of the request is 200, convert the response to json and return the location coordinates.
     if r.status_code == 200:
         jsonReq = r.json()
         return jsonReq["waypoints"][0]["location"][1], jsonReq["waypoints"][0]["location"][0]
     else:
+    #Otherwise raise an exception.
         raise Exception("OSRM server did not return a valid response.")
 
 #Validates a report of a user via the standard interface before adding it to the database.
@@ -111,7 +115,7 @@ def reportPotholeStandard(user, reportDetails, Testing=False):
 
             #If the coordinates reported are within the bounds for Trinidad and Tobago, process the report.
             if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
-               #Attempts to perform coordinate street matching
+               #Attempts to perform coordinate street matching using the OSRM server and stores the results back into the original variables.
                 try:
                     (reportDetails["latitude"], reportDetails["longitude"]) = snapCoordsToStreet(reportDetails["latitude"], reportDetails["longitude"])
                 except:
@@ -170,11 +174,8 @@ def reportPotholeStandard(user, reportDetails, Testing=False):
                         #Iterates over the images within the images field of the reportDetails and adds them to the reportedImage database.
                         for base64Image in reportDetails["images"]:
                             imageURL = uploadImage(base64Image, Testing)
-                            print(imageURL)
                             #Determines if the URL is valid and leads to an image.
                             if is_url_image(imageURL):
-
-                                print(imageURL)
                                 #If valid, add the imageURL to the reportedImage database for the reportID.
                                 try:
                                     #Creates image record using report details, adds to database, and commits changes.
@@ -229,7 +230,7 @@ def reportPotholeDriver(user, reportDetails):
         if "longitude" in reportDetails and "latitude" in reportDetails:
             #If the coordinates reported are within the bounds for Trinidad and Tobago, process the report.
             if -61.965556 < reportDetails["longitude"] < -60.469077 and 10.028088 < reportDetails["latitude"] < 11.370345:
-                #Attempts to perform coordinate street matching
+                #Attempts to perform coordinate street matching using the OSRM server and stores the results back into the original variables.
                 try:
                     (reportDetails["latitude"], reportDetails["longitude"]) = snapCoordsToStreet(reportDetails["latitude"], reportDetails["longitude"])
                 except:
@@ -329,13 +330,13 @@ def deletePotholeReport(reportID):
             try:
                 #Obtains the potholeID from the report
                 potholeID = foundReport.potholeID
+                #Deletes the images associated with the potholeID
                 deleteAllReportImagesFromStorage(potholeID)
                 #Deletes the report and commits the change to the database.
                 db.session.delete(foundReport)
                 db.session.commit()
 
                 
-
                 #Determines if there are any reports for a pothole given the potholeID.
                 potholeReports = db.session.query(Report).filter_by(potholeID = potholeID).first()
                 #If there is no report found, the pothole has no more reports and can therefore be deleted.
@@ -361,6 +362,7 @@ def deletePotholeReport(reportID):
 def deleteUserPotholeReport(user, potholeID, reportID):
     #Attempts to delete a pothole from the database.
     try:
+        #If the user is banned, return an error message and do not let them delete the pothole report.
         if user.banned:
             return {"error": "User is banned."}, 403
         #Ensures that the potholeID and reportID are non-null before deleting the data.
@@ -370,13 +372,12 @@ def deleteUserPotholeReport(user, potholeID, reportID):
 
             #If a report is found, delete the report.
             if foundReport:
-                #Attempts to delete the found report and commit to database.
+                #Attempts to delete the found report, its images, and commits it to the database.
                 try:
                     deleteAllReportImagesFromStorage(potholeID)
                     db.session.delete(foundReport)
                     db.session.commit()
                     
-
                     #Determines if there are any more reports for the pothole after the deletion.
                     potholeReports = db.session.query(Report).filter_by(potholeID = potholeID).first()
                     #If there are no more reports for that pothole, the pothole can be deleted.
@@ -406,6 +407,7 @@ def deleteUserPotholeReport(user, potholeID, reportID):
 def updateReportDescription(user, potholeID, reportID, potholeDetails):
     #Attempts to delete the report description of a pothole.
     try:
+        #If the user is banned, return an error message and do not let them update the pothole report.
         if user.banned:
             return {"error": "User is banned."}, 403
         #Determines if the potholeDetails is not null before processing the data.

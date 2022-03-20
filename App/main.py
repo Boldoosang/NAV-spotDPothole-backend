@@ -24,6 +24,8 @@ def addViews(app, views):
 
 #Creates the manager for the application, for the JSON web tokens using in authentication.
 jwt = JWTManager()
+
+#Creates the mail manager for the application, for use in sending confirmation and password reset emails.
 mail = Mail()
 
 #Loads the configuration into the application from either a config file, or using environment variables.
@@ -56,7 +58,7 @@ def loadConfig(app, config):
     for key,value in config.items():
         app.config[key] = config[key]
 
-
+#Initializes the DB and makes the initial commit.
 def init_db(app):
     db.init_app(app)
     db.create_all(app=app)
