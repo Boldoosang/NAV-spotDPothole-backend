@@ -26,6 +26,7 @@ MYDIR = os.path.dirname(__file__)
 #Allows for the uploading of an image given a base64 encoded string.
 def uploadImage(base64Image, Testing=False):
     #Attempts to process the base64 image and upload it to firebase.
+    
     try:
         #Obtains the data portion of the base64 image string.
         fileData = str(base64Image).split("base64")[1]
@@ -36,10 +37,13 @@ def uploadImage(base64Image, Testing=False):
         new_filename = "REPORT " + str(milliseconds) + "_" + randomString + ".jpg"
 
         #Creates a temporary file for use in storing the images.
-        temp = tempfile.NamedTemporaryFile(delete=True, suffix=".jpg", dir=os.path.join(os.getcwd(), "App/uploads"))
+        temp = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg", dir=os.path.join(os.getcwd(), "App/uploads"))
+
 
         #Decodes the base64 image and opens it using PIL.
         im = Image.open(BytesIO(base64.b64decode(fileData)))
+        #Discards the alpha channel of the image
+        im = im.convert("RGB")
         #Saves the image using the temporary file.
         im.save(temp.name)
 
