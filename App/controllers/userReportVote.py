@@ -117,8 +117,8 @@ def voteOnPothole(user, potholeID, reportID, voteData):
                             #Returns a message that the report will be deleted, along with an 'OK' http status code.
                             return {"message": "This report will be deleted due to its severe negative reputation."}, 200
 
-                        #Returns a message that the vote was casted for the report along with a 'CREATED' http status code (201).
-                        return {"message": "Vote casted for report!"}, 201
+                        #Returns a message that the vote was cast for the report along with a 'CREATED' http status code (201).
+                        return {"message": "Vote cast for report!"}, 201
                     else:
                     #Attempts to vote on a report given that the user has previously voted on the report.
                         #If the vote option received matches the previous vote option, the user has toggled the vote and would result in the deletion of the vote.
