@@ -1,4 +1,4 @@
-import os
+#Public Facing API information for firebase
 
 config = {
   "apiKey": "AIzaSyAFJQVYCaIhUWHoEIAhllfXK6sZdq6zgws",

@@ -2,12 +2,11 @@
 #SpotDPothole-Backend
 #NULLIFY
 
-#USER VIEW - Defines the view endpoints for REPORTEDIMAGES.
+#USER VIEW - Defines the view endpoints for USER.
 
 #Imports flask modules.
 from flask_jwt_extended import jwt_required, current_user
 from flask import Blueprint, request, jsonify, send_from_directory
-
 
 
 #Creates a blueprint to the collection of views for users.
@@ -57,25 +56,28 @@ def identify():
     return json.dumps(outcomeMessage), statusCode
 
 
-
+#Creates a PUT route to facilitate the confirmation of the user's account. Also returns a status code to denote the outcome of the operation.
 @userViews.route('/confirm/<token>', methods=["PUT"])
 def confirmEmail(token):
     details = request.get_json()
     outcomeMessage, statusCode = confirmEmailController(token, details)
     return json.dumps(outcomeMessage), statusCode
 
+#Creates a POST route to facilitate the resending of the confirmation email for a user's account. Also returns a status code to denote the outcome of the operation.
 @userViews.route('/resendConfirmation', methods=["POST"])
 def resendConfirmation():
     details = request.get_json()
     outcomeMessage, statusCode = resendConfirmationController(details)
     return json.dumps(outcomeMessage), statusCode
 
+#Creates a POST route to facilitate the resending of the password reset email for a user's account. Also returns a status code to denote the outcome of the operation.
 @userViews.route('/resetPassword', methods=["POST"])
 def sendPasswordReset():
     details = request.get_json()
     outcomeMessage, statusCode = sendPasswordResetController(details)
     return json.dumps(outcomeMessage), statusCode
 
+#Creates a POST route to facilitate the resetting of a user's password. Also returns a status code to denote the outcome of the operation.
 @userViews.route('/resetPassword/<token>', methods=["POST"])
 def resetPassword(token):
     details = request.get_json()

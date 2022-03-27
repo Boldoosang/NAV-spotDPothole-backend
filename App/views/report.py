@@ -8,6 +8,7 @@
 from flask_jwt_extended import current_user, jwt_required
 from flask import Blueprint, redirect, request, jsonify, send_from_directory
 
+#Imports controllers
 from App.controllers.report import deleteUserPotholeReport, getIndividualPotholeReport, getPotholeReports, getReportData, getReportDataForUser, updateReportDescription
 
 #Creates a blueprint to the collection of views for reports.

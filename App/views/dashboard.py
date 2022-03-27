@@ -16,7 +16,6 @@ from App.controllers.report import getReportDataForUser
 #Creates a blueprint to the collection of views for reports.
 dashboardViews = Blueprint('dashboardViews', __name__)
 
-
 #Creates a GET route for the retrieval of a user's pothole data. Also returns a status code to denote the outcome of the operation.
 @dashboardViews.route('/api/dashboard/potholes', methods=["GET"])
 @jwt_required()
@@ -24,7 +23,7 @@ def displayUserPotholes():
     displayData, statusCode = getUserPotholeData(current_user)
     return displayData, statusCode
 
-#Creates a GET route for the retrieval of all of the report data. Also returns a status code to denote the outcome of the operation.
+#Creates a GET route for the retrieval of all of the user's report data. Also returns a status code to denote the outcome of the operation.
 @dashboardViews.route('/api/dashboard/reports', methods=["GET"])
 @jwt_required()
 def displayUserReports():
