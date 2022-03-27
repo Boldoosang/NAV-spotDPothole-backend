@@ -10,7 +10,7 @@ import json
 #Imports the all of the required models and controllers.
 from App.models import *
 from App.controllers import *
-from App.controllers.reportedImage import deleteAllPotholeImagesFromStorage, deleteAllReportImagesFromStorage, deleteImageFromStorage
+from App.controllers.reportedImage import deleteAllPotholeImagesFromStorage, deleteImageFromStorage
 
 #Retrieves all of the potholes that are in the database and returns their dictionary definitions in an array, in json form, as well as
 #an 'OK' http status code (200).

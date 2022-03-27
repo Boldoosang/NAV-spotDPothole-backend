@@ -22,7 +22,7 @@ from App.models import *
 from App.controllers import *
 from App.controllers.pothole import deletePothole
 from App.controllers.reportedImage import is_url_image, uploadImage
-from App.controllers.reportedImage import deleteAllPotholeImagesFromStorage, deleteAllReportImagesFromStorage, deleteImageFromStorage
+from App.controllers.reportedImage import deleteAllReportImagesFromStorage, deleteImageFromStorage
 
 #Returns a json dump of all of the reports in the database.
 def getReportData():
@@ -328,10 +328,8 @@ def deletePotholeReport(reportID):
         if foundReport:
             #Attempts to delete the report.
             try:
-                #Obtains the potholeID from the report
-                potholeID = foundReport.potholeID
                 #Deletes the images associated with the potholeID
-                deleteAllReportImagesFromStorage(potholeID)
+                deleteAllReportImagesFromStorage(foundReport.reportID)
                 #Deletes the report and commits the change to the database.
                 db.session.delete(foundReport)
                 db.session.commit()
@@ -374,7 +372,7 @@ def deleteUserPotholeReport(user, potholeID, reportID):
             if foundReport:
                 #Attempts to delete the found report, its images, and commits it to the database.
                 try:
-                    deleteAllReportImagesFromStorage(potholeID)
+                    deleteAllReportImagesFromStorage(foundReport.reportID)
                     db.session.delete(foundReport)
                     db.session.commit()
                     
