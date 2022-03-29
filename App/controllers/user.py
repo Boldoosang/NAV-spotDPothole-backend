@@ -49,7 +49,7 @@ def registerUserController(regData, testConfirmed=False, testing=False):
 
                 domain = parsedEmail.split('@')[1]
                 if domain not in validDomains:
-                    return {"error" : "Please use gmail, yahoo, hotmail, outlook, or my.uwi.edu email providers."}, 400
+                    return {"error" : "Please use gmail, yahoo, hotmail, outlook, sta.uwi.edu or my.uwi.edu email providers."}, 400
 
                 #Ensures the user has entered a valid first name, and returns an appropriate error and status code if otherwise.
                 if len(parsedFirstName) < 2:
