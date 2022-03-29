@@ -332,7 +332,7 @@ def resendConfirmationController(details, testing=False):
 
                 #If the app is not being tested, send the email.
                 #@justinbaldeo.com is for test users and will print the email contents to admin console as opposed to sending an email.
-                if "@justinbaldeo.com" in newUser.email:
+                if "@justinbaldeo.com" in email:
                     print(msg)
                 elif not testing:
                     mail.send(msg)
@@ -383,7 +383,7 @@ def sendPasswordResetController(details, testing=False):
 
                 #If the app is not being tested, send the email.
                 #@justinbaldeo.com is for test users and will print the email contents to admin console as opposed to sending an email.
-                if "@justinbaldeo.com" in newUser.email:
+                if "@justinbaldeo.com" in email:
                     print(msg)
                 elif not testing:
                     mail.send(msg)
