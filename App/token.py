@@ -13,7 +13,7 @@ def generate_confirmation_token(email):
     return serializer.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
 
 #Returns an email address associated with a particular token.
-def confirm_token(token, expiration=600):
+def confirm_token(token, expiration=1800):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     #Attempts to get the email for a given token. 
     try:

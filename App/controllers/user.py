@@ -25,11 +25,9 @@ mail = Mail()
 
 #Facilitates the registration of a user in the application given a dictionary containing registration information.
 #The appropriate outcome and status codes are then returned.
-
-##### CHANGE TESTCONFIRMED TO FALSE WHEN FULLY DEPLOYING TO AVOID EMAIL CONFIRMATION #########
-def registerUserController(regData, testConfirmed=True, testing=False):  
+def registerUserController(regData, testConfirmed=False, testing=False):  
     #Sets the valid email provider domains for registration.
-    validDomains = ["gmail.com", "yahoo.com", "hotmail.com", "my.uwi.edu", "sta.uwi.edu", "outlook.com"]
+    validDomains = ["gmail.com", "yahoo.com", "hotmail.com", "justinbaldeo.com", "my.uwi.edu", "sta.uwi.edu", "outlook.com"]
     #Attempts to register the user using the registration data.
     try:
         #If the registration data is not null, process the data.
@@ -51,7 +49,7 @@ def registerUserController(regData, testConfirmed=True, testing=False):
 
                 domain = parsedEmail.split('@')[1]
                 if domain not in validDomains:
-                    return {"error" : "Please use gmail, yahoo, hotmail, outlook, or my.uwi.edu email providers."}, 400
+                    return {"error" : "Please use gmail, yahoo, hotmail, outlook, sta.uwi.edu or my.uwi.edu email providers."}, 400
 
                 #Ensures the user has entered a valid first name, and returns an appropriate error and status code if otherwise.
                 if len(parsedFirstName) < 2:
@@ -90,7 +88,10 @@ def registerUserController(regData, testConfirmed=True, testing=False):
                         )
 
                         #If the app is not being tested, send the email.
-                        if not testing:
+                        #@justinbaldeo.com is for test users and will print the email contents to admin console as opposed to sending an email.
+                        if "@justinbaldeo.com" in newUser.email:
+                            print(msg)
+                        elif not testing:
                             mail.send(msg)
 
                     #Returns the a success message and status code.
@@ -329,8 +330,11 @@ def resendConfirmationController(details, testing=False):
                     sender = "spotdpothole-email-confirmation@justinbaldeo.com"
                 )
 
-                #If the backend is not in testing mode, send the email.
-                if not testing:
+                #If the app is not being tested, send the email.
+                #@justinbaldeo.com is for test users and will print the email contents to admin console as opposed to sending an email.
+                if "@justinbaldeo.com" in email:
+                    print(msg)
+                elif not testing:
                     mail.send(msg)
 
                 #Send a success message and status code.
@@ -377,8 +381,11 @@ def sendPasswordResetController(details, testing=False):
                     sender = "spotdpothole-email-confirmation@justinbaldeo.com"
                 )
 
-                #If not in testing mode, send the email with the token to the user.
-                if not testing:
+                #If the app is not being tested, send the email.
+                #@justinbaldeo.com is for test users and will print the email contents to admin console as opposed to sending an email.
+                if "@justinbaldeo.com" in email:
+                    print(msg)
+                elif not testing:
                     mail.send(msg)
 
                 #Notify the user that the email has been sent.
@@ -509,7 +516,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    }, True)
+    }, True, True)
     registerUserController({
         "email" : "tester2@yahoo.com",
         "firstName" : "Jose",
@@ -517,7 +524,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    }, True)
+    }, True, True)
     registerUserController({
         "email" : "tester3@yahoo.com",
         "firstName" : "Mary",
@@ -525,7 +532,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    }, True)
+    }, True, True)
     registerUserController({
         "email" : "tester4@yahoo.com",
         "firstName" : "Keisha",
@@ -533,7 +540,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    }, True)
+    }, True, True)
     registerUserController({
         "email" : "tester5@yahoo.com",
         "firstName" : "Harry",
@@ -541,7 +548,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    }, True)
+    }, True, True)
     registerUserController({
         "email" : "tester6@yahoo.com",
         "firstName" : "Terrence",
@@ -549,7 +556,7 @@ def createTestUsers():
         "password" : "121233",
         "confirmPassword" : "121233",
         "agreeToS": True
-    }, True)
+    }, True, True)
 
 #Returns all registered users in the database.
 def getAllRegisteredUsers():
