@@ -15,6 +15,7 @@ For the second prototype of the application, the following features have been im
 * Viewing of reports of other users.
 * Viewing of reported potholes.
 * Automatic timeout of potholes that have not been reported.
+* Auto moderation of potholes that have received sufficient downvotes.
 * Accessing analytical information for potholes.
 * Voting on a report of a pothole.
 * Generating navigational routes from source to destination, preferring pothole free routes.
