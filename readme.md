@@ -30,6 +30,7 @@ For the second prototype of the application, the following features have been im
 ## DEPENDENCIES
 * [Python3](https://www.python.org/downloads/) - Python as main programming language.
 * [Python3 Modules (requirements.txt)](https://github.com/Boldoosang/NAV-spotDPothole-backend/blob/main/requirements.txt) - Python modules used in the development of the application.
+* [Open Source Routing Machine](https://hub.docker.com/r/boldoosang/spotdpothole-osrm) - OSRM server used for snapping reports to roads.
 
 Dependencies can be installed using:
 ```
