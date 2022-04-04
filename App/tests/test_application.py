@@ -721,7 +721,7 @@ def testBannedUserDeleteReport(simulated_db):
     assert 'User is banned.' in rv1[0]["error"] and rv1[1] == 403
 
 # Integration Test 41: A banned user should receive a banned message when attempting to edit the pothole description.
-def testBannedUserDeleteReport(simulated_db):
+def testBannedUserUpdateDescription(simulated_db):
     user = getOneRegisteredUser("tester1@yahoo.com")
     banUserController("tester1@yahoo.com")
     potholeID = 1
@@ -840,7 +840,7 @@ def testSendPasswordResetUnregisteredEmail(users_in_db):
     assert 'Unregistered email provided!' in rv[0]["error"] and rv[1] == 404
 
 # Integration Test 48: sendPasswordResetControllers should return an error message and code if attempting to reset an account with no supplied email.
-def testSendPasswordResetUnregisteredEmail(users_in_db):
+def testSendPasswordResetNoEmail(users_in_db):
     email = None
     details = {
         "email" : email
