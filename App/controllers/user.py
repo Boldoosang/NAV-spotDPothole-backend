@@ -83,7 +83,7 @@ def registerUserController(regData, testConfirmed=False, testing=False):
                         msg = Message(
                             subject = "SpotDPothole - Please confirm your email",
                             recipients=[newUser.email], 
-                            body = f"Please use the following confirmation token: {token}",
+                            body = f"Thank you for registering with SpotDPothole!\r\n\r\nPlease confirm your email address with to let us know that you’re real and not a robot. The code below is your verification code.\r\nPlease enter it in the 'Email Verification' section of the 'Account' tab, located in the 'Login' window.\r\n\r\nYour Code:\r\n{token}\r\n\r\nWe look forward to you reporting potholes!",
                             sender = "spotdpothole-email-confirmation@justinbaldeo.com"
                         )
 
@@ -326,7 +326,7 @@ def resendConfirmationController(details, testing=False):
                 msg = Message(
                     subject = "SpotDPothole - Please confirm your email",
                     recipients=[email], 
-                    body = f"Please use the following confirmation token: {token}",
+                    body = f"Thank you for registering with SpotDPothole!\r\n\r\nPlease confirm your email address with to let us know that you’re real and not a robot. The code below is your verification code.\r\nPlease enter it in the 'Email Verification' section of the 'Account' tab, located in the 'Login' window.\r\n\r\nYour Code:\r\n{token}\r\n\r\nWe look forward to you reporting potholes!",
                     sender = "spotdpothole-email-confirmation@justinbaldeo.com"
                 )
 
@@ -377,7 +377,7 @@ def sendPasswordResetController(details, testing=False):
                 msg = Message(
                     subject = "SpotDPothole - Please reset your password",
                     recipients=[email], 
-                    body = f"Please use the following confirmation token: {token}",
+                    body = f"It looks like you’ve forgotten your password. That’s okay! We’re here to help. Please copy the verification token below and enter it in the 'Reset Password' section of the 'Account' tab, located in the 'Login' window.\r\n\r\nYour Code:\r\n{token}\r\n\r\nYou may then create a new password for your account.\r\n\r\nIf you did not send this reset password request, then disregard this email. Don’t worry, your account information is safe.",
                     sender = "spotdpothole-email-confirmation@justinbaldeo.com"
                 )
 
