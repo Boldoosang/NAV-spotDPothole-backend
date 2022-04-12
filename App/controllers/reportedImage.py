@@ -12,7 +12,7 @@ import filetype, os, time, random, base64, tempfile, string
 #Imports the all of the required models, controllers, and functions.
 from App.models import *
 from App.controllers import *
-from PIL import Image
+from PIL import Image, ImageOps
 from io import BytesIO
 from werkzeug.utils import secure_filename
 from pyrebase import pyrebase
@@ -42,6 +42,8 @@ def uploadImage(base64Image, Testing=False):
 
         #Decodes the base64 image and opens it using PIL.
         im = Image.open(BytesIO(base64.b64decode(fileData)))
+        im = ImageOps.exif_transpose(im)
+        
         #Discards the alpha channel of the image
         im = im.convert("RGB")
         #Saves the image using the temporary file.
