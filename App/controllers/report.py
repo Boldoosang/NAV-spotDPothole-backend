@@ -328,6 +328,7 @@ def deletePotholeReport(reportID):
         if foundReport:
             #Attempts to delete the report.
             try:
+                potholeID = foundReport.potholeID
                 #Deletes the images associated with the potholeID
                 deleteAllReportImagesFromStorage(foundReport.reportID)
                 #Deletes the report and commits the change to the database.
@@ -344,7 +345,8 @@ def deletePotholeReport(reportID):
                 #Returns true since the report was deleted.
                 return True
             #If the deletion fails, rollback the database and return false since there was no deletion.
-            except:
+            except Exception as e:
+                print(e)
                 db.session.rollback()
                 return False
         #If the report is not found, return false since there was no deletion.
