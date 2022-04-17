@@ -118,5 +118,5 @@ Be sure to drop the config.py file into the /App directory for use of your custo
 * [SpotDPothole OSRM Server](https://hub.docker.com/r/boldoosang/spotdpothole-osrm)
 * [Project Report](https://docs.google.com/document/d/1MbG_XzXLCaeWMDBc3Zezz9sAgkBU1_tGtYckHa-LVjU/edit)
 * [Trello Board](https://trello.com/b/bCe8RVWj/spotdpothole-board)
-* **[Presentation Video](https://drive.google.com/file/d/1I26Kmw9RUOWzvvWH7LVCLmI33z4OshX7/view)
+* [Presentation Video](https://drive.google.com/file/d/1UykyVaxr4G0CXS1ABVqcTvMwgmhXvOui/view?usp=sharing)
 * [Sprint Reports](https://docs.google.com/document/d/1jxIfp3vwikRcj7EJdyDVY7riiU0riKOS5hV0pR2tbb8/edit)
