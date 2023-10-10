@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 8080 
 
-CMD [ "python3", "manage.py" , "serve"]
+CMD [ "python", "manage.py" , "serve"]
