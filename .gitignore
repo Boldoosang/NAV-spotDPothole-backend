@@ -6,3 +6,5 @@ App/test.db
 serviceAccountKey.json
 migrations/
 App/uploads/*.jpg
+venv/
+*.config.development

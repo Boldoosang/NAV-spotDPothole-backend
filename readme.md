@@ -41,7 +41,7 @@ $ pip3 install -r requirements.txt
 In development, configuration can be handled through the use of a 'config.py' file, with a class of 'development' that will specify the parameters for the flask backend server. This file should make use of the various flask configuration settings in order to confgure the application. Please note that this file is not included in the repository as it contains sensitive information that would be dependent on the application deployment use. However, an example file is provided, 'config.example.py', that will show the required information fields for deployment of the application. In the absense of the 'config.py' file, the configuration will default to the use of the environment variables; which are preset variables of the machine that will be hosting the application.
 In production, environment variables should be used as these variables ensure that the sensitive information variables can be loaded as needed without being present into the code.
 
-## HEROKU SETUP
+## HEROKU SETUP (NO LONGER APPLICABLE)
 The application can be deployed to heroku using the button below. 
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
