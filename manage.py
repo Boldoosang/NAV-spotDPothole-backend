@@ -65,7 +65,7 @@ def removeReport(reportID):
 def serve():
     print('Application running in ' + app.config['ENV'] + ' mode!')
     #Carries out startup tasks for application server.
-    bootstrapServer()
+    #bootstrapServer()
     app.run(host='0.0.0.0', port = 8080, debug = app.config['ENV'] == 'development')
 
 
