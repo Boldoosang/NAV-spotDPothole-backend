@@ -89,7 +89,7 @@ def snapCoordsToStreet(latitude, longitude):
     latitude = str(latitude)
     longitude = str(longitude)
     #Sends a request to the OSRM server and stores the result.
-    r = requests.get('http://osrm.justinbaldeo.com:5000/nearest/v1/driving/' + longitude + ',' + latitude)
+    r = requests.get('http://osrm.justinbaldeo.com/nearest/v1/driving/' + longitude + ',' + latitude)
     #If the status code of the request is 200, convert the response to json and return the location coordinates.
     if r.status_code == 200:
         jsonReq = r.json()
