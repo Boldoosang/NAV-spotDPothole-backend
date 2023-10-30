@@ -378,7 +378,7 @@ def sendPasswordResetController(details, testing=False):
                     subject = "SpotDPothole - Please reset your password",
                     recipients=[email], 
                     body = f"It looks like you’ve forgotten your password. That’s okay! We’re here to help. Please copy the verification token below and enter it in the 'Reset Password' section of the 'Account' tab, located in the 'Login' window.\r\n\r\nYour Code:\r\n{token}\r\n\r\nYou may then create a new password for your account.\r\n\r\nIf you did not send this reset password request, then disregard this email. Don’t worry, your account information is safe.",
-                    sender = "spotdpothole-email-confirmation@justinbaldeo.com"
+                    sender = "spotdpothole-noreply@justinbaldeo.com"
                 )
 
                 #If the app is not being tested, send the email.
