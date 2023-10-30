@@ -2,5 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/boldoosang/spotdpotholebe/
-    - /bin/cp index.html $DEPLOYPATH
-    - /bin/cp -r ./ $DEPLOYPATH
+    - /bin/cp -R ./ $DEPLOYPATH
